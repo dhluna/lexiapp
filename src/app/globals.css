@@ -1,26 +1,144 @@
 @import "tailwindcss";
 
+/*
+ * Lexi tokens. Ink-on-index-card palette with one highlighter accent, used for the
+ * word being studied and for what the learner has learned.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #f3f5fb;
+  --surface: #ffffff;
+  --surface-sunken: #e9ecf6;
+  --ink: #16193b;
+  --ink-soft: #4b5070;
+  --line: #d9ddeb;
+  --accent: #3a3ed6;
+  --accent-ink: #ffffff;
+  --accent-soft: #e6e7fd;
+  --marker: #ffe45c;
+  --learned: #0f7448;
+  --learned-soft: #e1f4e9;
+  --review: #9a5600;
+  --review-soft: #fff0d6;
+  --danger: #b4232c;
+  --danger-soft: #fde7e8;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #0e1022;
+    --surface: #181b33;
+    --surface-sunken: #12152a;
+    --ink: #eef0fa;
+    --ink-soft: #aab0cc;
+    --line: #2b2f50;
+    --accent: #9a9dff;
+    --accent-ink: #0e1022;
+    --accent-soft: #262a55;
+    --marker: #8a7414;
+    --learned: #62d6a0;
+    --learned-soft: #11301f;
+    --review: #f5b451;
+    --review-soft: #33250f;
+    --danger: #ff8a8f;
+    --danger-soft: #3a1518;
+    color-scheme: dark;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-sunken: var(--surface-sunken);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-marker: var(--marker);
+  --color-learned: var(--learned);
+  --color-learned-soft: var(--learned-soft);
+  --color-review: var(--review);
+  --color-review-soft: var(--review-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-lexi-body);
+  --font-display: var(--font-lexi-display);
+  --font-ipa: var(--font-lexi-ipa);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-lexi-body), system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* The highlighter stroke under the word being studied. */
+.marker {
+  background-image: linear-gradient(transparent 58%, var(--marker) 58%, var(--marker) 92%, transparent 92%);
+  background-repeat: no-repeat;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes marker-draw {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+@keyframes sound-bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.sound-bar {
+  transform-origin: center;
+  animation: sound-bar 720ms ease-in-out infinite;
+}
+
+.animate-card-in {
+  animation: card-in 220ms ease-out;
+}
+
+.animate-marker {
+  animation: marker-draw 420ms 120ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sound-bar {
+    animation: none;
+    transform: scaleY(0.7);
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
