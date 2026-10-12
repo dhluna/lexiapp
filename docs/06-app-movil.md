@@ -1,6 +1,6 @@
 # 06 · Fase 4: app móvil (Expo)
 
-Estado: **en implementación**, rama `fase-4`.
+Estado: **implementado** en la rama `fase-4`. Cómo probarlo: [07 · Probar la app móvil](07-movil-pruebas.md).
 
 ## Objetivo
 

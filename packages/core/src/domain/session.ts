@@ -127,3 +127,11 @@ export function sessionProgress(session: PracticeSession): number {
   if (session.wordIds.length === 0) return 1;
   return Object.keys(session.answers).length / session.wordIds.length;
 }
+
+/** Headline of the end-of-session summary. "Todas aprendidas" only if every word was learned. */
+export function summaryTitle(summary: SessionSummary): string {
+  const answered = summary.learned.length + summary.review.length;
+  if (answered === 0) return "Sesión terminada";
+  if (summary.learned.length === summary.total) return "Todas aprendidas";
+  return "Sesión completada";
+}

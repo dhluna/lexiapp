@@ -15,6 +15,8 @@ Monorepo con npm workspaces; los comandos de la raíz se ejecutan en todos los p
 - `npm run test:sql`: si cambias `supabase/migrations/`, añade la regla a
   `supabase/tests/10_sync_rules.sql` y ejecútalo (necesita Docker).
 - No ejecutes `npm run build` con un servidor de Next en marcha: comparten `.next`.
+- Móvil: `npm run start -w @lexi/mobile`; compila los paquetes con
+  `npx expo export --platform android|ios` dentro de `apps/mobile`.
 
 ## Estructura
 
@@ -75,6 +77,21 @@ apps/mobile     Expo (Fase 4)
 - Los datos del usuario solo existen en el cliente: `useProgress()` devuelve `null` en el
   servidor y durante la hidratación; muestra un `Skeleton` en ese caso.
 - Consulta `node_modules/next/dist/docs/` (en la raíz del monorepo) ante cualquier duda de API.
+
+## Móvil (Expo SDK 57)
+
+- Lee `apps/mobile/AGENTS.md`: instala módulos con `npx expo install` (versiones del SDK) y
+  consulta la documentación versionada de Expo; las APIs cambian entre SDK.
+- **Una sola copia de React (19.2.3)** en todo el monorepo: el renderizador de React Native
+  exige la versión exacta. Está fijada en el `package.json` raíz (`devDependencies` y
+  `overrides`); no la cambies sin cambiar también Expo.
+- Pantallas en `src/screens`, rutas finas en `src/app` (Expo Router), adaptadores nativos en
+  `src/platform`, composición en `src/services.ts`.
+- Valores animados de Reanimated con `.get()`/`.set()` (lo exige el lint del React Compiler).
+- Fuentes importadas por peso (`@expo-google-fonts/<familia>/<peso>`): importar el paquete
+  entero mete todos los pesos en la app.
+- Pruebas con Jest + React Native Testing Library 14: `render` y los eventos son asíncronos
+  (`await`). `renderWithServices` en `apps/mobile/src/test/render.tsx`.
 
 ## UI
 

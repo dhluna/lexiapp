@@ -50,15 +50,21 @@ npm run dev
 
 Abre <http://localhost:3000>. Para activar las cuentas, sigue [docs/05-despliegue.md](docs/05-despliegue.md) (las variables van en `apps/web/.env.local`).
 
+App móvil en tu teléfono con Expo Go (detalles en [docs/07-movil-pruebas.md](docs/07-movil-pruebas.md)):
+
+```bash
+npm run start -w @lexi/mobile
+```
+
 | Comando | Qué hace |
 | --- | --- |
-| `npm run dev` | Servidor de desarrollo |
-| `npm test` | Pruebas (Vitest, una pasada) |
-| `npm run test:watch` | Pruebas en modo observación |
+| `npm run dev` | Servidor de desarrollo de la web |
+| `npm run start -w @lexi/mobile` | Servidor de Expo para la app móvil |
+| `npm test` | Pruebas de todos los paquetes (Vitest en núcleo y web, Jest en móvil) |
 | `npm run test:sql` | Esquema de Supabase y sus reglas (RLS, sincronización) en un Postgres desechable; requiere Docker |
 | `npm run typecheck` | Comprobación de tipos |
 | `npm run lint` | ESLint |
-| `npm run build` / `npm start` | Compilación y servidor de producción |
+| `npm run build` / `npm start` | Compilación y servidor de producción de la web |
 
 ## Arquitectura
 
@@ -74,7 +80,10 @@ apps/web/src/             Next.js
 ├── hooks/  components/  features/
 └── app/                  Rutas: /, /practicar, /vocabulario, /vocabulario/[id], /progreso, /ajustes,
                           /entrar, /auth/callback, /restablecer-contrasena
-apps/mobile/              Expo (Fase 4, en curso)
+apps/mobile/src/           Expo (Android e iOS)
+├── platform/             Adaptadores nativos: SQLite, expo-speech, NetInfo, notificaciones
+├── screens/  components/  hooks/
+└── app/                  Rutas de Expo Router (pestañas + pantallas)
 supabase/                 Esquema de Postgres con RLS y pruebas de sus reglas
 ```
 
@@ -86,7 +95,8 @@ El detalle está en `docs/`:
 - [03 · Datos y persistencia](docs/03-datos-y-persistencia.md): modelo, versionado y migraciones.
 - [04 · Cuentas y sincronización](docs/04-cuentas-y-sincronizacion.md): Fase 3 (Supabase, fusión, seguridad).
 - [05 · Configurar cuentas y desplegar](docs/05-despliegue.md): Supabase, Google, variables y Vercel.
-- [06 · App móvil](docs/06-app-movil.md): Fase 4 con Expo (en curso).
+- [06 · App móvil](docs/06-app-movil.md): Fase 4 con Expo.
+- [07 · Probar la app móvil](docs/07-movil-pruebas.md): Expo Go y builds internos con EAS.
 
 ## Verificación
 

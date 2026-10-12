@@ -10,6 +10,7 @@ import {
   isLastWord,
   selectSessionWords,
   sessionProgress,
+  summaryTitle,
   summarize,
 } from "./session";
 
@@ -54,6 +55,22 @@ describe("selectSessionWords", () => {
     const foodCount = WORDS.filter((w) => w.category === "food").length;
     expect(ids).toHaveLength(Math.min(20, foodCount));
     expect(ids.every((id) => id.startsWith("food-"))).toBe(true);
+  });
+});
+
+describe("summaryTitle", () => {
+  const sum = (learned: number, review: number, skipped: number) => ({
+    total: learned + review + skipped,
+    learned: Array.from({ length: learned }, (_, i) => `l${i}`),
+    review: Array.from({ length: review }, (_, i) => `r${i}`),
+    skipped: Array.from({ length: skipped }, (_, i) => `s${i}`),
+  });
+
+  it("says all learned only when every word was learned", () => {
+    expect(summaryTitle(sum(5, 0, 0))).toBe("Todas aprendidas");
+    expect(summaryTitle(sum(1, 0, 4))).toBe("Sesión completada"); // 4 left unanswered
+    expect(summaryTitle(sum(3, 2, 0))).toBe("Sesión completada");
+    expect(summaryTitle(sum(0, 0, 5))).toBe("Sesión terminada");
   });
 });
 

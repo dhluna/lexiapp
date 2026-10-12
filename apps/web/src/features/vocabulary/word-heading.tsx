@@ -2,26 +2,18 @@ import type { Ref } from "react";
 import { SpeakButton } from "@/components/speak-button";
 import { getCategory } from "@lexi/core/data/categories";
 import { PART_OF_SPEECH_LABELS } from "@lexi/core/domain/labels";
+import { termScale } from "@lexi/core/domain/term-scale";
 import type { Word } from "@lexi/core/domain/types";
 import { cn } from "@/lib/cn";
 
-/** Approximate visual width in "average letters": m/w are wide, i/l/t/f/r/j narrow. */
-function visualLength(word: string) {
-  let units = 0;
-  for (const ch of word) units += "mw".includes(ch) ? 1.4 : "il".includes(ch) ? 0.5 : "tfrj".includes(ch) ? 0.65 : 1;
-  return units;
-}
+const TERM_CLASSES = {
+  lg: "text-5xl sm:text-6xl",
+  md: "text-4xl sm:text-5xl",
+  sm: "text-2xl sm:text-4xl",
+} as const;
 
-/**
- * Long words get a smaller size so they fit next to the audio button on a 375 px phone
- * without breaking mid-word (thresholds measured with the display font).
- */
-function termSize(term: string) {
-  const longest = Math.max(...term.split(" ").map(visualLength));
-  if (longest > 12.5) return "text-2xl sm:text-4xl";
-  if (longest > 8.2) return "text-4xl sm:text-5xl";
-  return "text-5xl sm:text-6xl";
-}
+/** Long words get a smaller size (shared rule with the mobile app). */
+const termSize = (term: string) => TERM_CLASSES[termScale(term)];
 
 interface WordHeadingProps {
   word: Word;

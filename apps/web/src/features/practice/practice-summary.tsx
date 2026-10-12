@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { getWord } from "@lexi/core/data/catalog";
-import { summarize, type PracticeSession } from "@lexi/core/domain/session";
+import { summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
 import type { WordId } from "@lexi/core/domain/types";
 
 interface PracticeSummaryProps {
@@ -19,12 +19,7 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
   useEffect(() => headingRef.current?.focus(), []);
 
   const answered = summary.learned.length + summary.review.length;
-  const title =
-    answered === 0
-      ? "Sesión terminada"
-      : summary.review.length === 0
-        ? "Todas aprendidas"
-        : "Sesión completada";
+  const title = summaryTitle(summary);
 
   return (
     <div className="mx-auto grid max-w-2xl gap-6">
