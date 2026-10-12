@@ -1,18 +1,25 @@
 "use client";
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
-import { getProgressStore, getSpeechService } from "@/services/instances";
+import type { AuthService } from "@/services/auth";
+import { getAuthService, getProgressStore, getSpeechService, getSyncService } from "@/services/instances";
 import type { ProgressStore } from "@/services/progress-store";
 import type { SpeechService } from "@/services/speech";
+import type { SyncService } from "@/services/sync-service";
 
 interface Services {
   progressStore?: ProgressStore;
   speech?: SpeechService;
+  /** `null` = accounts disabled. Omitted = use the browser singleton. */
+  auth?: AuthService | null;
+  sync?: SyncService | null;
 }
 
 export interface ServiceResolvers {
   progressStore: () => ProgressStore;
   speech: () => SpeechService;
+  auth: () => AuthService | null;
+  sync: () => SyncService | null;
 }
 
 const ServicesContext = createContext<Services>({});
@@ -32,6 +39,8 @@ export function useServices(): ServiceResolvers {
     () => ({
       progressStore: () => services.progressStore ?? getProgressStore(),
       speech: () => services.speech ?? getSpeechService(),
+      auth: () => (services.auth !== undefined ? services.auth : getAuthService()),
+      sync: () => (services.sync !== undefined ? services.sync : getSyncService()),
     }),
     [services],
   );

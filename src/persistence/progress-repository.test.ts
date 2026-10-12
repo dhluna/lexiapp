@@ -109,6 +109,10 @@ describe("migrations", () => {
     expect(state.practiceDays).toEqual(v1.practiceDays);
     // v2 adds autoPronounce; v3 maps the old "Lenta" speed 0.7 to 0.8.
     expect(state.preferences).toEqual({ sessionSize: 15, speechRate: 0.8, autoPronounce: true });
+    // v4 adds the sync fields with neutral values.
+    expect(state.removedWords).toEqual({});
+    expect(state.resetAt).toBeNull();
+    expect(state.preferencesUpdatedAt).toBe("1970-01-01T00:00:00.000Z");
   });
 
   it("upgrades old documents step by step before sanitizing", () => {

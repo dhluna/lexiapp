@@ -9,6 +9,9 @@ si cambian requisitos, reglas o el formato guardado.
 
 - `npm test`: Vitest (una pasada). Ejecútalo antes de dar algo por terminado.
 - `npm run typecheck`, `npm run lint`, `npm run build`: también deben pasar.
+- `npm run test:sql`: si cambias `supabase/migrations/`, añade la regla a
+  `supabase/tests/10_sync_rules.sql` y ejecútalo (necesita Docker).
+- No ejecutes `npm run build` con un servidor de Next en marcha: comparten `.next`.
 
 ## Arquitectura (dependencias en un solo sentido)
 
@@ -34,6 +37,14 @@ si cambian requisitos, reglas o el formato guardado.
   una prueba. Nunca sobrescribas datos que no se pueden leer sin hacer copia.
 - **Estadísticas solo desde el estado real** (`computeStats`). Nada de números decorativos.
 - **Racha:** días locales `YYYY-MM-DD` únicos. Solo cuentan las respuestas dadas en práctica.
+- **Sincronización (Fase 3):** nunca borres progreso sin dejar rastro: reiniciar una palabra
+  registra `removedWords` y «borrar progreso» fija `resetAt`. Toda fusión pasa por
+  `mergeStates` (`src/domain/merge.ts`), que debe seguir siendo conmutativa e idempotente.
+  Los cambios que vienen de la sincronización se aplican con `store.replaceState`, no con
+  métodos que cuenten como cambio local (provocarían subidas en bucle).
+- **Cuentas opcionales:** sin `NEXT_PUBLIC_SUPABASE_*` la app debe funcionar como en la
+  Fase 1. Nunca uses la clave `service_role` en el cliente; la seguridad la da RLS
+  (`supabase/migrations/`).
 - **Catálogo:** cada palabra lleva `ipa` (AFI amplio de inglés americano, sin barras, con `ɡ` y
   acento `ˈ`), ≥ 2 ejemplos con traducción; los verbos llevan `verbForms`.
   `src/data/catalog.test.ts` lo comprueba.

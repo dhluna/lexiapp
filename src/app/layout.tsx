@@ -3,6 +3,7 @@ import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque, Noto_Sans } from "next
 import Link from "next/link";
 import { BottomNav, SettingsLink, TopNav } from "@/components/layout/app-nav";
 import { PersistenceNotice } from "@/components/layout/persistence-notice";
+import { SyncBootstrap } from "@/hooks/use-account";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <BottomNav />
+        <SyncBootstrap />
       </body>
     </html>
   );

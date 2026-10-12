@@ -28,12 +28,15 @@ Clave única de LocalStorage: `lexi:progress`.
 
 ```ts
 interface UserProgressState {
-  version: 3;
+  version: 4;
   updatedAt: string;                       // ISO
   words: Record<WordId, WordProgress>;     // solo palabras tocadas
   practiceDays: string[];                  // "YYYY-MM-DD", únicos y ordenados
   sessions: SessionRecord[];               // sesiones completadas (máx. 365)
   preferences: { sessionSize: number; speechRate: number; autoPronounce: boolean };
+  preferencesUpdatedAt: string;            // EPOCH = valores por defecto (nunca ganan)
+  removedWords: Record<WordId, string>;    // marcas de borrado para sincronizar
+  resetAt: string | null;                  // último «borrar progreso»
 }
 
 interface WordProgress {
@@ -49,10 +52,11 @@ interface WordProgress {
 
 ## Versionado y migraciones
 
-- Cada documento lleva `version`. `CURRENT_VERSION = 3`.
+- Cada documento lleva `version`. `CURRENT_VERSION = 4`.
 - Historial: **v1** formato inicial · **v2** añade `preferences.autoPronounce`
   (migración `1 → 2` lo activa por defecto sin tocar el progreso) · **v3** cambia las
-  velocidades de voz a 0,8 / 1 / 1,2 (`2 → 3` convierte 0,7 → 0,8, 0,9 → 1 y 1,1 → 1,2).
+  velocidades de voz a 0,8 / 1 / 1,2 (`2 → 3` convierte 0,7 → 0,8, 0,9 → 1 y 1,1 → 1,2) ·
+  **v4** añade `removedWords`, `resetAt` y `preferencesUpdatedAt` para sincronizar (Fase 3).
 - Al leer: `JSON.parse` → si `version < CURRENT`, se aplican migraciones en cadena
   (`migrations[n]: (state_n) => state_{n+1}`) → `sanitize()` normaliza tipos y descarta
   entradas inválidas campo a campo (nunca el documento entero por un campo roto).
@@ -63,8 +67,10 @@ interface WordProgress {
 - Errores de cuota o de acceso (modo privado, almacenamiento bloqueado) se capturan;
   la app sigue funcionando en memoria y la UI muestra un aviso.
 
-## Contrato para un backend futuro
+## Backend remoto (Fase 3)
 
-El contrato actual es síncrono porque LocalStorage lo es. Para un backend remoto se
-prevé `AsyncProgressRepository { load(): Promise<State>; save(state): Promise<void> }`
-con el `ProgressStore` cargando de forma optimista desde la caché local.
+El repositorio local sigue siendo síncrono porque LocalStorage lo es. El backend remoto se
+modela aparte como `RemoteProgressSource { pull(): Promise<State>; push(state): Promise<void> }`,
+y `SyncService` fusiona ambos lados. La **versión 4** del documento añade `removedWords`,
+`resetAt` y `preferencesUpdatedAt` para poder sincronizar borrados. Detalle completo en
+[04 · Cuentas y sincronización](04-cuentas-y-sincronizacion.md).

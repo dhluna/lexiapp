@@ -15,6 +15,9 @@ export const SESSION_SIZE_MIN = 5;
 export const SESSION_SIZE_MAX = 20;
 export const MAX_STORED_SESSIONS = 365;
 
+/** "Never": the date given to defaults so any real change wins a merge. */
+export const EPOCH = "1970-01-01T00:00:00.000Z";
+
 export function createEmptyState(now: Date, version: number): UserProgressState {
   return {
     version,
@@ -23,6 +26,9 @@ export function createEmptyState(now: Date, version: number): UserProgressState 
     practiceDays: [],
     sessions: [],
     preferences: { ...DEFAULT_PREFERENCES },
+    preferencesUpdatedAt: EPOCH,
+    removedWords: {},
+    resetAt: null,
   };
 }
 

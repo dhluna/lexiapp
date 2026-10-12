@@ -3,6 +3,7 @@
 import { BookOpen, ChartNoAxesColumn, House, Layers, Settings, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSync } from "@/hooks/use-account";
 import { cn } from "@/lib/cn";
 
 interface NavItem {
@@ -53,18 +54,24 @@ export function TopNav() {
 export function SettingsLink() {
   const pathname = usePathname();
   const active = isActive(pathname, "/ajustes");
+  const syncFailed = useSync().snapshot?.status === "error";
   return (
     <Link
       href="/ajustes"
-      aria-label="Ajustes"
-      title="Ajustes"
+      aria-label={syncFailed ? "Ajustes: no se pudo sincronizar" : "Ajustes"}
+      title={syncFailed ? "No se pudo sincronizar" : "Ajustes"}
       aria-current={active ? "page" : undefined}
       className={cn(
         "inline-flex size-11 items-center justify-center rounded-full transition-colors",
         active ? "bg-accent-soft text-accent" : "text-ink-soft hover:bg-sunken hover:text-ink",
       )}
     >
-      <Settings aria-hidden className="size-5" />
+      <span className="relative">
+        <Settings aria-hidden className="size-5" />
+        {syncFailed && (
+          <span aria-hidden className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-danger ring-2 ring-paper" />
+        )}
+      </span>
     </Link>
   );
 }

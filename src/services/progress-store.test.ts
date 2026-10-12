@@ -113,4 +113,49 @@ describe("ProgressStore", () => {
     expect(snapshot.issue).toBe("write-failed");
     expect(snapshot.state.words["travel-luggage"].status).toBe("learned");
   });
+
+  it("leaves a deletion mark when a word is reset, and clears it if answered again", () => {
+    const { store, reload, setNow } = setup();
+    store.recordAnswer("travel-luggage", "learned");
+    setNow("2026-10-10T10:00:00");
+    store.setWordStatus("travel-luggage", "new");
+    let state = reload().getSnapshot().state;
+    expect(state.words["travel-luggage"]).toBeUndefined();
+    expect(state.removedWords["travel-luggage"]).toBe(new Date("2026-10-10T10:00:00").toISOString());
+
+    store.recordAnswer("travel-luggage", "review");
+    state = store.getSnapshot().state;
+    expect(state.removedWords["travel-luggage"]).toBeUndefined();
+  });
+
+  it("dates preference changes and full resets", () => {
+    const { store } = setup();
+    expect(store.getSnapshot().state.preferencesUpdatedAt).toBe("1970-01-01T00:00:00.000Z");
+    store.updatePreferences({ sessionSize: 15 });
+    const prefsAt = store.getSnapshot().state.preferencesUpdatedAt;
+    expect(prefsAt).not.toBe("1970-01-01T00:00:00.000Z");
+
+    store.resetProgress();
+    const state = store.getSnapshot().state;
+    expect(state.resetAt).not.toBeNull();
+    expect(state.preferencesUpdatedAt).toBe(prefsAt);
+  });
+
+  it("separates local changes from states applied by sync", () => {
+    const { store } = setup();
+    const local = vi.fn();
+    const any = vi.fn();
+    store.subscribeLocalChanges(local);
+    store.subscribe(any);
+
+    store.recordAnswer("travel-luggage", "learned");
+    expect(local).toHaveBeenCalledTimes(1);
+
+    store.replaceState({ ...store.getSnapshot().state, practiceDays: ["2026-10-01"] });
+    store.clearLocal();
+    expect(local).toHaveBeenCalledTimes(1);
+    expect(any).toHaveBeenCalledTimes(3);
+    expect(store.getSnapshot().state.words).toEqual({});
+    expect(store.getSnapshot().state.resetAt).toBeNull();
+  });
 });

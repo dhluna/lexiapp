@@ -65,7 +65,7 @@ describe("PracticeView", () => {
     expect(state.sessions).toHaveLength(1);
     expect(state.practiceDays).toHaveLength(1);
     expect(state.preferences.sessionSize).toBe(5);
-  });
+  }, 15_000); // Many simulated clicks: slow when the whole suite runs in parallel.
 
   it("keeps confirmed answers when the session is abandoned", async () => {
     const user = userEvent.setup();

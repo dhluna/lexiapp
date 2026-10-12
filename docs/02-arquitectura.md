@@ -71,6 +71,21 @@ si se bloquea, falla en silencio y el botón sigue disponible.
 Cada respuesta se persiste en el momento (RF-07); el estado de la sesión en curso no se
 persiste (abandonar = salir, sin perder lo confirmado).
 
+## Decisiones de la Fase 3 (ver `docs/04-cuentas-y-sincronizacion.md`)
+
+**ADR-10 · Supabase con autenticación y datos solo en el cliente.** `@supabase/supabase-js`
+desde el navegador y seguridad con RLS en Postgres. Las páginas siguen siendo estáticas: sin
+`proxy.ts` ni lectura de `cookies()` en el servidor, que con `cacheComponents` obligaría a
+envolver en `Suspense` toda página con sesión. El mismo patrón sirve para la futura app móvil.
+
+**ADR-11 · Local primero con sincronización por fusión.** La interfaz sigue leyendo
+LocalStorage; `SyncService` descarga, fusiona con `mergeStates` (función pura) y sube con la
+función `sync_push`, que solo acepta cambios más recientes. Se descarta la sincronización en
+tiempo real y la incremental: los volúmenes por usuario son pequeños.
+
+**ADR-12 · Borrados explícitos (datos v4).** Reiniciar una palabra deja una marca con fecha y
+«borrar progreso» fija `resetAt`, para que otro dispositivo no resucite datos borrados.
+
 ## Preparación para el futuro (no implementado)
 
 - **Cuentas / BD remota:** `UserProgressState` ya es un documento serializable con

@@ -21,13 +21,17 @@ por categoría. Fase 1: sin cuentas, el progreso se guarda en el navegador.
   ficha completa de cada palabra.
 - **Progreso:** resumen (racha, aprendidas, por repasar y calendario de 4 semanas),
   palabras por repasar y avance por categoría.
-- **Ajustes** (icono ⚙ de la cabecera): palabras por sesión, pronunciación automática,
-  velocidad y borrado del progreso.
+- **Ajustes** (icono ⚙ de la cabecera): cuenta, palabras por sesión, pronunciación
+  automática, velocidad y borrado del progreso.
+- **Cuentas y sincronización (opcional):** con Google o email y contraseña. El progreso se
+  sincroniza entre dispositivos y sigue funcionando sin conexión. Sin configurar Supabase,
+  Lexi funciona igual que sin cuenta.
 
 ## Stack
 
 Next.js 16 (App Router, Turbopack, Cache Components) · React 19 · TypeScript estricto ·
-Tailwind CSS 4 · Lucide · Web Speech API · LocalStorage · Vitest + React Testing Library.
+Tailwind CSS 4 · Lucide · Web Speech API · LocalStorage · Supabase (cuentas y
+sincronización, opcional) · Vitest + React Testing Library.
 
 shadcn/ui no se instaló en esta fase; el motivo está en
 [docs/02-arquitectura.md](docs/02-arquitectura.md) (ADR-2).
@@ -44,13 +48,14 @@ npm install
 npm run dev
 ```
 
-Abre <http://localhost:3000>.
+Abre <http://localhost:3000>. Para activar las cuentas, sigue [docs/05-despliegue.md](docs/05-despliegue.md).
 
 | Comando | Qué hace |
 | --- | --- |
 | `npm run dev` | Servidor de desarrollo |
 | `npm test` | Pruebas (Vitest, una pasada) |
 | `npm run test:watch` | Pruebas en modo observación |
+| `npm run test:sql` | Esquema de Supabase y sus reglas (RLS, sincronización) en un Postgres desechable; requiere Docker |
 | `npm run typecheck` | Comprobación de tipos |
 | `npm run lint` | ESLint |
 | `npm run build` / `npm start` | Compilación y servidor de producción |
@@ -66,7 +71,9 @@ src/
 ├── hooks/         Puente React ↔ servicios (useSyncExternalStore)
 ├── components/    UI reutilizable y navegación
 ├── features/      home · practice · vocabulary · progress · settings
-└── app/           Rutas: /, /practicar, /vocabulario, /vocabulario/[id], /progreso, /ajustes
+└── app/           Rutas: /, /practicar, /vocabulario, /vocabulario/[id], /progreso, /ajustes,
+                   /entrar, /auth/callback, /restablecer-contrasena
+supabase/migrations/  Esquema de Postgres con RLS y funciones de sincronización
 ```
 
 `domain`, `data`, `persistence` y `services` no dependen de React; la UI solo los consume.
@@ -75,6 +82,8 @@ El detalle está en `docs/`:
 - [01 · Requisitos](docs/01-requisitos.md): requisitos funcionales, reglas de negocio y criterios de aceptación.
 - [02 · Arquitectura](docs/02-arquitectura.md): capas y decisiones (ADR).
 - [03 · Datos y persistencia](docs/03-datos-y-persistencia.md): modelo, versionado y migraciones.
+- [04 · Cuentas y sincronización](docs/04-cuentas-y-sincronizacion.md): Fase 3 (Supabase, fusión, seguridad).
+- [05 · Configurar cuentas y desplegar](docs/05-despliegue.md): Supabase, Google, variables y Vercel.
 
 ## Verificación
 

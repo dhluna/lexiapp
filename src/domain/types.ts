@@ -80,4 +80,10 @@ export interface UserProgressState {
   practiceDays: string[];
   sessions: SessionRecord[];
   preferences: Preferences;
+  /** When `preferences` last changed by the user (EPOCH = never: defaults lose any merge). */
+  preferencesUpdatedAt: string;
+  /** Deletion marks: word reset to "new" at that time, so sync does not bring it back. */
+  removedWords: Record<WordId, string>;
+  /** Last "delete all progress": anything older is discarded when merging. */
+  resetAt: string | null;
 }

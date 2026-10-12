@@ -5,11 +5,12 @@ import {
   clampSpeechRate,
   createEmptyState,
   DEFAULT_PREFERENCES,
+  EPOCH,
   MAX_STORED_SESSIONS,
 } from "@/domain/progress";
 import type { SessionRecord, UserProgressState, WordProgress } from "@/domain/types";
 
-export const CURRENT_VERSION = 3;
+export const CURRENT_VERSION = 4;
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -31,6 +32,14 @@ export const MIGRATIONS: Record<number, (state: UnknownRecord) => UnknownRecord>
     const mapped = old === 0.7 ? 0.8 : old === 0.9 ? 1 : old === 1.1 ? 1.2 : old;
     return { ...state, version: 3, preferences: { ...preferences, speechRate: mapped } };
   },
+  // v4 records deletions and preference dates so progress can sync between devices.
+  3: (state) => ({
+    ...state,
+    version: 4,
+    removedWords: {},
+    resetAt: null,
+    preferencesUpdatedAt: EPOCH,
+  }),
 };
 
 export class UnsupportedVersionError extends Error {
@@ -116,6 +125,14 @@ export function sanitizeState(raw: UnknownRecord, now: Date): UserProgressState 
       autoPronounce:
         typeof autoPronounce === "boolean" ? autoPronounce : DEFAULT_PREFERENCES.autoPronounce,
     };
+  }
+
+  if (isIso(raw.preferencesUpdatedAt)) state.preferencesUpdatedAt = raw.preferencesUpdatedAt;
+  if (isIso(raw.resetAt)) state.resetAt = raw.resetAt;
+  if (isRecord(raw.removedWords)) {
+    for (const [id, at] of Object.entries(raw.removedWords)) {
+      if (isIso(at)) state.removedWords[id] = at;
+    }
   }
 
   return state;

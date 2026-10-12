@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { VoiceNotice } from "@/components/voice-notice";
+import { AccountSection } from "@/features/account/account-section";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
@@ -30,6 +31,8 @@ export function SettingsView() {
   return (
     <div className="mx-auto grid max-w-2xl gap-6">
       <h1 className="font-display text-4xl font-bold tracking-tight">Ajustes</h1>
+
+      <AccountSection />
 
       <Group title="Práctica">
         <RadioChips
