@@ -57,13 +57,13 @@ Lexi redirige a `/auth/callback` (Google y confirmación de email) y a
 En **Project Settings › API** copia la URL del proyecto y la clave **pública**
 (*publishable* o *anon*).
 
-En local:
+En local, dentro de `apps/web`:
 
 ```bash
-cp .env.example .env.local
+cp apps/web/.env.example apps/web/.env.local
 ```
 
-Rellena `.env.local`:
+Rellena `apps/web/.env.local`:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
@@ -76,8 +76,9 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clave pública>
 ## 6. Desplegar en Vercel
 
 1. Sube el repositorio a GitHub, GitLab o Bitbucket.
-2. En [vercel.com](https://vercel.com), **Add New › Project** e importa el repositorio
-   (Vercel detecta Next.js).
+2. En [vercel.com](https://vercel.com), **Add New › Project** e importa el repositorio.
+   En **Root Directory** elige **`apps/web`** (el repositorio es un monorepo); Vercel
+   detecta Next.js e instala las dependencias del workspace.
 3. En **Environment Variables** añade las dos variables del paso 5 para *Production* y
    *Preview*.
 4. Despliega. Después vuelve al paso 4 y añade la URL definitiva si aún no estaba.

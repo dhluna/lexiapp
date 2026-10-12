@@ -48,7 +48,7 @@ npm install
 npm run dev
 ```
 
-Abre <http://localhost:3000>. Para activar las cuentas, sigue [docs/05-despliegue.md](docs/05-despliegue.md).
+Abre <http://localhost:3000>. Para activar las cuentas, sigue [docs/05-despliegue.md](docs/05-despliegue.md) (las variables van en `apps/web/.env.local`).
 
 | Comando | Qué hace |
 | --- | --- |
@@ -63,17 +63,19 @@ Abre <http://localhost:3000>. Para activar las cuentas, sigue [docs/05-despliegu
 ## Arquitectura
 
 ```
-src/
-├── domain/        Reglas de negocio puras: progreso, racha, sesión, búsqueda
-├── data/          Catálogo de palabras y categorías
-├── persistence/   Contrato ProgressRepository, LocalStorage, esquema versionado
-├── services/      ProgressStore (casos de uso), SpeechService, composición
-├── hooks/         Puente React ↔ servicios (useSyncExternalStore)
-├── components/    UI reutilizable y navegación
-├── features/      home · practice · vocabulary · progress · settings
-└── app/           Rutas: /, /practicar, /vocabulario, /vocabulario/[id], /progreso, /ajustes,
-                   /entrar, /auth/callback, /restablecer-contrasena
-supabase/migrations/  Esquema de Postgres con RLS y funciones de sincronización
+packages/core/src/        @lexi/core: sin React ni APIs del navegador
+├── domain/               Reglas de negocio puras: progreso, racha, sesión, búsqueda, fusión
+├── data/                 Catálogo de palabras y categorías
+├── persistence/          ProgressRepository, esquema versionado, origen remoto (Supabase)
+├── services/             ProgressStore, SyncService, SupabaseAuthService, SpeechService
+└── platform.ts           Contratos que aporta cada plataforma
+apps/web/src/             Next.js
+├── platform/             Adaptadores web: localStorage, Web Speech, eventos, URL
+├── hooks/  components/  features/
+└── app/                  Rutas: /, /practicar, /vocabulario, /vocabulario/[id], /progreso, /ajustes,
+                          /entrar, /auth/callback, /restablecer-contrasena
+apps/mobile/              Expo (Fase 4, en curso)
+supabase/                 Esquema de Postgres con RLS y pruebas de sus reglas
 ```
 
 `domain`, `data`, `persistence` y `services` no dependen de React; la UI solo los consume.
@@ -84,6 +86,7 @@ El detalle está en `docs/`:
 - [03 · Datos y persistencia](docs/03-datos-y-persistencia.md): modelo, versionado y migraciones.
 - [04 · Cuentas y sincronización](docs/04-cuentas-y-sincronizacion.md): Fase 3 (Supabase, fusión, seguridad).
 - [05 · Configurar cuentas y desplegar](docs/05-despliegue.md): Supabase, Google, variables y Vercel.
+- [06 · App móvil](docs/06-app-movil.md): Fase 4 con Expo (en curso).
 
 ## Verificación
 

@@ -86,6 +86,29 @@ tiempo real y la incremental: los volúmenes por usuario son pequeños.
 **ADR-12 · Borrados explícitos (datos v4).** Reiniciar una palabra deja una marca con fecha y
 «borrar progreso» fija `resetAt`, para que otro dispositivo no resucite datos borrados.
 
+## Decisiones de la Fase 4 (ver `docs/06-app-movil.md`)
+
+**ADR-13 · Monorepo con npm workspaces.** `packages/core` (`@lexi/core`) contiene el dominio,
+el catálogo, la persistencia y los servicios; `apps/web` y `apps/mobile` lo consumen como
+código TypeScript (Turbopack y Metro lo compilan). Se importa por ruta
+(`@lexi/core/domain/merge`) en lugar de un índice único, para que cada app cargue solo lo que usa.
+React no se comparte entre apps, para no forzar la misma versión en la web y en Expo.
+
+**ADR-14 · Contratos de plataforma.** El núcleo se compila sin `lib: dom` y sus pruebas corren
+en Node. Lo que depende de la plataforma entra por cuatro contratos (`platform.ts`):
+`KeyValueStorage`, `SpeechEngine`, `SyncTriggers` y `AuthPlatform`. La lógica (elegir voz,
+fusionar, reintentar, canjear el código de inicio de sesión) se queda en el núcleo; cada
+plataforma aporta solo el adaptador mínimo.
+
+**ADR-15 · Almacenamiento móvil con `expo-sqlite/kv-store`.** Tiene API síncrona, así que
+`ProgressStore` y su contrato `KeyValueStorage` no cambian. AsyncStorage obligaría a hacer
+asíncrono todo el núcleo.
+
+**ADR-16 · Google en el móvil con el navegador del sistema.** `signInWithOAuth` con
+`skipBrowserRedirect`, `expo-web-browser` y canje del código al volver por
+`lexi://auth/callback`. Reutiliza el cliente OAuth web; el inicio nativo de Google exigiría
+clientes por plataforma y otra librería.
+
 ## Preparación para el futuro (no implementado)
 
 - **Cuentas / BD remota:** `UserProgressState` ya es un documento serializable con
