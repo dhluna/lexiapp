@@ -4,7 +4,7 @@ Aplicación web y móvil para que hispanohablantes practiquen vocabulario en ing
 tarjetas con significado, pronunciación y ejemplos traducidos, racha diaria y progreso
 por categoría. Cuentas opcionales para sincronizar el progreso entre dispositivos.
 
-**Pruébala:** https://lexiapp-five.vercel.app (Android: APK interno con EAS, ver
+**Pruébala:** https://lexiapp-es.vercel.app (Android: APK interno con EAS, ver
 [docs/07](docs/07-movil-pruebas.md)).
 
 ## Funcionalidades (Fase 1)

@@ -42,10 +42,10 @@ de correo incluido sirve para pruebas, pero envía muy pocos correos por hora.
 ## 4. URL permitidas
 
 En **Authentication › URL Configuration**:
-- **Site URL**: la URL de producción (la de Lexi es `https://lexiapp-five.vercel.app`).
+- **Site URL**: la URL de producción (la de Lexi es `https://lexiapp-es.vercel.app`).
 - **Redirect URLs** (añade todas las que uses):
   - `http://localhost:3000/**`
-  - `https://lexiapp-five.vercel.app/**`
+  - `https://lexiapp-es.vercel.app/**`
   - `lexi://**` y `exp://**` (app móvil, ver [docs/07](07-movil-pruebas.md))
   - Si usas despliegues de vista previa de Vercel:
     `https://*-<tu-equipo>.vercel.app/**`
