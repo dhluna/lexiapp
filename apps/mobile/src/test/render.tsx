@@ -29,10 +29,11 @@ export function fakeSpeechEngine() {
 }
 
 /** In-memory notifications: permission can be denied, scheduled ones are listed. */
-export function fakeNotifications(granted = true) {
+export function fakeNotifications(granted = true, available = true) {
   const scheduled = new Map<string, { at: Date; title: string; body: string }>();
   const port: NotificationsPort & { granted: boolean } = {
     granted,
+    available,
     hasPermission: async () => port.granted,
     requestPermission: async () => port.granted,
     schedule: async (id, at, title, body) => void scheduled.set(id, { at, title, body }),

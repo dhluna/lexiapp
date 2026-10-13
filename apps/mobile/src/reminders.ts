@@ -15,7 +15,7 @@ import type { NotificationsPort } from "@/platform/notifications";
 export const REMINDER_KEY = "lexi:reminder";
 const ID_PREFIX = "lexi-reminder-";
 
-export type EnableResult = "enabled" | "denied";
+export type EnableResult = "enabled" | "denied" | "unavailable";
 
 /**
  * Daily reminder (device setting, not synced). Schedules the next 7 days locally and
@@ -43,6 +43,11 @@ export class ReminderService {
 
   getSettings = (): ReminderSettings => this.settings;
 
+  /** False in Expo Go on Android: the reminder needs the installed app. */
+  get available(): boolean {
+    return this.notifications.available;
+  }
+
   subscribe = (listener: () => void): (() => void) => {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
@@ -58,6 +63,7 @@ export class ReminderService {
   }
 
   async enable(hour: ReminderHour = this.settings.hour): Promise<EnableResult> {
+    if (!this.available) return "unavailable";
     const granted = await this.notifications.requestPermission();
     if (!granted) {
       this.save({ enabled: false, hour });
@@ -79,6 +85,7 @@ export class ReminderService {
   }
 
   async reschedule(): Promise<void> {
+    if (!this.available) return;
     await this.notifications.cancelWithPrefix(ID_PREFIX);
     if (!this.settings.enabled) return;
     // Permission can be revoked from system settings at any time.

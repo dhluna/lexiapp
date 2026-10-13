@@ -169,6 +169,18 @@ function ReminderGroup() {
   const { settings, service } = useReminder();
   const [denied, setDenied] = useState(false);
 
+  if (!service.available) {
+    return (
+      <Group title="Recordatorio">
+        <Notice title="El recordatorio no está disponible en Expo Go">
+          <AppText variant="small" color={colors.review}>
+            Expo Go para Android no permite notificaciones. Funcionará en la app instalada (APK).
+          </AppText>
+        </Notice>
+      </Group>
+    );
+  }
+
   return (
     <Group title="Recordatorio">
       <Toggle

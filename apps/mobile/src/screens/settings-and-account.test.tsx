@@ -70,6 +70,13 @@ describe("SettingsScreen (mobile)", () => {
     expect(notifications.scheduled.size).toBe(0);
   });
 
+  it("explains that the reminder needs the installed app where notifications are unavailable", async () => {
+    const notifications = fakeNotifications(true, false);
+    await renderWithServices(<SettingsScreen />, { notifications: notifications.port });
+    expect(screen.getByText("El recordatorio no está disponible en Expo Go")).toBeTruthy();
+    expect(screen.queryByLabelText("Recordatorio diario")).toBeNull();
+  });
+
   it("asks for confirmation before deleting progress", async () => {
     const { store } = await renderWithServices(<SettingsScreen />);
     await act(async () => store.recordAnswer("travel-fly", "learned"));

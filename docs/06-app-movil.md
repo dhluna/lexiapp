@@ -67,6 +67,8 @@ Pestañas (abajo)            Pantallas apiladas
 - Texto según la racha real: con racha, «Llevas N días seguidos. Unos minutos hoy para no
   perderla.»; sin racha, «Unos minutos de vocabulario para empezar una racha.».
 - Solo notificaciones locales: no hay servidor de notificaciones.
+- En Expo Go para Android no existe `expo-notifications`: el módulo se carga de forma
+  diferida y Ajustes muestra que el recordatorio necesita la app instalada.
 
 ## Diferencias de plataforma
 
@@ -77,6 +79,7 @@ Pestañas (abajo)            Pantallas apiladas
 | Disparadores de sincronización | `online`, `visibilitychange` | `NetInfo`, `AppState` |
 | Retorno de Google y correos | URL `https://…/auth/callback` | Enlace `lexi://auth/callback` (en desarrollo, `exp://…`) |
 | Sesión de Supabase | `localStorage` | `expo-sqlite/kv-store` |
+| PKCE (SHA-256, bytes aleatorios) | Web Crypto del navegador | `expo-crypto`, instalado como `globalThis.crypto` antes de crear el cliente |
 
 Configuración extra en Supabase: añadir `lexi://**` y `exp://**` a **Redirect URLs**.
 

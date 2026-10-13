@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { AppState } from "react-native";
+import { installCryptoPolyfill } from "./crypto";
 import { sessionStorage } from "./storage";
 
 // Must be read literally: Expo inlines EXPO_PUBLIC_* variables at build time.
@@ -15,6 +16,8 @@ export function getSupabase(): SupabaseClient | null {
     client = null;
     return client;
   }
+  // PKCE with SHA-256 and secure random bytes (see ./crypto).
+  installCryptoPolyfill();
   client = createClient(URL, KEY, {
     auth: {
       storage: sessionStorage,
