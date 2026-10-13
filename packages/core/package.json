@@ -2,6 +2,7 @@
   "name": "@lexi/core",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Dominio, catálogo, persistencia y servicios de Lexi, sin React ni APIs del navegador.",
   "exports": {
     "./*": "./src/*.ts"

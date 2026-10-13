@@ -125,3 +125,8 @@ El detalle está en `docs/`:
   «deberes»). Cuando hay variantes habituales se dan las dos («tarea / deberes»).
 - Sin pruebas end-to-end automatizadas (Playwright) en esta fase; los flujos se cubren con
   React Testing Library y se revisaron a mano en el navegador.
+
+## Licencia
+
+[MIT](LICENSE). Puedes usar, modificar y redistribuir el código, también en proyectos
+comerciales, siempre que conserves el aviso de copyright y la licencia.
