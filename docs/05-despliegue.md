@@ -42,10 +42,11 @@ de correo incluido sirve para pruebas, pero envía muy pocos correos por hora.
 ## 4. URL permitidas
 
 En **Authentication › URL Configuration**:
-- **Site URL**: la URL de producción, por ejemplo `https://lexi.vercel.app`.
+- **Site URL**: la URL de producción (la de Lexi es `https://lexiapp-five.vercel.app`).
 - **Redirect URLs** (añade todas las que uses):
   - `http://localhost:3000/**`
-  - `https://lexi.vercel.app/**`
+  - `https://lexiapp-five.vercel.app/**`
+  - `lexi://**` y `exp://**` (app móvil, ver [docs/07](07-movil-pruebas.md))
   - Si usas despliegues de vista previa de Vercel:
     `https://*-<tu-equipo>.vercel.app/**`
 
@@ -81,7 +82,11 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clave pública>
    detecta Next.js e instala las dependencias del workspace.
 3. En **Environment Variables** añade las dos variables del paso 5 para *Production* y
    *Preview*.
-4. Despliega. Después vuelve al paso 4 y añade la URL definitiva si aún no estaba.
+   No añadas la integración de Supabase que ofrece Vercel: crearía un proyecto nuevo y vacío.
+4. Despliega. Usa el dominio de producción (**Domains**, sin el nombre del equipo); las
+   direcciones con código de despliegue o con el nombre del equipo piden iniciar sesión en
+   Vercel. Después vuelve al paso 4 y pon esa URL en Supabase.
+5. Cada `git push` a `master` publica una versión nueva; las demás ramas generan vistas previas.
 
 ## 7. Comprobaciones tras configurar
 
