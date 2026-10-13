@@ -9,9 +9,11 @@
     "userInterfaceStyle": "automatic",
     "backgroundColor": "#f3f5fb",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.diegohernandez.lexi"
     },
     "android": {
+      "package": "com.diegohernandez.lexi",
       "adaptiveIcon": {
         "backgroundColor": "#3a3ed6",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -30,6 +32,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0577d790-3553-4d76-952c-406492acb1b8"
+      }
+    },
+    "owner": "thecat97"
   }
 }
