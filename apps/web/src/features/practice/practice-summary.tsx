@@ -42,7 +42,7 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
             Otra sesión
           </Button>
           <Button size="lg" variant="secondary" onClick={onChangeSettings}>
-            Elegir otra categoría
+            Elegir otro paquete
           </Button>
           <ButtonLink href="/" size="lg" variant="ghost">
             Volver al inicio

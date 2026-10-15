@@ -22,12 +22,18 @@ async function swipe(translationX: number) {
 beforeEach(() => setSearchParams({}));
 
 describe("PracticeScreen (mobile)", () => {
-  it("starts a category with one tap, speaks the word and saves answers", async () => {
+  it("starts an added pack with one tap, speaks the word and saves answers", async () => {
     const { store, spoken } = await renderWithServices(<PracticeScreen />);
-    await act(async () => store.updatePreferences({ sessionSize: 5 }));
+    await act(async () => {
+      store.updatePreferences({ sessionSize: 5 });
+      store.setPackActive("travel", true);
+    });
 
     expect(screen.getByText("Practicar")).toBeTruthy();
-    await fireEvent.press(screen.getByLabelText("Practicar Viajes: 11 nuevas"));
+    // Only the packs in practice are offered.
+    expect(screen.getByLabelText("Practicar Esenciales: 150 nuevas")).toBeTruthy();
+    expect(screen.queryByLabelText(/Practicar Comida/)).toBeNull();
+    await fireEvent.press(screen.getByLabelText("Practicar Viajes: 30 nuevas"));
 
     const first = currentTerm();
     expect(spoken).toContain(first); // automatic pronunciation
@@ -36,7 +42,7 @@ describe("PracticeScreen (mobile)", () => {
     const learned = Object.entries(store.getSnapshot().state.words);
     expect(learned).toHaveLength(1);
     expect(getWord(learned[0][0])?.term).toBe(first);
-    expect(getWord(learned[0][0])?.category).toBe("travel");
+    expect(getWord(learned[0][0])?.pack).toBe("travel");
     expect(currentTerm()).not.toBe(first);
   });
 

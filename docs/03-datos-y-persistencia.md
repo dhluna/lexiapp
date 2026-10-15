@@ -2,24 +2,24 @@
 
 ## Catálogo (`src/data/words`)
 
-Un archivo por categoría. Cada `Word`:
+Un archivo por paquete (`src/data/packs.ts` define los paquetes). Cada `Word`:
 
 ```ts
 {
-  id: "travel-luggage",            // estable: <categoría>-<término-en-slug>
+  id: "travel-luggage",            // estable: <paquete>-<término-en-slug>
   term: "luggage",
   ipa: "ˈlʌɡɪdʒ",                   // AFI amplio, inglés americano, sin barras
   translation: "equipaje",
   definition: "Maletas y bolsas que llevas al viajar. Es incontable: no lleva -s.",
-  category: "travel",
+  pack: "travel",
   partOfSpeech: "noun",            // noun | verb | phrasal-verb | adjective | adverb
   verbForms?: { past, pastParticiple, irregular },  // obligatorio en verbos
   examples: [{ en, es }, { en, es }]                // mínimo 2
 }
 ```
 
-`src/data/catalog.test.ts` valida: ≥ 80 palabras, 8 categorías con ≥ 10 cada una, ids únicos
-con el formato correcto, ≥ 2 ejemplos, formas verbales en todos los verbos y una
+`src/data/catalog.test.ts` valida: 150 palabras en Esenciales y ≥ 25 en cada paquete temático,
+términos únicos en todo el catálogo, ids únicos con el formato correcto, ≥ 2 ejemplos, formas verbales en todos los verbos y una
 transcripción AFI con caracteres válidos (p. ej. `ɡ` y no `g`) y acento principal `ˈ`.
 
 ## Estado guardado
@@ -28,12 +28,13 @@ Clave única de LocalStorage: `lexi:progress`.
 
 ```ts
 interface UserProgressState {
-  version: 4;
+  version: 5;
   updatedAt: string;                       // ISO
   words: Record<WordId, WordProgress>;     // solo palabras tocadas
   practiceDays: string[];                  // "YYYY-MM-DD", únicos y ordenados
   sessions: SessionRecord[];               // sesiones completadas (máx. 365)
-  preferences: { sessionSize: number; speechRate: number; autoPronounce: boolean };
+  preferences: { sessionSize: number; speechRate: number; autoPronounce: boolean;
+                 activePacks: PackId[] };  // paquetes opcionales añadidos (nunca Esenciales)
   preferencesUpdatedAt: string;            // EPOCH = valores por defecto (nunca ganan)
   removedWords: Record<WordId, string>;    // marcas de borrado para sincronizar
   resetAt: string | null;                  // último «borrar progreso»
@@ -52,11 +53,13 @@ interface WordProgress {
 
 ## Versionado y migraciones
 
-- Cada documento lleva `version`. `CURRENT_VERSION = 4`.
+- Cada documento lleva `version`. `CURRENT_VERSION = 5`.
 - Historial: **v1** formato inicial · **v2** añade `preferences.autoPronounce`
   (migración `1 → 2` lo activa por defecto sin tocar el progreso) · **v3** cambia las
   velocidades de voz a 0,8 / 1 / 1,2 (`2 → 3` convierte 0,7 → 0,8, 0,9 → 1 y 1,1 → 1,2) ·
   **v4** añade `removedWords`, `resetAt` y `preferencesUpdatedAt` para sincronizar (Fase 3).
+  **v5** añade `preferences.activePacks` (vacío) y cambia `categoryId` por `packId` en las
+  sesiones; las categorías que no son paquete pasan a `null` ([08](08-paquetes.md)).
 - Al leer: `JSON.parse` → si `version < CURRENT`, se aplican migraciones en cadena
   (`migrations[n]: (state_n) => state_{n+1}`) → `sanitize()` normaliza tipos y descarta
   entradas inválidas campo a campo (nunca el documento entero por un campo roto).

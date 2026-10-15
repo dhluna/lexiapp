@@ -2,8 +2,8 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { isCategoryId } from "@lexi/core/data/categories";
-import { WORDS } from "@lexi/core/data/catalog";
+import { getActiveWords, isPackActive } from "@lexi/core/data/catalog";
+import { isPackId } from "@lexi/core/data/packs";
 import {
   answerCurrent,
   createSession,
@@ -13,7 +13,7 @@ import {
   type PracticeSession,
   type SessionAnswer,
 } from "@lexi/core/domain/session";
-import type { CategoryId, UserProgressState } from "@lexi/core/domain/types";
+import type { PackId, UserProgressState } from "@lexi/core/domain/types";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { PracticeCard } from "./practice-card";
 import { PracticeSkeleton } from "./practice-skeleton";
@@ -25,17 +25,19 @@ const ANSWER_MESSAGES: Record<SessionAnswer, string> = {
   review: "Guardada para repasar.",
 };
 
-function buildSession(state: UserProgressState, categoryId: CategoryId | null): PracticeSession {
-  const ids = selectSessionWords(WORDS, state, { size: state.preferences.sessionSize, categoryId });
-  return createSession(ids, new Date(), categoryId);
+/** A session over the active packs (or one of them). */
+function buildSession(state: UserProgressState, packId: PackId | null): PracticeSession {
+  const pack = packId && isPackActive(state, packId) ? packId : null;
+  const ids = selectSessionWords(getActiveWords(state), state, { size: state.preferences.sessionSize, packId: pack });
+  return createSession(ids, new Date(), pack);
 }
 
 export function PracticeView() {
   const params = useSearchParams();
-  const linkedCategory = params.get("categoria");
-  const categoryId = isCategoryId(linkedCategory) ? linkedCategory : null;
-  // "Empezar práctica" (home) and "Practicar <categoría>" (progress) go straight to the card.
-  const autoStart = params.get("empezar") === "1" || categoryId !== null;
+  const linkedPack = params.get("paquete");
+  const packId = isPackId(linkedPack) ? linkedPack : null;
+  // "Empezar práctica" (home) and "Practicar <paquete>" (progress) go straight to the card.
+  const autoStart = params.get("empezar") === "1" || packId !== null;
 
   const snapshot = useProgress();
   const actions = useProgressActions();
@@ -44,17 +46,17 @@ export function PracticeView() {
   // Coming from a direct link: the setup screen is skipped entirely.
   const [autoStartPending, setAutoStartPending] = useState(autoStart);
 
-  const start = (category: CategoryId | null) => {
+  const start = (pack: PackId | null) => {
     if (!snapshot) return;
     setAnnouncement("");
-    setSession(buildSession(snapshot.state, category));
+    setSession(buildSession(snapshot.state, pack));
   };
 
   // Coming from "Empezar práctica": start during render (React re-renders before
   // committing), so neither the setup screen nor an empty frame is ever painted.
   if (autoStartPending && snapshot) {
     setAutoStartPending(false);
-    setSession(buildSession(snapshot.state, categoryId));
+    setSession(buildSession(snapshot.state, packId));
   }
 
   if (!snapshot || autoStartPending) {
@@ -74,7 +76,7 @@ export function PracticeView() {
     return (
       <PracticeSummary
         session={session}
-        onRestart={() => start(session.categoryId)}
+        onRestart={() => start(session.packId)}
         onChangeSettings={() => setSession(null)}
       />
     );

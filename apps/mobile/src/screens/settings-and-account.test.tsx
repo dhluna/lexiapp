@@ -43,7 +43,7 @@ describe("SettingsScreen (mobile)", () => {
     await fireEvent.press(screen.getByText("15"));
     await fireEvent.press(screen.getByText("Lenta"));
     await fireEvent(screen.getByLabelText("Pronunciación automática"), "valueChange", false);
-    expect(store.getSnapshot().state.preferences).toEqual({ sessionSize: 15, speechRate: 0.8, autoPronounce: false });
+    expect(store.getSnapshot().state.preferences).toEqual({ sessionSize: 15, speechRate: 0.8, autoPronounce: false, activePacks: [] });
   });
 
   it("turns the daily reminder on and lets the learner pick the hour", async () => {

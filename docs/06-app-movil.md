@@ -19,7 +19,7 @@ gestos y recordatorios.
 
 | ID | Requisito |
 | --- | --- |
-| RF-23 | Mismas funciones que la web: Inicio, Practicar, Vocabulario (categorías → palabras → ficha), Progreso y Ajustes. Mismos textos y reglas. |
+| RF-23 | Mismas funciones que la web: Inicio, Practicar, Vocabulario (paquetes → palabras → ficha), Progreso y Ajustes. Mismos textos y reglas. |
 | RF-24 | Pronunciación con la voz en inglés del sistema (`expo-speech`), automática y bajo demanda; aviso si no hay voz en inglés. |
 | RF-25 | En la práctica, deslizar la tarjeta a la izquierda pasa a la siguiente palabra y a la derecha vuelve a la anterior. |
 | RF-26 | Recordatorio diario opcional a una hora elegida, que no avisa si ya se practicó ese día. |
@@ -31,7 +31,7 @@ gestos y recordatorios.
 ```
 Pestañas (abajo)            Pantallas apiladas
 ├── Inicio                  ├── Ficha de palabra   /palabra/[id]
-├── Practicar               ├── Categoría          /categoria/[id]
+├── Practicar               ├── Paquete            /paquete/[id]
 ├── Vocabulario             ├── Ajustes            /ajustes      (⚙ en la cabecera)
 └── Progreso                ├── Entrar             /entrar
                             └── Nueva contraseña   /restablecer
@@ -40,8 +40,8 @@ Pestañas (abajo)            Pantallas apiladas
 | Web | Móvil |
 | --- | --- |
 | `/` | Pestaña Inicio |
-| `/practicar` (+ `?empezar=1`, `?categoria=`) | Pestaña Practicar; los accesos directos abren la sesión igual |
-| `/vocabulario` y `?categoria=` | Pestaña Vocabulario → pantalla Categoría |
+| `/practicar` (+ `?empezar=1`, `?paquete=`) | Pestaña Practicar; los accesos directos abren la sesión igual |
+| `/vocabulario` y `?paquete=` | Pestaña Vocabulario → pantalla Paquete |
 | `/vocabulario/[id]` | Ficha de palabra |
 | `/progreso`, `/ajustes` | Pestaña Progreso, pantalla Ajustes |
 | `/entrar`, `/auth/callback`, `/restablecer-contrasena` | Entrar y Nueva contraseña; el retorno llega por `lexi://auth/callback` |

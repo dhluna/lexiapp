@@ -1,62 +1,67 @@
 "use client";
 
-import { ChevronLeft, Search, X } from "lucide-react";
+import { Check, ChevronLeft, Minus, Plus, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useDeferredValue, useMemo, useState, type ReactNode } from "react";
-import { CategoryIcon } from "@/components/category-icon";
+import { useDeferredValue, useState, type ReactNode } from "react";
+import { PackIcon } from "@/components/pack-icon";
 import { SpeakButton } from "@/components/speak-button";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { CATEGORIES, getCategory, isCategoryId } from "@lexi/core/data/categories";
-import { WORDS } from "@lexi/core/data/catalog";
+import { isPackActive, WORDS } from "@lexi/core/data/catalog";
+import { getPack, isPackId, PACKS } from "@lexi/core/data/packs";
 import { STATUS_LABELS } from "@lexi/core/domain/labels";
 import { getWordStatus } from "@lexi/core/domain/progress";
 import { filterWords } from "@lexi/core/domain/search";
-import type { LearningStatus } from "@lexi/core/domain/types";
-import { useProgress, useStats } from "@/hooks/use-progress";
+import type { LearningStatus, PackId } from "@lexi/core/domain/types";
+import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { cn } from "@/lib/cn";
-import { CategoryGrid } from "./category-grid";
+import { PackGrid } from "./pack-grid";
 
 const STATUSES: readonly LearningStatus[] = ["new", "review", "learned"];
 
 export function VocabularyView() {
   const params = useSearchParams();
-  const paramCategory = params.get("categoria");
-  // The open category lives in the URL, so the browser's back button returns to the grid.
-  const categoryId = isCategoryId(paramCategory) ? paramCategory : null;
-  const category = categoryId ? getCategory(categoryId) : undefined;
+  const paramPack = params.get("paquete");
+  // The open pack lives in the URL, so the browser's back button returns to the grid.
+  const packId = isPackId(paramPack) ? paramPack : null;
+  const pack = packId ? getPack(packId) : undefined;
 
   const snapshot = useProgress();
-  const stats = useStats();
+  const { setPackActive } = useProgressActions();
   const state = snapshot?.state ?? null;
+  const [confirmation, setConfirmation] = useState("");
+
+  const togglePack = (id: PackId, active: boolean) => {
+    setPackActive(id, active);
+    const name = getPack(id)?.name ?? id;
+    setConfirmation(
+      active ? `${name} se añadió a tu práctica.` : `${name} ya no está en tu práctica. Su progreso se conserva.`,
+    );
+  };
 
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<LearningStatus | null>(null);
 
-  // Opening another category starts with a clean filter.
-  const [lastCategory, setLastCategory] = useState(categoryId);
-  if (categoryId !== lastCategory) {
-    setLastCategory(categoryId);
+  // Opening another pack starts with a clean filter.
+  const [lastPack, setLastPack] = useState(packId);
+  if (packId !== lastPack) {
+    setLastPack(packId);
     setQuery("");
     setStatus(null);
+    setConfirmation("");
   }
 
   const deferredQuery = useDeferredValue(query);
-  const showGrid = !categoryId && deferredQuery.trim() === "";
+  const showGrid = !packId && deferredQuery.trim() === "";
 
-  const results = useMemo(
-    () => filterWords(WORDS, state, { query: deferredQuery, categoryId, status }),
-    [state, deferredQuery, categoryId, status],
-  );
-
-  const statusCounts = useMemo(() => {
-    const pool = filterWords(WORDS, state, { query: deferredQuery, categoryId });
-    const counts: Record<LearningStatus, number> = { new: 0, review: 0, learned: 0 };
-    for (const word of pool) counts[getWordStatus(state, word.id)] += 1;
-    return counts;
-  }, [state, deferredQuery, categoryId]);
+  // The React Compiler memoizes these: no manual useMemo needed.
+  const results = filterWords(WORDS, state, { query: deferredQuery, packId, status });
+  const statusCounts: Record<LearningStatus, number> = { new: 0, review: 0, learned: 0 };
+  for (const word of filterWords(WORDS, state, { query: deferredQuery, packId })) {
+    statusCounts[getWordStatus(state, word.id)] += 1;
+  }
 
   const clearFilters = () => {
     setQuery("");
@@ -65,57 +70,80 @@ export function VocabularyView() {
 
   return (
     <div className="grid gap-6">
-      {category ? (
+      {pack ? (
         <div>
           <Link
             href="/vocabulario"
             className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-xl pr-3 font-semibold text-ink-soft hover:text-ink"
           >
             <ChevronLeft aria-hidden className="size-5" />
-            Todas las categorías
+            Todos los paquetes
           </Link>
-          <div className="mt-2 flex items-center gap-3">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent">
-              <CategoryIcon id={category.id} className="size-6" />
-            </span>
-            <div>
-              <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">{category.name}</h1>
-              <p className="text-ink-soft">{category.description}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-accent-soft text-accent">
+                <PackIcon id={pack.id} className="size-6" />
+              </span>
+              <div className="min-w-0">
+                <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">{pack.name}</h1>
+                <p className="text-ink-soft">{pack.description}</p>
+              </div>
             </div>
+            {state &&
+              (pack.core ? (
+                <p className="inline-flex items-center gap-2 text-sm font-semibold text-ink-soft">
+                  <Check aria-hidden className="size-4 text-learned" />
+                  Siempre en tu práctica
+                </p>
+              ) : isPackActive(state, pack.id) ? (
+                <Button variant="secondary" onClick={() => togglePack(pack.id, false)}>
+                  <Minus aria-hidden className="size-4" />
+                  Quitar de mi práctica
+                </Button>
+              ) : (
+                <Button onClick={() => togglePack(pack.id, true)}>
+                  <Plus aria-hidden className="size-4" />
+                  Añadir a mi práctica
+                </Button>
+              ))}
           </div>
+          {state && !pack.core && !isPackActive(state, pack.id) && (
+            <p className="mt-3 text-sm text-ink-soft">
+              Puedes ver y escuchar sus palabras. Al añadirlo, entrarán en tu práctica diaria y en tu progreso.
+            </p>
+          )}
         </div>
       ) : (
         <div>
           <h1 className="font-display text-4xl font-bold tracking-tight">Vocabulario</h1>
           <p className="mt-2 text-lg text-ink-soft">
-            {WORDS.length} palabras en {CATEGORIES.length} categorías. Elige una o busca en inglés o en español.
+            {WORDS.length} palabras en {PACKS.length} paquetes. Elige uno o busca en inglés o en español.
           </p>
         </div>
       )}
 
+      <p aria-live="polite" className={cn("text-sm font-semibold text-learned", !confirmation && "sr-only")}>
+        {confirmation}
+      </p>
+
       <div className="relative">
         <Search aria-hidden className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-ink-soft" />
         <label htmlFor="buscar" className="sr-only">
-          {category ? `Buscar en ${category.name}` : "Buscar palabra o traducción"}
+          {pack ? `Buscar en ${pack.name}` : "Buscar palabra o traducción"}
         </label>
         <input
           id="buscar"
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={category ? `Buscar en ${category.name}` : "Busca «deadline» o «plazo»"}
+          placeholder={pack ? `Buscar en ${pack.name}` : "Busca «deadline» o «plazo»"}
           autoComplete="off"
           className="min-h-14 w-full rounded-2xl border border-line bg-surface pr-4 pl-12 text-lg placeholder:text-ink-soft/80 focus-visible:border-accent"
         />
       </div>
 
       {showGrid ? (
-        <section aria-labelledby="categorias">
-          <h2 id="categorias" className="mb-4 font-display text-2xl font-semibold">
-            Categorías
-          </h2>
-          <CategoryGrid stats={stats} />
-        </section>
+        <PackGrid state={state} onAdd={(id) => togglePack(id, true)} />
       ) : (
         <>
           <div role="group" aria-label="Estado" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">

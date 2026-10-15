@@ -1,6 +1,6 @@
 import type { Ref } from "react";
 import { SpeakButton } from "@/components/speak-button";
-import { getCategory } from "@lexi/core/data/categories";
+import { getPack } from "@lexi/core/data/packs";
 import { PART_OF_SPEECH_LABELS } from "@lexi/core/domain/labels";
 import { termScale } from "@lexi/core/domain/term-scale";
 import type { Word } from "@lexi/core/domain/types";
@@ -30,7 +30,7 @@ export function WordHeading({ word, as: Tag = "h2", ref }: WordHeadingProps) {
           {PART_OF_SPEECH_LABELS[word.partOfSpeech]}
         </span>
         <span className="rounded-full bg-sunken px-2.5 py-0.5 text-ink-soft">
-          {getCategory(word.category)?.name ?? word.category}
+          {getPack(word.pack)?.name ?? word.pack}
         </span>
       </p>
       <div className="mt-2 flex items-center gap-4">

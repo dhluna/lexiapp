@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CATEGORY_IDS } from "../data/categories";
+import { PACK_IDS } from "../data/packs";
 import { WORDS } from "../data/catalog";
 import {
   applyAnswer,
@@ -48,7 +48,7 @@ describe("computeStats", () => {
     state.words["removed-from-catalog"] = applyAnswer(undefined, "learned", now);
     state.practiceDays = ["2026-10-09", "2026-10-10"];
 
-    const stats = computeStats(state, WORDS, CATEGORY_IDS, "2026-10-10");
+    const stats = computeStats(state, WORDS, PACK_IDS, "2026-10-10");
     expect(stats).toMatchObject({
       totalWords: WORDS.length,
       studied: 3,
@@ -59,14 +59,19 @@ describe("computeStats", () => {
       practiceDaysCount: 2,
     });
     expect(stats.streak.current).toBe(2);
-    const cat = stats.byCategory[a.category];
-    expect(cat.learned + cat.review).toBe(cat.studied);
-    const totalByCategory = Object.values(stats.byCategory).reduce((n, x) => n + x.total, 0);
-    expect(totalByCategory).toBe(WORDS.length);
+    const pack = stats.byPack[a.pack]!;
+    expect(pack.learned + pack.review).toBe(pack.studied);
+    const totalByPack = Object.values(stats.byPack).reduce((n, x) => n + (x?.total ?? 0), 0);
+    expect(totalByPack).toBe(WORDS.length);
+  });
+
+  it("only reports the packs it is given", () => {
+    const stats = computeStats(createEmptyState(now, 1), WORDS, ["essentials"], "2026-10-10");
+    expect(Object.keys(stats.byPack)).toEqual(["essentials"]);
   });
 
   it("reports zero for an empty state", () => {
-    const stats = computeStats(createEmptyState(now, 1), WORDS, CATEGORY_IDS, "2026-10-10");
+    const stats = computeStats(createEmptyState(now, 1), WORDS, PACK_IDS, "2026-10-10");
     expect(stats.studied).toBe(0);
     expect(stats.streak.current).toBe(0);
     expect(getWordStatus(null, WORDS[0].id)).toBe("new");

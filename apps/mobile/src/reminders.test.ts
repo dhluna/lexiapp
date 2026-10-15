@@ -41,7 +41,7 @@ describe("ReminderService", () => {
     expect(scheduled.get("lexi-reminder-2026-10-12")!.title).toBe("Llevas 1 día de racha");
     expect(scheduled.get("lexi-reminder-2026-10-13")!.title).toBe("Hora de practicar");
 
-    store.recordAnswer("food-eat", "learned"); // practice today
+    store.recordAnswer("essentials-eat", "learned"); // practice today
     await service.reschedule();
     expect(scheduled.has("lexi-reminder-2026-10-12")).toBe(false);
     expect(scheduled.get("lexi-reminder-2026-10-13")!.title).toBe("Llevas 2 días seguidos");

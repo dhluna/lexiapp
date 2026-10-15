@@ -30,9 +30,12 @@ describe("PracticeView", () => {
   it("runs a full session, saving answers and showing a summary", async () => {
     const user = userEvent.setup();
     const { store, synth } = renderWithServices(<PracticeView />);
-    act(() => store.updatePreferences({ sessionSize: 5 }));
+    act(() => {
+      store.updatePreferences({ sessionSize: 5 });
+      store.setPackActive("travel", true);
+    });
 
-    // One tap on a category starts it: no filters to set first.
+    // One tap on a pack starts it: no filters to set first.
     await user.click(screen.getByRole("button", { name: /Practicar Viajes/ }));
 
     const seen: string[] = [];
@@ -61,7 +64,7 @@ describe("PracticeView", () => {
 
     const { state } = store.getSnapshot();
     expect(Object.keys(state.words)).toHaveLength(5);
-    expect(Object.keys(state.words).every((id) => getWord(id)?.category === "travel")).toBe(true);
+    expect(Object.keys(state.words).every((id) => getWord(id)?.pack === "travel")).toBe(true);
     expect(state.sessions).toHaveLength(1);
     expect(state.practiceDays).toHaveLength(1);
     expect(state.preferences.sessionSize).toBe(5);
@@ -87,9 +90,13 @@ describe("PracticeView", () => {
   });
 
   it("starts right away from the home shortcut and supports keyboard shortcuts", async () => {
-    search = "empezar=1&categoria=food";
+    search = "empezar=1&paquete=food";
     const user = userEvent.setup();
-    const rendered = renderWithServices(<PracticeView />);
+    const storage = new MemoryStorage();
+    const seed = renderWithServices(<div />, storage);
+    seed.store.setPackActive("food", true);
+    seed.unmount();
+    const rendered = renderWithServices(<PracticeView />, storage);
     const { store } = rendered;
 
     const term = currentTerm();
@@ -167,10 +174,11 @@ describe("PracticeView", () => {
     expect(synth.speak).not.toHaveBeenCalled();
   });
 
-  it("shows a clean start screen with today's plan and one entry per category", async () => {
+  it("shows a clean start screen with today's plan and one entry per active pack", async () => {
     const user = userEvent.setup();
     const { store } = renderWithServices(<PracticeView />);
     act(() => {
+      store.setPackActive("travel", true);
       store.recordAnswer("travel-luggage", "review");
       store.recordAnswer("travel-fly", "learned");
     });
@@ -182,9 +190,12 @@ describe("PracticeView", () => {
       "/ajustes",
     );
     expect(screen.getByRole("button", { name: "Practicar Viajes: 1 por repasar" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Practicar Salud: 11 nuevas" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Practicar Esenciales: 150 nuevas" })).toBeInTheDocument();
+    // Packs not added are not offered; a link leads to them.
+    expect(screen.queryByRole("button", { name: /Practicar Comida/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Añadir más paquetes" })).toHaveAttribute("href", "/vocabulario");
 
-    // A category session starts with its pending word.
+    // A pack session starts with its pending word.
     await user.click(screen.getByRole("button", { name: /Practicar Viajes/ }));
     expect(currentTerm()).toBe("luggage");
   });

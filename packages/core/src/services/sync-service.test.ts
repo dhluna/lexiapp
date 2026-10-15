@@ -40,7 +40,7 @@ describe("SyncService", () => {
     const server = new FakeServer();
     const phone = device(server);
     phone.auth.signIn(ANA);
-    phone.store.recordAnswer("food-eat", "review");
+    phone.store.recordAnswer("essentials-eat", "review");
     await phone.sync.syncNow();
 
     const laptop = device(server);
@@ -48,8 +48,8 @@ describe("SyncService", () => {
     laptop.auth.signIn(ANA);
     await laptop.sync.syncNow();
 
-    expect(Object.keys(words(laptop)).sort()).toEqual(["food-eat", "travel-luggage"]);
-    expect(Object.keys(server.stateOf("ana").words).sort()).toEqual(["food-eat", "travel-luggage"]);
+    expect(Object.keys(words(laptop)).sort()).toEqual(["essentials-eat", "travel-luggage"]);
+    expect(Object.keys(server.stateOf("ana").words).sort()).toEqual(["essentials-eat", "travel-luggage"]);
     expect(JSON.parse(laptop.storage.getItem(SYNC_KEY)!).ownerId).toBe("ana");
     expect(laptop.sync.getSnapshot()).toMatchObject({ status: "idle", error: null });
   });
@@ -115,14 +115,14 @@ describe("SyncService", () => {
     await d.sync.syncNow();
 
     online = false;
-    d.store.recordAnswer("health-fever", "review");
+    d.store.recordAnswer("essentials-sleep", "review");
     await vi.advanceTimersByTimeAsync(3_000);
     expect(d.sync.getSnapshot().status).toBe("offline");
-    expect(server.stateOf("ana").words["health-fever"]).toBeUndefined();
+    expect(server.stateOf("ana").words["essentials-sleep"]).toBeUndefined();
 
     online = true;
     await d.sync.syncNow(); // what the "online" event triggers
-    expect(server.stateOf("ana").words["health-fever"]?.status).toBe("review");
+    expect(server.stateOf("ana").words["essentials-sleep"]?.status).toBe("review");
     expect(d.sync.getSnapshot().status).toBe("idle");
   });
 
@@ -184,11 +184,11 @@ describe("SyncService", () => {
     const server = new FakeServer();
     const d = device(server);
     d.auth.signIn(ANA);
-    d.store.recordAnswer("education-learn", "learned");
+    d.store.recordAnswer("essentials-learn", "learned");
 
     const result = await d.sync.signOut();
     expect(result.ok).toBe(true);
-    expect(server.stateOf("ana").words["education-learn"]?.status).toBe("learned");
+    expect(server.stateOf("ana").words["essentials-learn"]?.status).toBe("learned");
     expect(words(d)).toEqual({});
     expect(JSON.parse(d.storage.getItem(SYNC_KEY)!).ownerId).toBeNull();
     expect(d.sync.getSnapshot().status).toBe("disabled");

@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { act, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { WORDS } from "@lexi/core/data/catalog";
@@ -18,25 +18,43 @@ describe("VocabularyView", () => {
     search = "";
   });
 
-  it("opens on the category grid with real progress", () => {
+  it("opens on the packs: the ones in practice with progress, and the rest to add", () => {
     const storage = new MemoryStorage();
     const seed = renderWithServices(<div />, storage);
+    seed.store.setPackActive("food", true);
     seed.store.recordAnswer("food-recipe", "learned");
     seed.unmount();
 
     renderWithServices(<VocabularyView />, storage);
-    expect(screen.getByRole("heading", { name: "Categorías" })).toBeInTheDocument();
-    const food = screen.getByRole("link", { name: /Alimentación\s*1 de 11 aprendidas/ });
-    expect(food).toHaveAttribute("href", "/vocabulario?categoria=food");
-    expect(screen.getByRole("link", { name: /Viajes\s*0 de 11 aprendidas/ })).toBeInTheDocument();
+    const mine = screen.getByRole("region", { name: "En tu práctica" });
+    expect(within(mine).getByRole("link", { name: /Esenciales\s*0 de 150 aprendidas/ })).toHaveAttribute(
+      "href",
+      "/vocabulario?paquete=essentials",
+    );
+    expect(within(mine).getByRole("link", { name: /Comida\s*1 de 30 aprendidas/ })).toBeInTheDocument();
+
+    const more = screen.getByRole("region", { name: "Más paquetes" });
+    expect(within(more).getByRole("link", { name: /Viajes\s*30 palabras/ })).toHaveAttribute("href", "/vocabulario?paquete=travel");
+    expect(within(more).queryByRole("link", { name: /Comida/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("list", { name: "Palabras" })).not.toBeInTheDocument();
+  });
+
+  it("adds a pack from its card and confirms it", async () => {
+    const user = userEvent.setup();
+    const { store } = renderWithServices(<VocabularyView />);
+    await user.click(screen.getByRole("button", { name: "Añadir Viajes a mi práctica" }));
+    expect(store.getSnapshot().state.preferences.activePacks).toEqual(["travel"]);
+    expect(screen.getByText("Viajes se añadió a tu práctica.")).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("region", { name: "En tu práctica" })).getByRole("link", { name: /Viajes/ }),
+    ).toBeInTheDocument();
   });
 
   it("searches the whole catalog from the grid, ignoring accents", async () => {
     const user = userEvent.setup();
     renderWithServices(<VocabularyView />);
     await user.type(screen.getByRole("searchbox", { name: "Buscar palabra o traducción" }), "contrasena");
-    expect(screen.queryByRole("heading", { name: "Categorías" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "En tu práctica" })).not.toBeInTheDocument();
     const list = screen.getByRole("list", { name: "Palabras" });
     expect(within(list).getByRole("link", { name: /password/ })).toHaveAttribute(
       "href",
@@ -44,24 +62,47 @@ describe("VocabularyView", () => {
     );
   });
 
-  it("shows one category with status filters and an empty state", async () => {
-    search = "categoria=food";
+  it("shows one pack with status filters and an empty state", async () => {
+    search = "paquete=food";
     const user = userEvent.setup();
     const { store } = renderWithServices(<VocabularyView />);
     store.recordAnswer("food-recipe", "learned");
 
-    expect(screen.getByRole("heading", { level: 1, name: "Alimentación" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Todas las categorías/ })).toHaveAttribute("href", "/vocabulario");
-    expect(screen.getByRole("status")).toHaveTextContent("11 palabras");
+    expect(screen.getByRole("heading", { level: 1, name: "Comida" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Todos los paquetes/ })).toHaveAttribute("href", "/vocabulario");
+    expect(screen.getByRole("status")).toHaveTextContent("30 palabras");
 
     await user.click(screen.getByRole("button", { name: /Aprendida/ }));
     expect(screen.getByRole("status")).toHaveTextContent("1 palabra");
     expect(within(screen.getByRole("list", { name: "Palabras" })).getByText("recipe")).toBeInTheDocument();
 
-    await user.type(screen.getByRole("searchbox", { name: "Buscar en Alimentación" }), "zzz");
+    await user.type(screen.getByRole("searchbox", { name: "Buscar en Comida" }), "zzz");
     expect(screen.getByText("No hay palabras con estos filtros")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Quitar filtros" }));
-    expect(screen.getByRole("status")).toHaveTextContent("11 palabras");
+    expect(screen.getByRole("status")).toHaveTextContent("30 palabras");
+  });
+
+  it("adds and removes a pack from its page without losing its progress", async () => {
+    search = "paquete=travel";
+    const user = userEvent.setup();
+    const { store } = renderWithServices(<VocabularyView />);
+    expect(screen.getByText(/Puedes ver y escuchar sus palabras/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Añadir a mi práctica" }));
+    expect(store.getSnapshot().state.preferences.activePacks).toEqual(["travel"]);
+    act(() => store.recordAnswer("travel-fly", "learned"));
+
+    await user.click(screen.getByRole("button", { name: "Quitar de mi práctica" }));
+    expect(screen.getByText("Viajes ya no está en tu práctica. Su progreso se conserva.")).toBeInTheDocument();
+    expect(store.getSnapshot().state.preferences.activePacks).toEqual([]);
+    expect(store.getSnapshot().state.words["travel-fly"]?.status).toBe("learned");
+  });
+
+  it("keeps the essentials always in practice", () => {
+    search = "paquete=essentials";
+    renderWithServices(<VocabularyView />);
+    expect(screen.getByText("Siempre en tu práctica")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /mi práctica/ })).not.toBeInTheDocument();
   });
 });
 

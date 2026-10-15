@@ -160,3 +160,27 @@ do $$ begin
   assert (select count(*) from public.word_progress where user_id = 'bbbbbbbb-0000-0000-0000-000000000002') = 1, 'T7 se tocaron datos de Luis';
   raise notice 'T7 ok: eliminar la cuenta borra solo los datos de quien la elimina';
 end $$;
+
+-- T8: paquetes activos (0002), con la misma regla que el resto de preferencias
+set role authenticated;
+select set_config('request.jwt.claim.sub', :'luis', false);
+select public.sync_push('{"settings": {"session_size": 5, "speech_rate": 1, "auto_pronounce": true,
+  "active_packs": ["travel", "food"], "preferences_updated_at": "2026-10-08T00:00:00Z", "reset_at": null, "reset_day": null},
+  "words": [], "days": [], "sessions": []}'::jsonb);
+-- Una preferencia más antigua no pisa la reciente.
+select public.sync_push('{"settings": {"session_size": 5, "speech_rate": 1, "auto_pronounce": true,
+  "active_packs": [], "preferences_updated_at": "2026-10-07T12:00:00Z", "reset_at": null, "reset_day": null},
+  "words": [], "days": [], "sessions": []}'::jsonb);
+do $$ begin
+  assert (select active_packs from public.user_settings) = array['travel', 'food'], 'T8 una preferencia antigua pisó los paquetes';
+end $$;
+-- Un cliente anterior a los paquetes (sin active_packs) cambia otra preferencia: los paquetes se conservan.
+select public.sync_push('{"settings": {"session_size": 20, "speech_rate": 1, "auto_pronounce": true,
+  "preferences_updated_at": "2026-10-09T00:00:00Z", "reset_at": null, "reset_day": null},
+  "words": [], "days": [], "sessions": []}'::jsonb);
+do $$ begin
+  assert (select session_size from public.user_settings) = 20, 'T8 no se aplicó la preferencia nueva';
+  assert (select active_packs from public.user_settings) = array['travel', 'food'], 'T8 un cliente antiguo borró los paquetes';
+  raise notice 'T8 ok: los paquetes activos siguen la regla de preferencias y sobreviven a clientes antiguos';
+end $$;
+reset role;

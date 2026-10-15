@@ -1,4 +1,4 @@
-import type { CategoryId, StoredStatus, UserProgressState, Word, WordId } from "./types";
+import type { PackId, StoredStatus, UserProgressState, Word, WordId } from "./types";
 
 /** Answers given in a session. Words left unanswered count as skipped in the summary. */
 export type SessionAnswer = StoredStatus;
@@ -6,7 +6,7 @@ export type SessionAnswer = StoredStatus;
 export interface PracticeSession {
   id: string;
   startedAt: string;
-  categoryId: CategoryId | null;
+  packId: PackId | null;
   wordIds: WordId[];
   index: number;
   answers: Record<WordId, SessionAnswer>;
@@ -15,7 +15,7 @@ export interface PracticeSession {
 
 export interface SelectOptions {
   size: number;
-  categoryId?: CategoryId | null;
+  packId?: PackId | null;
   /** Returns a number in [0, 1). Injected for deterministic tests. */
   random?: () => number;
 }
@@ -36,9 +36,9 @@ function shuffle<T>(items: readonly T[], random: () => number): T[] {
 export function selectSessionWords(
   catalog: readonly Word[],
   state: UserProgressState,
-  { size, categoryId = null, random = Math.random }: SelectOptions,
+  { size, packId = null, random = Math.random }: SelectOptions,
 ): WordId[] {
-  const pool = categoryId ? catalog.filter((w) => w.category === categoryId) : catalog;
+  const pool = packId ? catalog.filter((w) => w.pack === packId) : catalog;
   const byOldest = (a: Word, b: Word) =>
     (state.words[a.id]?.lastReviewedAt ?? "").localeCompare(
       state.words[b.id]?.lastReviewedAt ?? "",
@@ -62,13 +62,13 @@ export function selectSessionWords(
 export function createSession(
   wordIds: readonly WordId[],
   now: Date,
-  categoryId: CategoryId | null = null,
+  packId: PackId | null = null,
 ): PracticeSession {
   const unique = [...new Set(wordIds)];
   return {
     id: `s-${now.getTime().toString(36)}`,
     startedAt: now.toISOString(),
-    categoryId,
+    packId,
     wordIds: unique,
     index: 0,
     answers: {},

@@ -9,10 +9,10 @@ import { FONTS, RADIUS, useTheme } from "@/theme";
 interface PracticeSummaryProps {
   session: PracticeSession;
   onRestart: () => void;
-  onChooseCategory: () => void;
+  onChoosePack: () => void;
 }
 
-export function PracticeSummary({ session, onRestart, onChooseCategory }: PracticeSummaryProps) {
+export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSummaryProps) {
   const { colors } = useTheme();
   const router = useRouter();
   const summary = summarize(session);
@@ -54,7 +54,7 @@ export function PracticeSummary({ session, onRestart, onChooseCategory }: Practi
           ))}
         </View>
         <Button title="Otra sesión" onPress={onRestart} />
-        <Button title="Elegir otra categoría" variant="secondary" onPress={onChooseCategory} />
+        <Button title="Elegir otro paquete" variant="secondary" onPress={onChoosePack} />
         <Button title="Volver al inicio" variant="ghost" onPress={() => router.navigate("/")} />
       </Card>
 

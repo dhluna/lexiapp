@@ -24,11 +24,11 @@ describe("ProgressStore", () => {
   it("persists every answer immediately", () => {
     const { store, reload } = setup();
     store.recordAnswer("travel-luggage", "learned");
-    store.recordAnswer("food-eat", "review");
+    store.recordAnswer("essentials-eat", "review");
 
     const state = reload().getSnapshot().state;
     expect(state.words["travel-luggage"].status).toBe("learned");
-    expect(state.words["food-eat"].status).toBe("review");
+    expect(state.words["essentials-eat"].status).toBe("review");
     expect(state.practiceDays).toEqual(["2026-10-10"]);
   });
 
@@ -36,7 +36,7 @@ describe("ProgressStore", () => {
     const { store, setNow } = setup();
     store.recordAnswer("travel-luggage", "learned");
     setNow("2026-10-10T21:00:00");
-    store.recordAnswer("food-eat", "learned");
+    store.recordAnswer("essentials-eat", "learned");
     setNow("2026-10-11T08:00:00");
     store.recordAnswer("food-raw", "learned");
     expect(store.getSnapshot().state.practiceDays).toEqual(["2026-10-10", "2026-10-11"]);
@@ -44,7 +44,7 @@ describe("ProgressStore", () => {
 
   it("records a completed session once", () => {
     const { store, reload } = setup();
-    let session = createSession(["travel-luggage", "food-eat"], new Date());
+    let session = createSession(["travel-luggage", "essentials-eat"], new Date());
     session = answerCurrent(answerCurrent(session, "learned"), "review");
     store.completeSession(session);
     store.completeSession(session);
@@ -75,7 +75,34 @@ describe("ProgressStore", () => {
       sessionSize: 20,
       speechRate: 0.7,
       autoPronounce: false,
+      activePacks: [],
     });
+  });
+
+  it("adds and removes optional packs without touching their progress", () => {
+    const { store, reload } = setup();
+    const changes: number[] = [];
+    store.subscribeLocalChanges(() => changes.push(1));
+
+    store.setPackActive("travel", true);
+    store.setPackActive("emotions", true);
+    store.setPackActive("travel", true); // already active: no change
+    expect(store.getSnapshot().state.preferences.activePacks).toEqual(["travel", "emotions"]);
+    expect(changes).toHaveLength(2);
+    expect(store.getSnapshot().state.preferencesUpdatedAt).not.toBe("1970-01-01T00:00:00.000Z");
+
+    store.recordAnswer("travel-luggage", "learned");
+    store.setPackActive("travel", false);
+    const after = reload().getSnapshot().state;
+    expect(after.preferences.activePacks).toEqual(["emotions"]);
+    expect(after.words["travel-luggage"]?.status).toBe("learned");
+  });
+
+  it("never deactivates the core pack", () => {
+    const { store } = setup();
+    store.setPackActive("essentials", false);
+    store.setPackActive("essentials", true);
+    expect(store.getSnapshot().state.preferences.activePacks).toEqual([]);
   });
 
   it("resets progress but keeps preferences", () => {
@@ -99,7 +126,7 @@ describe("ProgressStore", () => {
     expect(listener).toHaveBeenCalledTimes(1);
     expect(store.getSnapshot()).not.toBe(before);
     unsubscribe();
-    store.recordAnswer("food-eat", "learned");
+    store.recordAnswer("essentials-eat", "learned");
     expect(listener).toHaveBeenCalledTimes(1);
   });
 

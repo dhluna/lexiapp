@@ -1,12 +1,12 @@
-export type CategoryId =
-  | "daily-life"
-  | "business"
-  | "travel"
+/** Word packs. `essentials` is always active; the rest are added by each learner. */
+export type PackId =
+  | "essentials"
   | "technology"
-  | "health"
   | "food"
-  | "education"
-  | "communication";
+  | "work"
+  | "travel"
+  | "phrasal-verbs"
+  | "emotions";
 
 export type PartOfSpeech =
   | "noun"
@@ -35,7 +35,7 @@ export interface Word {
   ipa: string;
   translation: string;
   definition: string;
-  category: CategoryId;
+  pack: PackId;
   partOfSpeech: PartOfSpeech;
   verbForms?: VerbForms;
   examples: Example[];
@@ -60,7 +60,7 @@ export interface SessionRecord {
   startedAt: string;
   completedAt: string;
   day: string;
-  categoryId: CategoryId | null;
+  packId: PackId | null;
   total: number;
   learned: number;
   review: number;
@@ -71,6 +71,8 @@ export interface Preferences {
   speechRate: number;
   /** Speak each word automatically when it appears in practice. */
   autoPronounce: boolean;
+  /** Optional packs added to practice (never `essentials`, which is always active). */
+  activePacks: PackId[];
 }
 
 export interface UserProgressState {

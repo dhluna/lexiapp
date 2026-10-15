@@ -71,7 +71,7 @@ describe("LocalStorageProgressRepository", () => {
     expect(Object.keys(state.words)).toEqual(["good"]);
     expect(state.practiceDays).toEqual(["2026-10-09", "2026-10-10"]);
     expect(state.sessions).toEqual([]);
-    expect(state.preferences).toEqual({ sessionSize: 20, speechRate: 1, autoPronounce: true });
+    expect(state.preferences).toEqual({ sessionSize: 20, speechRate: 1, autoPronounce: true, activePacks: [] });
   });
 
   it("reports storage failures instead of throwing", () => {
@@ -108,11 +108,59 @@ describe("migrations", () => {
     expect(state.words["travel-luggage"].status).toBe("learned");
     expect(state.practiceDays).toEqual(v1.practiceDays);
     // v2 adds autoPronounce; v3 maps the old "Lenta" speed 0.7 to 0.8.
-    expect(state.preferences).toEqual({ sessionSize: 15, speechRate: 0.8, autoPronounce: true });
+    // v5 adds the optional packs, none active.
+    expect(state.preferences).toEqual({ sessionSize: 15, speechRate: 0.8, autoPronounce: true, activePacks: [] });
     // v4 adds the sync fields with neutral values.
     expect(state.removedWords).toEqual({});
     expect(state.resetAt).toBeNull();
     expect(state.preferencesUpdatedAt).toBe("1970-01-01T00:00:00.000Z");
+  });
+
+  it("upgrades v4 sessions from categories to packs", () => {
+    const storage = new MemoryStorage();
+    const session = (id: string, categoryId: string | null) => ({
+      id,
+      startedAt: now.toISOString(),
+      completedAt: now.toISOString(),
+      day: "2026-10-10",
+      categoryId,
+      total: 10,
+      learned: 5,
+      review: 5,
+    });
+    const v4 = {
+      version: 4,
+      updatedAt: now.toISOString(),
+      words: {},
+      practiceDays: ["2026-10-10"],
+      sessions: [session("s1", "travel"), session("s2", "health"), session("s3", null)],
+      preferences: { sessionSize: 10, speechRate: 1, autoPronounce: true },
+      preferencesUpdatedAt: "1970-01-01T00:00:00.000Z",
+      removedWords: {},
+      resetAt: null,
+    };
+    storage.setItem(STORAGE_KEY, JSON.stringify(v4));
+    const { state, issue } = new LocalStorageProgressRepository(storage, clock).load();
+    expect(issue).toBeNull();
+    expect(state.version).toBe(5);
+    // "travel" is still a pack; "health" was a category only.
+    expect(state.sessions.map((s) => s.packId)).toEqual(["travel", null, null]);
+    expect(state.sessions.every((s) => !("categoryId" in s))).toBe(true);
+    expect(state.preferences.activePacks).toEqual([]);
+  });
+
+  it("keeps only known optional packs, once and in catalog order", () => {
+    const storage = new MemoryStorage();
+    storage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 5,
+        updatedAt: now.toISOString(),
+        preferences: { activePacks: ["emotions", "essentials", "travel", "travel", "pirates", 7] },
+      }),
+    );
+    const { state } = new LocalStorageProgressRepository(storage, clock).load();
+    expect(state.preferences.activePacks).toEqual(["travel", "emotions"]);
   });
 
   it("upgrades old documents step by step before sanitizing", () => {
@@ -122,10 +170,10 @@ describe("migrations", () => {
     };
     const legacy = JSON.stringify({
       version: 1,
-      legacyWords: { "food-eat": applyAnswer(undefined, "learned", now) },
+      legacyWords: { "essentials-eat": applyAnswer(undefined, "learned", now) },
     });
     const state = parseState(legacy, now, { migrations, targetVersion: 3 });
-    expect(state.words["food-eat"]?.status).toBe("learned");
+    expect(state.words["essentials-eat"]?.status).toBe("learned");
   });
 
   it("fails when a migration step is missing", () => {

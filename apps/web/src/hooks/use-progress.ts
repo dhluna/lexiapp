@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useSyncExternalStore } from "react";
-import { CATEGORY_IDS } from "@lexi/core/data/categories";
-import { WORDS } from "@lexi/core/data/catalog";
+import { activePackIds, getActiveWords } from "@lexi/core/data/catalog";
 import { toDayKey } from "@lexi/core/domain/dates";
 import { computeStats, type ProgressStats } from "@lexi/core/domain/progress";
 import type { ProgressSnapshot, ProgressStore } from "@lexi/core/services/progress-store";
@@ -23,7 +22,12 @@ export function useProgress(): ProgressSnapshot | null {
 
 type Actions = Pick<
   ProgressStore,
-  "recordAnswer" | "setWordStatus" | "completeSession" | "updatePreferences" | "resetProgress"
+  | "recordAnswer"
+  | "setWordStatus"
+  | "completeSession"
+  | "updatePreferences"
+  | "setPackActive"
+  | "resetProgress"
 >;
 
 /** Use-case actions, resolved lazily so they are safe to create during render. */
@@ -35,17 +39,19 @@ export function useProgressActions(): Actions {
       setWordStatus: (...args) => progressStore().setWordStatus(...args),
       completeSession: (...args) => progressStore().completeSession(...args),
       updatePreferences: (...args) => progressStore().updatePreferences(...args),
+      setPackActive: (...args) => progressStore().setPackActive(...args),
       resetProgress: () => progressStore().resetProgress(),
     }),
     [progressStore],
   );
 }
 
+/** Statistics of the active packs only: the words the learner is actually studying. */
 export function useStats(): ProgressStats | null {
   const snapshot = useProgress();
-  return useMemo(
-    () =>
-      snapshot ? computeStats(snapshot.state, WORDS, CATEGORY_IDS, toDayKey(new Date())) : null,
-    [snapshot],
-  );
+  return useMemo(() => {
+    if (!snapshot) return null;
+    const { state } = snapshot;
+    return computeStats(state, getActiveWords(state), activePackIds(state), toDayKey(new Date()));
+  }, [snapshot]);
 }

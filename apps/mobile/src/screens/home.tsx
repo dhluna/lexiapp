@@ -1,7 +1,9 @@
+import { activePackIds } from "@lexi/core/data/catalog";
+import { PACKS } from "@lexi/core/data/packs";
 import { toDayKey } from "@lexi/core/domain/dates";
 import { planSession, planText } from "@lexi/core/planning/session-plan";
 import { useRouter } from "expo-router";
-import { Flame } from "lucide-react-native";
+import { Flame, Plus } from "lucide-react-native";
 import { View } from "react-native";
 import { PracticeCalendar } from "@/components/practice-calendar";
 import { AppText, Button, Card, ProgressBar, Screen } from "@/components/ui";
@@ -26,6 +28,7 @@ export function HomeScreen() {
   const stats = useStats();
   const { streak } = stats;
   const firstTime = stats.studied === 0;
+  const activePacks = activePackIds(state).length;
   const plan = planSession(state, state.preferences.sessionSize);
 
   const title = firstTime ? "Tus primeras palabras" : streak.practicedToday ? "Hoy ya practicaste" : "Tu práctica de hoy";
@@ -67,7 +70,8 @@ export function HomeScreen() {
       <Card>
         <AppText variant="heading">Tu vocabulario</AppText>
         <AppText variant="muted">
-          Has estudiado {stats.studied} de {stats.totalWords} palabras.
+          Has estudiado {stats.studied} de {stats.totalWords} palabras
+          {activePacks === 1 ? " del paquete Esenciales." : ` de tus ${activePacks} paquetes.`}
         </AppText>
         <ProgressBar
           value={stats.learned}
@@ -81,6 +85,14 @@ export function HomeScreen() {
           <Figure term="Por repasar" value={stats.review} color={colors.review} />
           <Figure term="Sesiones" value={stats.sessionsCompleted} color={colors.ink} />
         </View>
+        {activePacks < PACKS.length && (
+          <Button
+            title="Añade un paquete de palabras"
+            variant="ghost"
+            icon={<Plus color={colors["ink-soft"]} size={16} />}
+            onPress={() => router.navigate("/vocabulario")}
+          />
+        )}
       </Card>
     </Screen>
   );

@@ -1,11 +1,11 @@
-import { CATEGORIES } from "@lexi/core/data/categories";
-import { WORDS } from "@lexi/core/data/catalog";
+import { getActiveWords } from "@lexi/core/data/catalog";
+import { PACKS } from "@lexi/core/data/packs";
 import { toDayKey } from "@lexi/core/domain/dates";
 import { useRouter } from "expo-router";
 import { Flame } from "lucide-react-native";
 import type { ReactNode } from "react";
 import { Pressable, View } from "react-native";
-import { CategoryIcon } from "@/components/category-icon";
+import { PackIcon } from "@/components/pack-icon";
 import { PracticeCalendar } from "@/components/practice-calendar";
 import { AppText, Button, Card, ProgressBar, Screen } from "@/components/ui";
 import { useProgress, useStats } from "@/hooks/use-progress";
@@ -55,7 +55,7 @@ export function ProgressScreen() {
     );
   }
 
-  const pending = WORDS.filter((w) => state.words[w.id]?.status === "review");
+  const pending = getActiveWords(state).filter((w) => state.words[w.id]?.status === "review");
 
   return (
     <Screen>
@@ -117,23 +117,24 @@ export function ProgressScreen() {
       )}
 
       <Card>
-        <AppText variant="heading">Por categoría</AppText>
-        {CATEGORIES.map((category) => {
-          const c = stats.byCategory[category.id];
+        <AppText variant="heading">Por paquete</AppText>
+        {PACKS.map((pack) => {
+          const c = stats.byPack[pack.id];
+          if (!c) return null;
           return (
             <Pressable
-              key={category.id}
+              key={pack.id}
               accessibilityRole="link"
-              accessibilityLabel={`${category.name}: ${c.learned} de ${c.total} aprendidas`}
-              onPress={() => router.push({ pathname: "/categoria/[id]", params: { id: category.id } })}
+              accessibilityLabel={`${pack.name}: ${c.learned} de ${c.total} aprendidas`}
+              onPress={() => router.push({ pathname: "/paquete/[id]", params: { id: pack.id } })}
               style={{ minHeight: 44, flexDirection: "row", alignItems: "center", gap: 10 }}
             >
-              <CategoryIcon id={category.id} color={colors.accent} />
+              <PackIcon id={pack.id} color={colors.accent} />
               <AppText variant="subheading" numberOfLines={1} style={{ width: 118 }}>
-                {category.name}
+                {pack.name}
               </AppText>
               <View style={{ flex: 1 }}>
-                <ProgressBar value={c.learned} secondary={c.review} max={c.total} label={`Progreso en ${category.name}`} />
+                <ProgressBar value={c.learned} secondary={c.review} max={c.total} label={`Progreso en ${pack.name}`} />
               </View>
               <AppText variant="small" style={{ width: 42, textAlign: "right" }}>
                 {c.learned}/{c.total}
@@ -141,6 +142,9 @@ export function ProgressScreen() {
             </Pressable>
           );
         })}
+        {Object.keys(stats.byPack).length < PACKS.length && (
+          <Button title="Añadir más paquetes" variant="ghost" onPress={() => router.navigate("/vocabulario")} />
+        )}
       </Card>
     </Screen>
   );

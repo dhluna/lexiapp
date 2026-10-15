@@ -1,9 +1,12 @@
 "use client";
 
-import { Flame } from "lucide-react";
+import { Flame, Plus } from "lucide-react";
+import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { activePackIds } from "@lexi/core/data/catalog";
+import { PACKS } from "@lexi/core/data/packs";
 import { toDayKey } from "@lexi/core/domain/dates";
 import { useProgress, useStats } from "@/hooks/use-progress";
 import { PracticeCalendar } from "@/features/progress/practice-calendar";
@@ -27,6 +30,7 @@ export function HomeView() {
   const plan = planSession(state, state.preferences.sessionSize);
   const { streak } = stats;
   const firstTime = stats.studied === 0;
+  const activePacks = activePackIds(state).length;
 
   return (
     <div className="grid gap-8">
@@ -75,7 +79,8 @@ export function HomeView() {
         <div className="rounded-3xl bg-surface p-6">
           <h2 className="font-display text-xl font-semibold">Tu vocabulario</h2>
           <p className="mt-1 text-ink-soft">
-            Has estudiado {stats.studied} de {stats.totalWords} palabras.
+            Has estudiado {stats.studied} de {stats.totalWords} palabras
+            {activePacks === 1 ? " del paquete Esenciales." : ` de tus ${activePacks} paquetes.`}
           </p>
           <ProgressBar
             className="mt-5 h-3"
@@ -89,6 +94,15 @@ export function HomeView() {
             <Figure term="Por repasar" value={stats.review} tone="text-review" />
             <Figure term="Sesiones" value={stats.sessionsCompleted} tone="text-ink" />
           </dl>
+          {activePacks < PACKS.length && (
+            <Link
+              href="/vocabulario"
+              className="mt-4 inline-flex min-h-11 items-center gap-2 font-semibold text-accent underline-offset-4 hover:underline"
+            >
+              <Plus aria-hidden className="size-4" />
+              Añade un paquete de palabras
+            </Link>
+          )}
         </div>
       </section>
     </div>

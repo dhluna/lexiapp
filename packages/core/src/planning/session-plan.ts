@@ -1,5 +1,5 @@
-import { WORDS } from "../data/catalog";
-import type { CategoryId, UserProgressState } from "../domain/types";
+import { getActiveWords } from "../data/catalog";
+import type { PackId, UserProgressState } from "../domain/types";
 
 export interface SessionPlan {
   review: number;
@@ -8,9 +8,13 @@ export interface SessionPlan {
   total: number;
 }
 
-/** How many words of the pool are pending review, new or learned (uncapped totals). */
-export function poolCounts(state: UserProgressState, categoryId: CategoryId | null = null) {
-  const pool = categoryId ? WORDS.filter((w) => w.category === categoryId) : WORDS;
+/**
+ * How many words of the pool (the active packs, or one of them) are pending review, new or
+ * learned (uncapped totals).
+ */
+export function poolCounts(state: UserProgressState, packId: PackId | null = null) {
+  const active = getActiveWords(state);
+  const pool = packId ? active.filter((w) => w.pack === packId) : active;
   let pending = 0;
   let fresh = 0;
   for (const word of pool) {
@@ -25,9 +29,9 @@ export function poolCounts(state: UserProgressState, categoryId: CategoryId | nu
 export function planSession(
   state: UserProgressState,
   size: number,
-  categoryId: CategoryId | null = null,
+  packId: PackId | null = null,
 ): SessionPlan {
-  const { pending, fresh, learned: learnedTotal } = poolCounts(state, categoryId);
+  const { pending, fresh, learned: learnedTotal } = poolCounts(state, packId);
   const review = Math.min(pending, size);
   const freshIn = Math.min(fresh, size - review);
   const learned = Math.min(learnedTotal, size - review - freshIn);

@@ -1,5 +1,5 @@
-import { isCategoryId } from "@lexi/core/data/categories";
-import { WORDS } from "@lexi/core/data/catalog";
+import { getActiveWords, isPackActive } from "@lexi/core/data/catalog";
+import { isPackId } from "@lexi/core/data/packs";
 import {
   answerCurrent,
   createSession,
@@ -9,7 +9,7 @@ import {
   type PracticeSession,
   type SessionAnswer,
 } from "@lexi/core/domain/session";
-import type { CategoryId, UserProgressState } from "@lexi/core/domain/types";
+import type { PackId, UserProgressState } from "@lexi/core/domain/types";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
@@ -17,20 +17,22 @@ import { PracticeCard } from "./practice-card";
 import { PracticeSetup } from "./practice-setup";
 import { PracticeSummary } from "./practice-summary";
 
-function buildSession(state: UserProgressState, categoryId: CategoryId | null): PracticeSession {
-  const ids = selectSessionWords(WORDS, state, { size: state.preferences.sessionSize, categoryId });
-  return createSession(ids, new Date(), categoryId);
+/** A session over the active packs (or one of them). */
+function buildSession(state: UserProgressState, packId: PackId | null): PracticeSession {
+  const pack = packId && isPackActive(state, packId) ? packId : null;
+  const ids = selectSessionWords(getActiveWords(state), state, { size: state.preferences.sessionSize, packId: pack });
+  return createSession(ids, new Date(), pack);
 }
 
 /**
  * Same flow as the web's PracticeView. Links can start a session directly
- * (`?empezar=1` or `?categoria=…`); `t` makes a repeated link start a new one, because
+ * (`?empezar=1` or `?paquete=…`); `t` makes a repeated link start a new one, because
  * tab screens stay mounted.
  */
 export function PracticeScreen() {
-  const params = useLocalSearchParams<{ empezar?: string; categoria?: string; t?: string }>();
-  const linkedCategory = isCategoryId(params.categoria) ? params.categoria : null;
-  const linkToken = params.empezar === "1" || linkedCategory ? (params.t ?? "inicial") : null;
+  const params = useLocalSearchParams<{ empezar?: string; paquete?: string; t?: string }>();
+  const linkedPack = isPackId(params.paquete) ? params.paquete : null;
+  const linkToken = params.empezar === "1" || linkedPack ? (params.t ?? "inicial") : null;
 
   const { state } = useProgress();
   const actions = useProgressActions();
@@ -40,10 +42,10 @@ export function PracticeScreen() {
   // Start from a link during render (React re-renders before painting): no flash of the setup screen.
   if (linkToken && linkToken !== handledLink) {
     setHandledLink(linkToken);
-    setSession(buildSession(state, linkedCategory));
+    setSession(buildSession(state, linkedPack));
   }
 
-  const start = (categoryId: CategoryId | null) => setSession(buildSession(state, categoryId));
+  const start = (packId: PackId | null) => setSession(buildSession(state, packId));
 
   if (!session) return <PracticeSetup state={state} onStart={start} />;
 
@@ -51,8 +53,8 @@ export function PracticeScreen() {
     return (
       <PracticeSummary
         session={session}
-        onRestart={() => start(session.categoryId)}
-        onChooseCategory={() => setSession(null)}
+        onRestart={() => start(session.packId)}
+        onChoosePack={() => setSession(null)}
       />
     );
   }

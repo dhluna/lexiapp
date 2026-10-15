@@ -13,7 +13,8 @@ idea de cada paso se mantiene.
 2. Abre **SQL Editor**, pega el contenido de
    [`supabase/migrations/0001_lexi_sync.sql`](../supabase/migrations/0001_lexi_sync.sql) y
    ejecútalo. Crea las tablas, las reglas de acceso (RLS) y las funciones `sync_push` y
-   `delete_my_account`.
+   `delete_my_account`. Después haz lo mismo, en orden, con el resto de archivos de
+   `supabase/migrations/` (`0002_active_packs.sql` añade los paquetes activos a los ajustes).
    - Alternativa con [Supabase CLI](https://supabase.com/docs/guides/cli):
      `supabase link --project-ref <ref>` y después `supabase db push`.
 3. Comprueba en **Table Editor** que las cuatro tablas muestran el candado de RLS activado.

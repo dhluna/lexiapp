@@ -1,4 +1,4 @@
-import { isCategoryId } from "../data/categories";
+import { isOptionalPackId, isPackId, PACK_IDS } from "../data/packs";
 import { isDayKey } from "../domain/dates";
 import {
   clampSessionSize,
@@ -8,9 +8,9 @@ import {
   EPOCH,
   MAX_STORED_SESSIONS,
 } from "../domain/progress";
-import type { SessionRecord, UserProgressState, WordProgress } from "../domain/types";
+import type { PackId, SessionRecord, UserProgressState, WordProgress } from "../domain/types";
 
-export const CURRENT_VERSION = 4;
+export const CURRENT_VERSION = 5;
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -40,6 +40,19 @@ export const MIGRATIONS: Record<number, (state: UnknownRecord) => UnknownRecord>
     resetAt: null,
     preferencesUpdatedAt: EPOCH,
   }),
+  // v5 replaces categories with word packs: optional packs added by the learner, and
+  // sessions tagged with a pack. Old category ids that are not packs become `null`.
+  4: (state) => {
+    const preferences = isRecord(state.preferences) ? state.preferences : {};
+    const sessions = Array.isArray(state.sessions)
+      ? state.sessions.map((session: unknown) => {
+          if (!isRecord(session)) return session;
+          const { categoryId, ...rest } = session;
+          return { ...rest, packId: isPackId(categoryId) ? categoryId : null };
+        })
+      : state.sessions;
+    return { ...state, version: 5, preferences: { ...preferences, activePacks: [] }, sessions };
+  },
 };
 
 export class UnsupportedVersionError extends Error {
@@ -84,11 +97,18 @@ function sanitizeSession(value: unknown): SessionRecord | null {
     startedAt: isIso(value.startedAt) ? value.startedAt : value.completedAt,
     completedAt: value.completedAt,
     day: value.day,
-    categoryId: isCategoryId(value.categoryId) ? value.categoryId : null,
+    packId: isPackId(value.packId) ? value.packId : null,
     total: count(value.total),
     learned: count(value.learned),
     review: count(value.review),
   };
+}
+
+/** Known optional packs, without duplicates, in catalog order. */
+export function sanitizePackList(value: unknown): PackId[] {
+  if (!Array.isArray(value)) return [];
+  const wanted = new Set(value.filter(isOptionalPackId));
+  return PACK_IDS.filter((id) => wanted.has(id));
 }
 
 /** Normalizes field by field: one broken entry never discards the whole document. */
@@ -116,7 +136,7 @@ export function sanitizeState(raw: UnknownRecord, now: Date): UserProgressState 
   }
 
   if (isRecord(raw.preferences)) {
-    const { sessionSize, speechRate, autoPronounce } = raw.preferences;
+    const { sessionSize, speechRate, autoPronounce, activePacks } = raw.preferences;
     state.preferences = {
       sessionSize:
         typeof sessionSize === "number" ? clampSessionSize(sessionSize) : DEFAULT_PREFERENCES.sessionSize,
@@ -124,6 +144,7 @@ export function sanitizeState(raw: UnknownRecord, now: Date): UserProgressState 
         typeof speechRate === "number" ? clampSpeechRate(speechRate) : DEFAULT_PREFERENCES.speechRate,
       autoPronounce:
         typeof autoPronounce === "boolean" ? autoPronounce : DEFAULT_PREFERENCES.autoPronounce,
+      activePacks: sanitizePackList(activePacks),
     };
   }
 

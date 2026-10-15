@@ -13,7 +13,7 @@ const session = (id: string, completedAt: string): SessionRecord => ({
   startedAt: completedAt,
   completedAt,
   day: completedAt.slice(0, 10),
-  categoryId: null,
+  packId: null,
   total: 10,
   learned: 5,
   review: 5,
@@ -84,7 +84,7 @@ describe("mergeStates", () => {
 
   it("keeps the most recently changed preferences, and defaults never win", () => {
     const changed = state({
-      preferences: { sessionSize: 20, speechRate: 0.8, autoPronounce: false },
+      preferences: { sessionSize: 20, speechRate: 0.8, autoPronounce: false, activePacks: ["travel"] },
       preferencesUpdatedAt: "2026-10-05T00:00:00.000Z",
     });
     const fresh = state();
@@ -110,7 +110,7 @@ describe("mergeStates", () => {
       removedWords: { z: "2026-10-06T00:00:00.000Z" },
       practiceDays: ["2026-10-05"],
       sessions: [session("s1", "2026-10-05T11:00:00.000Z")],
-      preferences: { sessionSize: 15, speechRate: 1, autoPronounce: true },
+      preferences: { sessionSize: 15, speechRate: 1, autoPronounce: true, activePacks: ["food"] },
       preferencesUpdatedAt: "2026-10-05T00:00:00.000Z",
     });
     const b = state({
@@ -121,7 +121,7 @@ describe("mergeStates", () => {
       },
       practiceDays: ["2026-10-04", "2026-10-05"],
       sessions: [session("s2", "2026-10-04T11:00:00.000Z")],
-      preferences: { sessionSize: 5, speechRate: 1, autoPronounce: false },
+      preferences: { sessionSize: 5, speechRate: 1, autoPronounce: false, activePacks: [] },
       preferencesUpdatedAt: "2026-10-05T00:00:00.000Z",
     });
 

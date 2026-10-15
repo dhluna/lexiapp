@@ -1,20 +1,23 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import Link from "next/link";
-import { CategoryIcon } from "@/components/category-icon";
+import { PackIcon } from "@/components/pack-icon";
 import { Button } from "@/components/ui/button";
-import { CATEGORIES } from "@lexi/core/data/categories";
-import type { CategoryId, UserProgressState } from "@lexi/core/domain/types";
+import { activePackIds } from "@lexi/core/data/catalog";
+import { getPack, PACKS } from "@lexi/core/data/packs";
+import type { PackId, UserProgressState } from "@lexi/core/domain/types";
 import { planSession, planText, poolCounts } from "@lexi/core/planning/session-plan";
 
 interface PracticeSetupProps {
   state: UserProgressState;
-  onStart: (categoryId: CategoryId | null) => void;
+  onStart: (packId: PackId | null) => void;
 }
 
-/** One obvious action (today's session) and, below, one tap per category. No filters. */
+/** One obvious action (today's session) and, below, one tap per active pack. No filters. */
 export function PracticeSetup({ state, onStart }: PracticeSetupProps) {
   const size = state.preferences.sessionSize;
   const today = planSession(state, size);
+  const packs = activePackIds(state).flatMap((id) => getPack(id) ?? []);
+  const morePacks = packs.length < PACKS.length;
 
   return (
     <div className="mx-auto grid max-w-2xl gap-10">
@@ -34,13 +37,13 @@ export function PracticeSetup({ state, onStart }: PracticeSetupProps) {
         </p>
       </section>
 
-      <section aria-labelledby="por-categoria">
-        <h2 id="por-categoria" className="font-display text-xl font-semibold">
-          O practica una categoría
+      <section aria-labelledby="por-paquete">
+        <h2 id="por-paquete" className="font-display text-xl font-semibold">
+          O practica un paquete
         </h2>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {CATEGORIES.map((category) => {
-            const counts = poolCounts(state, category.id);
+          {packs.map((pack) => {
+            const counts = poolCounts(state, pack.id);
             const summary =
               counts.pending > 0
                 ? `${counts.pending} por repasar`
@@ -48,18 +51,18 @@ export function PracticeSetup({ state, onStart }: PracticeSetupProps) {
                   ? `${counts.fresh} ${counts.fresh === 1 ? "nueva" : "nuevas"}`
                   : "Todo aprendido";
             return (
-              <li key={category.id}>
+              <li key={pack.id}>
                 <button
                   type="button"
-                  onClick={() => onStart(category.id)}
-                  aria-label={`Practicar ${category.name}: ${summary}`}
+                  onClick={() => onStart(pack.id)}
+                  aria-label={`Practicar ${pack.name}: ${summary}`}
                   className="flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-left transition-colors hover:border-accent"
                 >
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent">
-                    <CategoryIcon id={category.id} />
+                    <PackIcon id={pack.id} />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-semibold">{category.name}</span>
+                    <span className="block font-semibold">{pack.name}</span>
                     <span className={counts.pending > 0 ? "block text-sm text-review" : "block text-sm text-ink-soft"}>
                       {summary}
                     </span>
@@ -70,6 +73,15 @@ export function PracticeSetup({ state, onStart }: PracticeSetupProps) {
             );
           })}
         </ul>
+        {morePacks && (
+          <Link
+            href="/vocabulario"
+            className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl font-semibold text-accent underline-offset-4 hover:underline"
+          >
+            <Plus aria-hidden className="size-4" />
+            Añadir más paquetes
+          </Link>
+        )}
       </section>
     </div>
   );

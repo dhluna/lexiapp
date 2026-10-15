@@ -7,20 +7,20 @@ una aplicación web sin cuentas: todo el progreso vive en el navegador.
 
 | ID | Requisito | Ruta / módulo |
 | --- | --- | --- |
-| RF-01 | Pantalla de inicio con acceso directo a la práctica diaria, resumen (palabras estudiadas, aprendidas, por repasar) y racha. Todo calculado del progreso real. Las categorías viven en Vocabulario. | `/` · `features/home` |
-| RF-02 | Iniciar una sesión de práctica sin configurar nada: «Empezar» (sesión general con su plan real) o un toque en una categoría. El tamaño de sesión se cambia en Ajustes. | `/practicar` · `domain/session` |
+| RF-01 | Pantalla de inicio con acceso directo a la práctica diaria, resumen (palabras estudiadas, aprendidas, por repasar) y racha. Todo calculado del progreso real (solo paquetes activos). Los paquetes viven en Vocabulario. | `/` · `features/home` |
+| RF-02 | Iniciar una sesión de práctica sin configurar nada: «Empezar» (sesión general con su plan real) o un toque en un paquete activo. El tamaño de sesión se cambia en Ajustes. | `/practicar` · `domain/session` |
 | RF-03 | En cada tarjeta: palabra, significado y ejemplos EN/ES visibles desde el principio; la palabra se pronuncia automáticamente al aparecer (desactivable) y puede repetirse con su botón. | `features/practice` |
 | RF-04 | Marcar la palabra como **aprendida** o **por repasar** (avanza sola), o moverse con **anterior / siguiente** para revisar o cambiar una respuesta. Atajos: `Espacio` escuchar, `1` repasar, `2` aprendida, `←` `→` navegar. | `domain/session` |
 | RF-05 | Indicador visual de avance y resumen al terminar. | `features/practice` |
 | RF-06 | Sin repeticiones dentro de una sesión. | `domain/session` |
 | RF-07 | Cada respuesta confirmada se guarda al instante: abandonar la sesión no pierde progreso. | `services/progress-store` |
-| RF-08 | Catálogo ≥ 80 palabras reales en 8 categorías. | `data/words` |
-| RF-09 | Vocabulario organizado por categorías: la entrada muestra una tarjeta por categoría con su progreso; al abrir una (`?categoria=`) se listan sus palabras con filtro por estado. La búsqueda (sin acentos ni mayúsculas) recorre todo el catálogo o la categoría abierta. | `/vocabulario` · `domain/search` |
-| RF-10 | Ficha de palabra: término, transcripción fonética (AFI, inglés americano), traducción, explicación, categoría, tipo, ≥ 2 ejemplos traducidos, pronunciación, estado y acciones. Verbos con pasado y participio. | `/vocabulario/[id]` |
+| RF-08 | Catálogo organizado en paquetes: Esenciales (150 palabras más frecuentes, siempre activo) y paquetes temáticos que se añaden a la práctica. Ver [08](08-paquetes.md). | `data/words`, `data/packs` |
+| RF-09 | Vocabulario organizado por paquetes: «En tu práctica» (con su progreso) y «Más paquetes» (para añadir); al abrir uno (`?paquete=`) se listan sus palabras con filtro por estado. La búsqueda (sin acentos ni mayúsculas) recorre todo el catálogo o el paquete abierto. | `/vocabulario` · `domain/search` |
+| RF-10 | Ficha de palabra: término, transcripción fonética (AFI, inglés americano), traducción, explicación, paquete, tipo, ≥ 2 ejemplos traducidos, pronunciación, estado y acciones. Verbos con pasado y participio. | `/vocabulario/[id]` |
 | RF-11 | Pronunciación con `speechSynthesis` + `SpeechSynthesisUtterance`, priorizando voces en inglés; degradación limpia sin soporte. | `services/speech` |
 | RF-12 | Persistencia en LocalStorage: progreso por palabra, sesiones completadas, días de práctica y preferencias (tamaño de sesión, velocidad de voz, pronunciación automática; se editan en `/ajustes`). Acceso centralizado, errores controlados, datos versionados. | `persistence/` |
 | RF-13 | Racha de días consecutivos: varias sesiones el mismo día cuentan una sola vez. | `domain/streak` |
-| RF-14 | Pantalla de progreso: resumen (racha, aprendidas, por repasar, calendario de 4 semanas, mejor racha y sesiones), palabras por repasar y avance por categoría. | `/progreso` |
+| RF-14 | Pantalla de progreso: resumen (racha, aprendidas, por repasar, calendario de 4 semanas, mejor racha y sesiones), palabras por repasar y avance por paquete activo. | `/progreso` |
 | RF-15 | Ajustes en su propia página (icono ⚙ de la cabecera): palabras por sesión, pronunciación automática, velocidad y borrado del progreso con confirmación. | `/ajustes` |
 
 ## Reglas de negocio

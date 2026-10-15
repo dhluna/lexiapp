@@ -17,6 +17,7 @@ describe("SettingsView", () => {
       sessionSize: 15,
       speechRate: 0.8,
       autoPronounce: false,
+      activePacks: [],
     });
   });
 

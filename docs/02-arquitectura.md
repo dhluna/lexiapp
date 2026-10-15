@@ -109,6 +109,14 @@ asíncrono todo el núcleo.
 `lexi://auth/callback`. Reutiliza el cliente OAuth web; el inicio nativo de Google exigiría
 clientes por plataforma y otra librería.
 
+## Decisiones de los paquetes (ver `docs/08-paquetes.md`)
+
+**ADR-17 · Paquetes incluidos en la app.** El catálogo sigue siendo código (`data/words`,
+un archivo por paquete) y no hay descargas: funciona sin conexión y las pruebas validan todo
+el contenido. Lo que cambia por usuario es qué paquetes están activos, que se guarda en las
+preferencias (formato v5) y se sincroniza con ellas. `getActiveWords(state)` es la única
+puerta de la práctica y de las estadísticas; Vocabulario sigue usando `WORDS` completo.
+
 ## Preparación para el futuro (no implementado)
 
 - **Cuentas / BD remota:** `UserProgressState` ya es un documento serializable con

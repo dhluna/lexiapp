@@ -1,6 +1,7 @@
 import type {
-  CategoryId,
   LearningStatus,
+  PackId,
+  Preferences,
   StoredStatus,
   UserProgressState,
   Word,
@@ -10,7 +11,17 @@ import type {
 import { calculateStreak, type StreakInfo } from "./streak";
 
 /** Rate 1 is the engine's native speed: other rates are resampled and can sound grainy. */
-export const DEFAULT_PREFERENCES = { sessionSize: 10, speechRate: 1, autoPronounce: true } as const;
+export const DEFAULT_PREFERENCES: Readonly<Preferences> = Object.freeze({
+  sessionSize: 10,
+  speechRate: 1,
+  autoPronounce: true,
+  activePacks: Object.freeze([]) as unknown as PackId[],
+});
+
+/** A fresh, mutable copy of the default preferences. */
+export function defaultPreferences(): Preferences {
+  return { ...DEFAULT_PREFERENCES, activePacks: [] };
+}
 export const SESSION_SIZE_MIN = 5;
 export const SESSION_SIZE_MAX = 20;
 export const MAX_STORED_SESSIONS = 365;
@@ -25,7 +36,7 @@ export function createEmptyState(now: Date, version: number): UserProgressState 
     words: {},
     practiceDays: [],
     sessions: [],
-    preferences: { ...DEFAULT_PREFERENCES },
+    preferences: defaultPreferences(),
     preferencesUpdatedAt: EPOCH,
     removedWords: {},
     resetAt: null,
@@ -75,8 +86,8 @@ export function applyManualStatus(
   return { ...previous, status, updatedAt: iso };
 }
 
-export interface CategoryStats {
-  categoryId: CategoryId;
+export interface PackStats {
+  packId: PackId;
   total: number;
   learned: number;
   review: number;
@@ -92,27 +103,28 @@ export interface ProgressStats {
   sessionsCompleted: number;
   practiceDaysCount: number;
   streak: StreakInfo;
-  byCategory: Record<CategoryId, CategoryStats>;
+  /** Only the packs passed to `computeStats` (the active ones), in that order. */
+  byPack: Partial<Record<PackId, PackStats>>;
 }
 
-/** Derives every figure shown in the UI from the real state and the current catalog. */
+/**
+ * Derives every figure shown in the UI from the real state and the words that count
+ * (those of the active packs).
+ */
 export function computeStats(
   state: UserProgressState,
   catalog: readonly Word[],
-  categoryIds: readonly CategoryId[],
+  packIds: readonly PackId[],
   today: string,
 ): ProgressStats {
-  const byCategory = Object.fromEntries(
-    categoryIds.map((categoryId) => [
-      categoryId,
-      { categoryId, total: 0, learned: 0, review: 0, studied: 0 },
-    ]),
-  ) as Record<CategoryId, CategoryStats>;
+  const byPack: Partial<Record<PackId, PackStats>> = Object.fromEntries(
+    packIds.map((packId) => [packId, { packId, total: 0, learned: 0, review: 0, studied: 0 }]),
+  );
 
   let learned = 0;
   let review = 0;
   for (const word of catalog) {
-    const bucket = byCategory[word.category];
+    const bucket = byPack[word.pack];
     const status = getWordStatus(state, word.id);
     if (bucket) bucket.total += 1;
     if (status === "learned") {
@@ -123,8 +135,8 @@ export function computeStats(
       if (bucket) bucket.review += 1;
     }
   }
-  for (const bucket of Object.values(byCategory)) {
-    bucket.studied = bucket.learned + bucket.review;
+  for (const bucket of Object.values(byPack)) {
+    if (bucket) bucket.studied = bucket.learned + bucket.review;
   }
 
   return {
@@ -136,7 +148,7 @@ export function computeStats(
     sessionsCompleted: state.sessions.length,
     practiceDaysCount: new Set(state.practiceDays).size,
     streak: calculateStreak(state.practiceDays, today),
-    byCategory,
+    byPack,
   };
 }
 

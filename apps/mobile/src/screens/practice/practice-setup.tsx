@@ -1,17 +1,20 @@
-import { CATEGORIES } from "@lexi/core/data/categories";
-import type { CategoryId, UserProgressState } from "@lexi/core/domain/types";
+import { activePackIds } from "@lexi/core/data/catalog";
+import { getPack, PACKS } from "@lexi/core/data/packs";
+import type { PackId, UserProgressState } from "@lexi/core/domain/types";
 import { planSession, planText, poolCounts } from "@lexi/core/planning/session-plan";
-import { Link } from "expo-router";
-import { ChevronRight } from "lucide-react-native";
+import { Link, useRouter } from "expo-router";
+import { ChevronRight, Plus } from "lucide-react-native";
 import { Pressable, View } from "react-native";
-import { CategoryIcon } from "@/components/category-icon";
+import { PackIcon } from "@/components/pack-icon";
 import { AppText, Button, Card, Screen } from "@/components/ui";
 import { RADIUS, useTheme } from "@/theme";
 
-/** One obvious action (today's session) and one tap per category. No filters (same as the web). */
-export function PracticeSetup({ state, onStart }: { state: UserProgressState; onStart: (c: CategoryId | null) => void }) {
+/** One obvious action (today's session) and one tap per active pack. No filters (same as the web). */
+export function PracticeSetup({ state, onStart }: { state: UserProgressState; onStart: (p: PackId | null) => void }) {
   const { colors } = useTheme();
+  const router = useRouter();
   const size = state.preferences.sessionSize;
+  const packs = activePackIds(state).flatMap((id) => getPack(id) ?? []);
 
   return (
     <Screen>
@@ -29,10 +32,10 @@ export function PracticeSetup({ state, onStart }: { state: UserProgressState; on
         </AppText>
       </Card>
 
-      <AppText variant="heading">O practica una categoría</AppText>
+      <AppText variant="heading">O practica un paquete</AppText>
       <View style={{ gap: 10 }}>
-        {CATEGORIES.map((category) => {
-          const counts = poolCounts(state, category.id);
+        {packs.map((pack) => {
+          const counts = poolCounts(state, pack.id);
           const summary =
             counts.pending > 0
               ? `${counts.pending} por repasar`
@@ -41,10 +44,10 @@ export function PracticeSetup({ state, onStart }: { state: UserProgressState; on
                 : "Todo aprendido";
           return (
             <Pressable
-              key={category.id}
+              key={pack.id}
               accessibilityRole="button"
-              accessibilityLabel={`Practicar ${category.name}: ${summary}`}
-              onPress={() => onStart(category.id)}
+              accessibilityLabel={`Practicar ${pack.name}: ${summary}`}
+              onPress={() => onStart(pack.id)}
               style={({ pressed }) => ({
                 flexDirection: "row",
                 alignItems: "center",
@@ -66,10 +69,10 @@ export function PracticeSetup({ state, onStart }: { state: UserProgressState; on
                   justifyContent: "center",
                 }}
               >
-                <CategoryIcon id={category.id} color={colors.accent} />
+                <PackIcon id={pack.id} color={colors.accent} />
               </View>
               <View style={{ flex: 1 }}>
-                <AppText variant="subheading">{category.name}</AppText>
+                <AppText variant="subheading">{pack.name}</AppText>
                 <AppText variant="small" color={counts.pending > 0 ? colors.review : colors["ink-soft"]}>
                   {summary}
                 </AppText>
@@ -79,6 +82,14 @@ export function PracticeSetup({ state, onStart }: { state: UserProgressState; on
           );
         })}
       </View>
+      {packs.length < PACKS.length && (
+        <Button
+          title="Añadir más paquetes"
+          variant="ghost"
+          icon={<Plus color={colors["ink-soft"]} size={16} />}
+          onPress={() => router.navigate("/vocabulario")}
+        />
+      )}
     </Screen>
   );
 }

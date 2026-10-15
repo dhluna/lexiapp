@@ -13,9 +13,9 @@ describe("remote rows ⇄ domain", () => {
       ...createEmptyState(now, CURRENT_VERSION),
       words: {
         "travel-fly": applyAnswer(undefined, "learned", new Date("2026-10-10T09:00:00Z")),
-        "food-eat": applyAnswer(undefined, "review", new Date("2026-10-10T10:00:00Z")),
+        "essentials-eat": applyAnswer(undefined, "review", new Date("2026-10-10T10:00:00Z")),
       },
-      removedWords: { "health-fever": "2026-10-09T08:00:00.000Z" },
+      removedWords: { "essentials-sleep": "2026-10-09T08:00:00.000Z" },
       practiceDays: ["2026-10-09", "2026-10-10"],
       sessions: [
         {
@@ -23,13 +23,13 @@ describe("remote rows ⇄ domain", () => {
           startedAt: "2026-10-10T08:55:00.000Z",
           completedAt: "2026-10-10T09:05:00.000Z",
           day: "2026-10-10",
-          categoryId: "travel" as const,
+          packId: "travel" as const,
           total: 10,
           learned: 6,
           review: 4,
         },
       ],
-      preferences: { sessionSize: 15, speechRate: 0.8, autoPronounce: false },
+      preferences: { sessionSize: 15, speechRate: 0.8, autoPronounce: false, activePacks: ["travel" as const, "emotions" as const] },
       preferencesUpdatedAt: "2026-10-08T00:00:00.000Z",
       resetAt: "2026-10-01T00:00:00.000Z",
     };
@@ -37,7 +37,7 @@ describe("remote rows ⇄ domain", () => {
     const payload = stateToPayload(state);
     // The reset day is a *local* date (00:00 UTC is still Sept 30 in America).
     expect(payload.settings.reset_day).toBe(toDayKey(new Date(state.resetAt)));
-    expect(payload.words.find((w) => w.word_id === "health-fever")).toMatchObject({ deleted: true, status: null });
+    expect(payload.words.find((w) => w.word_id === "essentials-sleep")).toMatchObject({ deleted: true, status: null });
 
     // Simulate what Postgres returns: same values, "+00:00" timestamps, day as date text.
     const pg = (iso: string | null) => (iso ? iso.replace(".000Z", "+00:00").replace("Z", "+00:00") : null);
@@ -54,6 +54,7 @@ describe("remote rows ⇄ domain", () => {
         session_size: payload.settings.session_size,
         speech_rate: payload.settings.speech_rate,
         auto_pronounce: payload.settings.auto_pronounce,
+        active_packs: payload.settings.active_packs,
         preferences_updated_at: pg(payload.settings.preferences_updated_at)!,
         reset_at: pg(payload.settings.reset_at),
       },
@@ -74,6 +75,17 @@ describe("remote rows ⇄ domain", () => {
     expect(empty.words).toEqual({});
     expect(empty.preferencesUpdatedAt).toBe("1970-01-01T00:00:00.000Z");
     expect(empty.resetAt).toBeNull();
+  });
+
+  it("reads accounts from before migration 0002 (no active_packs column) as no packs added", () => {
+    const settings = {
+      session_size: 10,
+      speech_rate: 1,
+      auto_pronounce: true,
+      preferences_updated_at: "2026-10-08T00:00:00+00:00",
+      reset_at: null,
+    };
+    expect(rowsToState([], [], [], settings, now).preferences.activePacks).toEqual([]);
   });
 
   it("drops invalid remote rows instead of breaking the app", () => {

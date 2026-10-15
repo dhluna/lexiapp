@@ -1,4 +1,4 @@
-import type { CategoryId, LearningStatus, UserProgressState, Word } from "./types";
+import type { LearningStatus, PackId, UserProgressState, Word } from "./types";
 import { getWordStatus } from "./progress";
 
 /** Lowercase without accents, so "cancion" finds "canción". */
@@ -12,18 +12,18 @@ export function normalizeText(value: string): string {
 
 export interface WordFilter {
   query?: string;
-  categoryId?: CategoryId | null;
+  packId?: PackId | null;
   status?: LearningStatus | null;
 }
 
 export function filterWords(
   catalog: readonly Word[],
   state: UserProgressState | null,
-  { query = "", categoryId = null, status = null }: WordFilter,
+  { query = "", packId = null, status = null }: WordFilter,
 ): Word[] {
   const needle = normalizeText(query);
   const results = catalog.filter((word) => {
-    if (categoryId && word.category !== categoryId) return false;
+    if (packId && word.pack !== packId) return false;
     if (status && getWordStatus(state, word.id) !== status) return false;
     if (!needle) return true;
     return (

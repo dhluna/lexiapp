@@ -7,18 +7,20 @@ import {
   createEmptyState,
   MAX_STORED_SESSIONS,
 } from "../domain/progress";
+import { isOptionalPackId } from "../data/packs";
 import type { PracticeSession } from "../domain/session";
 import { summarize } from "../domain/session";
 import { addPracticeDay } from "../domain/streak";
 import type {
   LearningStatus,
+  PackId,
   Preferences,
   StoredStatus,
   UserProgressState,
   WordId,
 } from "../domain/types";
 import type { PersistenceIssue, ProgressRepository } from "../persistence/progress-repository";
-import { CURRENT_VERSION } from "../persistence/schema";
+import { CURRENT_VERSION, sanitizePackList } from "../persistence/schema";
 
 export interface ProgressSnapshot {
   state: UserProgressState;
@@ -109,7 +111,7 @@ export class ProgressStore {
         startedAt: session.startedAt,
         completedAt: now.toISOString(),
         day: toDayKey(now),
-        categoryId: session.categoryId,
+        packId: session.packId,
         total: summary.total,
         learned: summary.learned.length,
         review: summary.review.length,
@@ -126,8 +128,21 @@ export class ProgressStore {
         sessionSize: clampSessionSize(patch.sessionSize ?? state.preferences.sessionSize),
         speechRate: clampSpeechRate(patch.speechRate ?? state.preferences.speechRate),
         autoPronounce: patch.autoPronounce ?? state.preferences.autoPronounce,
+        activePacks: sanitizePackList(patch.activePacks ?? state.preferences.activePacks),
       },
     }));
+  }
+
+  /**
+   * Adds an optional pack to practice or removes it. Removing never deletes progress: the
+   * words just stop counting until the pack is added again. The core pack cannot change.
+   */
+  setPackActive(packId: PackId, active: boolean): void {
+    if (!isOptionalPackId(packId)) return;
+    const current = this.getSnapshot().state.preferences.activePacks;
+    if (current.includes(packId) === active) return;
+    const next = active ? [...current, packId] : current.filter((id) => id !== packId);
+    this.updatePreferences({ activePacks: next });
   }
 
   /** Deletes all progress, here and (through `resetAt`) on every synced device. */

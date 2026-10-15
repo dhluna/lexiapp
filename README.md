@@ -11,19 +11,20 @@ por categoría. Cuentas opcionales para sincronizar el progreso entre dispositiv
 
 - **Inicio:** práctica de hoy (con el plan real de la sesión), racha de los últimos 7 días
   y resumen del vocabulario.
-- **Practicar:** una pantalla limpia con «Empezar» (sesión general) o un toque por categoría;
+- **Practicar:** una pantalla limpia con «Empezar» (sesión general) o un toque por paquete;
   sesiones de 5 a 20 palabras (se cambia en Ajustes). Primero salen las
   palabras por repasar, luego las nuevas. Cada tarjeta muestra significado y ejemplos desde
   el principio y pronuncia la palabra al aparecer (se puede desactivar). Una barra flotante
   permite marcar *aprendida* o *por repasar*; las flechas anterior / siguiente permiten
   revisar o cambiar respuestas. Resumen al terminar. Atajos de teclado (`Espacio` escuchar,
   `1`, `2`, `←`, `→`).
-- **Vocabulario:** 88 palabras organizadas en 8 categorías (tarjetas con el progreso de cada
+- **Vocabulario:** 330 palabras en 7 paquetes: Esenciales (las 150 más frecuentes, siempre
+  activo) y paquetes temáticos que se añaden a la práctica (tarjetas con el progreso de cada
   una), con transcripción fonética (AFI, inglés americano). Búsqueda en inglés o español (sin
-  distinguir acentos) en todo el catálogo o dentro de una categoría, filtro por estado y
+  distinguir acentos) en todo el catálogo o dentro de un paquete, filtro por estado y
   ficha completa de cada palabra.
 - **Progreso:** resumen (racha, aprendidas, por repasar y calendario de 4 semanas),
-  palabras por repasar y avance por categoría.
+  palabras por repasar y avance por paquete.
 - **Ajustes** (icono ⚙ de la cabecera): cuenta, palabras por sesión, pronunciación
   automática, velocidad y borrado del progreso.
 - **Cuentas y sincronización (opcional):** con Google o email y contraseña. El progreso se
@@ -74,7 +75,7 @@ npm run start -w @lexi/mobile
 ```
 packages/core/src/        @lexi/core: sin React ni APIs del navegador
 ├── domain/               Reglas de negocio puras: progreso, racha, sesión, búsqueda, fusión
-├── data/                 Catálogo de palabras y categorías
+├── data/                 Catálogo de palabras y paquetes
 ├── persistence/          ProgressRepository, esquema versionado, origen remoto (Supabase)
 ├── services/             ProgressStore, SyncService, SupabaseAuthService, SpeechService
 └── platform.ts           Contratos que aporta cada plataforma
@@ -100,6 +101,7 @@ El detalle está en `docs/`:
 - [05 · Configurar cuentas y desplegar](docs/05-despliegue.md): Supabase, Google, variables y Vercel.
 - [06 · App móvil](docs/06-app-movil.md): Fase 4 con Expo.
 - [07 · Probar la app móvil](docs/07-movil-pruebas.md): Expo Go y builds internos con EAS.
+- [08 · Paquetes de palabras](docs/08-paquetes.md): Esenciales y paquetes temáticos.
 
 ## Verificación
 

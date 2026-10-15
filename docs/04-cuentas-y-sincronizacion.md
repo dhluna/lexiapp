@@ -141,7 +141,7 @@ política para `select`, `insert`, `update` y `delete` limitada a `auth.uid() = 
 | --- | --- | --- |
 | `word_progress` | `word_id text`, `status text` (`review`/`learned`), `times_seen`, `times_learned`, `times_review int`, `first_seen_at`, `last_reviewed_at`, `updated_at timestamptz`, `deleted boolean` | `(user_id, word_id)` |
 | `practice_days` | `day date` | `(user_id, day)` |
-| `practice_sessions` | `id text`, `started_at`, `completed_at timestamptz`, `day date`, `category_id text null`, `total`, `learned`, `review int` | `(user_id, id)` |
+| `practice_sessions` | `id text`, `started_at`, `completed_at timestamptz`, `day date`, `category_id text null` (id del paquete), `total`, `learned`, `review int` | `(user_id, id)` |
 | `user_settings` | `session_size int`, `speech_rate real`, `auto_pronounce boolean`, `preferences_updated_at timestamptz`, `reset_at timestamptz null` | `user_id` |
 
 `word_progress.deleted = true` representa una marca de borrado (sustituye a `removedWords`).

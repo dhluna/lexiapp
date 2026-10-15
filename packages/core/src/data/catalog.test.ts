@@ -1,27 +1,42 @@
 import { describe, expect, it } from "vitest";
-import { CATEGORIES, CATEGORY_IDS } from "./categories";
-import { getWord, WORDS } from "./catalog";
+import { activePackIds, getActiveWords, getWord, getWordsByPack, WORDS } from "./catalog";
+import { CORE_PACK_ID, PACK_IDS, PACKS } from "./packs";
+import { createEmptyState } from "../domain/progress";
 
 describe("catalog", () => {
-  it("has at least 80 words", () => {
-    expect(WORDS.length).toBeGreaterThanOrEqual(80);
-  });
-
-  it("covers the 8 categories with at least 10 words each", () => {
-    expect(CATEGORIES).toHaveLength(8);
-    for (const id of CATEGORY_IDS) {
-      expect(WORDS.filter((w) => w.category === id).length, id).toBeGreaterThanOrEqual(10);
+  it("has 150 essentials and at least 25 words in every other pack", () => {
+    expect(getWordsByPack(CORE_PACK_ID)).toHaveLength(150);
+    for (const id of PACK_IDS.filter((p) => p !== CORE_PACK_ID)) {
+      expect(getWordsByPack(id).length, id).toBeGreaterThanOrEqual(25);
     }
+    expect(PACKS.filter((p) => p.core).map((p) => p.id)).toEqual([CORE_PACK_ID]);
   });
 
-  it("uses unique, stable ids prefixed by the category", () => {
+  it("puts every word in an existing pack, with unique ids prefixed by the pack", () => {
     const ids = WORDS.map((w) => w.id);
     expect(new Set(ids).size).toBe(ids.length);
     for (const w of WORDS) {
+      expect(PACK_IDS, w.id).toContain(w.pack);
       expect(w.id).toMatch(/^[a-z-]+$/);
-      expect(w.id.startsWith(`${w.category}-`), w.id).toBe(true);
+      expect(w.id.startsWith(`${w.pack}-`), w.id).toBe(true);
       expect(getWord(w.id)).toBe(w);
     }
+  });
+
+  it("never repeats a term across packs", () => {
+    const terms = WORDS.map((w) => w.term.toLowerCase());
+    const repeated = terms.filter((t, i) => terms.indexOf(t) !== i);
+    expect(repeated).toEqual([]);
+  });
+
+  it("counts only the essentials until the learner adds a pack", () => {
+    const state = createEmptyState(new Date("2026-10-15T10:00:00Z"), 5);
+    expect(activePackIds(state)).toEqual([CORE_PACK_ID]);
+    expect(getActiveWords(state)).toHaveLength(150);
+
+    state.preferences.activePacks = ["travel", "essentials", "unknown" as never];
+    expect(activePackIds(state)).toEqual([CORE_PACK_ID, "travel"]);
+    expect(getActiveWords(state).every((w) => w.pack === CORE_PACK_ID || w.pack === "travel")).toBe(true);
   });
 
   it("documents every word completely", () => {

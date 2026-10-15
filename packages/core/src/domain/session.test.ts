@@ -44,15 +44,15 @@ describe("selectSessionWords", () => {
 
   it("fills with learned words when nothing new is left", () => {
     const state = createEmptyState(now, 1);
-    const pool = WORDS.filter((w) => w.category === "travel");
+    const pool = WORDS.filter((w) => w.pack === "travel");
     for (const w of pool) state.words[w.id] = applyAnswer(undefined, "learned", now);
-    const ids = selectSessionWords(WORDS, state, { size: 5, categoryId: "travel" });
+    const ids = selectSessionWords(WORDS, state, { size: 5, packId: "travel" });
     expect(ids).toHaveLength(5);
   });
 
-  it("limits the session to the category pool", () => {
-    const ids = selectSessionWords(WORDS, createEmptyState(now, 1), { size: 20, categoryId: "food" });
-    const foodCount = WORDS.filter((w) => w.category === "food").length;
+  it("limits the session to the pack pool", () => {
+    const ids = selectSessionWords(WORDS, createEmptyState(now, 1), { size: 20, packId: "food" });
+    const foodCount = WORDS.filter((w) => w.pack === "food").length;
     expect(ids).toHaveLength(Math.min(20, foodCount));
     expect(ids.every((id) => id.startsWith("food-"))).toBe(true);
   });

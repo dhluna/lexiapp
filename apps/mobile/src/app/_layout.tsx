@@ -51,7 +51,7 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="palabra/[id]" options={{ title: "Palabra" }} />
-        <Stack.Screen name="categoria/[id]" options={{ title: "Categoría" }} />
+        <Stack.Screen name="paquete/[id]" options={{ title: "Paquete" }} />
         <Stack.Screen name="ajustes" options={{ title: "Ajustes" }} />
         <Stack.Screen name="entrar" options={{ title: "Entra en Lexi" }} />
         <Stack.Screen name="restablecer" options={{ title: "Nueva contraseña" }} />

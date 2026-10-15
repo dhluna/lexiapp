@@ -50,7 +50,7 @@ apps/mobile     Expo (Fase 4)
 
 ## Reglas que no se deben romper
 
-- **Ids de palabra estables** (`<categoría>-<término>`). Nunca renombres ni reutilices un id:
+- **Ids de palabra estables** (`<paquete>-<término>`). Nunca renombres ni reutilices un id:
   el progreso guardado depende de él. Para retirar una palabra, bórrala del catálogo;
   su progreso se ignora sin borrarse.
 - **Cambios en el formato guardado:** sube `CURRENT_VERSION` en `persistence/schema.ts`,
@@ -66,9 +66,12 @@ apps/mobile     Expo (Fase 4)
 - **Cuentas opcionales:** sin `NEXT_PUBLIC_SUPABASE_*` la app debe funcionar como en la
   Fase 1. Nunca uses la clave `service_role` en el cliente; la seguridad la da RLS
   (`supabase/migrations/`).
-- **Catálogo:** cada palabra lleva `ipa` (AFI amplio de inglés americano, sin barras, con `ɡ` y
-  acento `ˈ`), ≥ 2 ejemplos con traducción; los verbos llevan `verbForms`.
-  `packages/core/src/data/catalog.test.ts` lo comprueba.
+- **Catálogo y paquetes** (`docs/08-paquetes.md`): cada palabra pertenece a un solo paquete
+  y ningún término se repite entre paquetes. Lleva `ipa` (AFI amplio de inglés americano, sin
+  barras, con `ɡ` y acento `ˈ`), ≥ 2 ejemplos con traducción; los verbos llevan `verbForms`.
+  `packages/core/src/data/catalog.test.ts` lo comprueba. Esenciales siempre está activo.
+- **Práctica y estadísticas solo con paquetes activos:** usa `getActiveWords(state)` y
+  `activePackIds(state)` (`data/catalog.ts`). `WORDS` completo solo para Vocabulario y fichas.
 
 ## Web (Next.js 16)
 

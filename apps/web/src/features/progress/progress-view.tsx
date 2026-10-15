@@ -3,12 +3,12 @@
 import { Flame } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CategoryIcon } from "@/components/category-icon";
+import { PackIcon } from "@/components/pack-icon";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState, Skeleton } from "@/components/ui/empty-state";
 import { ProgressBar } from "@/components/ui/progress-bar";
-import { CATEGORIES } from "@lexi/core/data/categories";
-import { WORDS } from "@lexi/core/data/catalog";
+import { getActiveWords } from "@lexi/core/data/catalog";
+import { PACKS } from "@lexi/core/data/packs";
 import { toDayKey } from "@lexi/core/domain/dates";
 import { useProgress, useStats } from "@/hooks/use-progress";
 import { PracticeCalendar } from "./practice-calendar";
@@ -44,7 +44,7 @@ export function ProgressView() {
     );
   }
 
-  const pending = WORDS.filter((w) => state.words[w.id]?.status === "review");
+  const pending = getActiveWords(state).filter((w) => state.words[w.id]?.status === "review");
   const { streak } = stats;
 
   return (
@@ -111,28 +111,29 @@ export function ProgressView() {
         </section>
       )}
 
-      <section aria-labelledby="por-categoria" className="rounded-3xl bg-surface p-6 sm:p-8">
-        <h2 id="por-categoria" className="font-display text-xl font-semibold">
-          Por categoría
+      <section aria-labelledby="por-paquete" className="rounded-3xl bg-surface p-6 sm:p-8">
+        <h2 id="por-paquete" className="font-display text-xl font-semibold">
+          Por paquete
         </h2>
         <ul className="mt-2">
-          {CATEGORIES.map((category) => {
-            const c = stats.byCategory[category.id];
+          {PACKS.map((pack) => {
+            const c = stats.byPack[pack.id];
+            if (!c) return null;
             return (
-              <li key={category.id}>
+              <li key={pack.id}>
                 <Link
-                  href={`/vocabulario?categoria=${category.id}`}
-                  aria-label={`${category.name}: ${c.learned} de ${c.total} aprendidas`}
+                  href={`/vocabulario?paquete=${pack.id}`}
+                  aria-label={`${pack.name}: ${c.learned} de ${c.total} aprendidas`}
                   className="-mx-3 flex min-h-12 items-center gap-3 rounded-xl px-3 hover:bg-sunken"
                 >
-                  <CategoryIcon id={category.id} className="size-5 shrink-0 text-accent" />
-                  <span className="w-28 shrink-0 truncate font-semibold sm:w-36">{category.name}</span>
+                  <PackIcon id={pack.id} className="size-5 shrink-0 text-accent" />
+                  <span className="w-28 shrink-0 truncate font-semibold sm:w-36">{pack.name}</span>
                   <ProgressBar
                     className="flex-1"
                     value={c.learned}
                     secondary={c.review}
                     max={c.total}
-                    label={`Progreso en ${category.name}`}
+                    label={`Progreso en ${pack.name}`}
                   />
                   <span className="w-12 shrink-0 text-right text-sm text-ink-soft tabular-nums">
                     {c.learned}/{c.total}
@@ -142,6 +143,14 @@ export function ProgressView() {
             );
           })}
         </ul>
+        {Object.keys(stats.byPack).length < PACKS.length && (
+          <Link
+            href="/vocabulario"
+            className="mt-3 inline-flex min-h-11 items-center font-semibold text-accent underline-offset-4 hover:underline"
+          >
+            Añadir más paquetes
+          </Link>
+        )}
       </section>
     </div>
   );

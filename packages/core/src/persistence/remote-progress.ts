@@ -38,6 +38,7 @@ interface SessionRow {
   started_at: string;
   completed_at: string;
   day: string;
+  /** Pack id (the column keeps its original name). */
   category_id: string | null;
   total: number;
   learned: number;
@@ -48,6 +49,8 @@ interface SettingsRow {
   session_size: number;
   speech_rate: number;
   auto_pronounce: boolean;
+  /** Missing until migration 0002 is applied: then no pack is active remotely. */
+  active_packs?: string[] | null;
   preferences_updated_at: string;
   reset_at: string | null;
 }
@@ -98,7 +101,7 @@ export function rowsToState(
       startedAt: iso(s.started_at),
       completedAt: iso(s.completed_at),
       day: s.day,
-      categoryId: s.category_id,
+      packId: s.category_id,
       total: s.total,
       learned: s.learned,
       review: s.review,
@@ -108,6 +111,7 @@ export function rowsToState(
           sessionSize: settings.session_size,
           speechRate: settings.speech_rate,
           autoPronounce: settings.auto_pronounce,
+          activePacks: settings.active_packs ?? [],
         }
       : undefined,
     preferencesUpdatedAt: settings ? iso(settings.preferences_updated_at) : EPOCH,
@@ -123,6 +127,7 @@ export function stateToPayload(state: UserProgressState) {
       session_size: state.preferences.sessionSize,
       speech_rate: state.preferences.speechRate,
       auto_pronounce: state.preferences.autoPronounce,
+      active_packs: state.preferences.activePacks,
       preferences_updated_at: state.preferencesUpdatedAt,
       reset_at: state.resetAt,
       // Practice days are local dates: the server deletes them with this device's calendar.
@@ -158,7 +163,7 @@ export function stateToPayload(state: UserProgressState) {
       started_at: s.startedAt,
       completed_at: s.completedAt,
       day: s.day,
-      category_id: s.categoryId,
+      category_id: s.packId,
       total: s.total,
       learned: s.learned,
       review: s.review,
