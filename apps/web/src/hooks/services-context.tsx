@@ -2,7 +2,16 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import type { AuthService } from "@lexi/core/services/auth";
-import { getAuthService, getProgressStore, getSpeechService, getSyncService } from "@/services/instances";
+import type { CelebrationSettings } from "@lexi/core/services/celebration-settings";
+import type { Celebrator } from "@lexi/core/services/celebrator";
+import {
+  getAuthService,
+  getCelebrationSettings,
+  getCelebrator,
+  getProgressStore,
+  getSpeechService,
+  getSyncService,
+} from "@/services/instances";
 import type { ProgressStore } from "@lexi/core/services/progress-store";
 import type { SpeechService } from "@lexi/core/services/speech";
 import type { SyncService } from "@lexi/core/services/sync-service";
@@ -13,6 +22,8 @@ interface Services {
   /** `null` = accounts disabled. Omitted = use the browser singleton. */
   auth?: AuthService | null;
   sync?: SyncService | null;
+  celebrator?: Celebrator;
+  celebrationSettings?: CelebrationSettings;
 }
 
 export interface ServiceResolvers {
@@ -20,6 +31,8 @@ export interface ServiceResolvers {
   speech: () => SpeechService;
   auth: () => AuthService | null;
   sync: () => SyncService | null;
+  celebrator: () => Celebrator;
+  celebrationSettings: () => CelebrationSettings;
 }
 
 const ServicesContext = createContext<Services>({});
@@ -41,6 +54,8 @@ export function useServices(): ServiceResolvers {
       speech: () => services.speech ?? getSpeechService(),
       auth: () => (services.auth !== undefined ? services.auth : getAuthService()),
       sync: () => (services.sync !== undefined ? services.sync : getSyncService()),
+      celebrator: () => services.celebrator ?? getCelebrator(),
+      celebrationSettings: () => services.celebrationSettings ?? getCelebrationSettings(),
     }),
     [services],
   );

@@ -7,6 +7,7 @@ import { VoiceNotice } from "@/components/voice-notice";
 import { AppText, Button, Card, Chip, Notice, Screen } from "@/components/ui";
 import { useAuth, useSync } from "@/hooks/use-account";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
+import { useCelebrationSound } from "@/hooks/use-celebration";
 import { useReminder } from "@/hooks/use-reminder";
 import { useTheme } from "@/theme";
 
@@ -217,6 +218,7 @@ function ReminderGroup() {
 }
 
 export function SettingsScreen() {
+  const [celebrationSound, setCelebrationSound] = useCelebrationSound();
   const { colors } = useTheme();
   const { state } = useProgress();
   const actions = useProgressActions();
@@ -235,6 +237,12 @@ export function SettingsScreen() {
           options={SESSION_SIZES.map((n) => ({ value: n, label: String(n) }))}
           value={state.preferences.sessionSize}
           onChange={(sessionSize) => actions.updatePreferences({ sessionSize })}
+        />
+        <Toggle
+          label="Sonido de celebración"
+          hint="Un acorde breve y una vibración al terminar una sesión, junto al confeti. Solo en este dispositivo."
+          value={celebrationSound}
+          onChange={setCelebrationSound}
         />
       </Group>
 

@@ -1,10 +1,14 @@
 import { LocalStorageProgressRepository } from "@lexi/core/persistence/progress-repository";
 import { SupabaseRemoteProgress } from "@lexi/core/persistence/remote-progress";
 import { SupabaseAuthService, type AuthService } from "@lexi/core/services/auth";
+import { CelebrationSettings } from "@lexi/core/services/celebration-settings";
+import { Celebrator } from "@lexi/core/services/celebrator";
 import { ProgressStore } from "@lexi/core/services/progress-store";
 import { SpeechService } from "@lexi/core/services/speech";
 import { SyncService } from "@lexi/core/services/sync-service";
 import { deviceAuthPlatform } from "@/platform/auth-platform";
+import { playChime } from "@/platform/chime";
+import { confettiBus } from "@/platform/confetti-bus";
 import { deviceNotifications } from "@/platform/notifications";
 import { createExpoSpeechEngine } from "@/platform/speech";
 import { deviceStorage } from "@/platform/storage";
@@ -18,6 +22,8 @@ let speechService: SpeechService | null = null;
 let authService: AuthService | null | undefined;
 let syncService: SyncService | null | undefined;
 let reminderService: ReminderService | null = null;
+let celebrationSettings: CelebrationSettings | null = null;
+let celebrator: Celebrator | null = null;
 
 export function getProgressStore(): ProgressStore {
   progressStore ??= new ProgressStore(new LocalStorageProgressRepository(deviceStorage));
@@ -58,4 +64,19 @@ export function getReminderService(): ReminderService {
   reminderService = new ReminderService(getProgressStore(), deviceStorage, deviceNotifications);
   reminderService.start();
   return reminderService;
+}
+
+/** Device setting: whether finishing a session plays the chime and vibrates (not synced). */
+export function getCelebrationSettings(): CelebrationSettings {
+  celebrationSettings ??= new CelebrationSettings(deviceStorage);
+  return celebrationSettings;
+}
+
+export function getCelebrator(): Celebrator {
+  celebrator ??= new Celebrator(
+    getCelebrationSettings(),
+    { confetti: (kind) => confettiBus.emit(kind), sound: playChime },
+    () => getSpeechService().stop(),
+  );
+  return celebrator;
 }

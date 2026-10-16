@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { getWord } from "@lexi/core/data/catalog";
+import { celebrationFor } from "@lexi/core/domain/celebration";
 import { summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
 import type { WordId } from "@lexi/core/domain/types";
+import { useServices } from "@/hooks/services-context";
 
 interface PracticeSummaryProps {
   session: PracticeSession;
@@ -17,6 +19,16 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
   const summary = summarize(session);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => headingRef.current?.focus(), []);
+
+  // Celebrate once per finished session (the ref survives re-renders and StrictMode's re-run).
+  const { celebrator } = useServices();
+  const celebrated = useRef<string | null>(null);
+  const kind = celebrationFor(summary);
+  useEffect(() => {
+    if (celebrated.current === session.id) return;
+    celebrated.current = session.id;
+    celebrator().celebrate(kind);
+  }, [celebrator, session.id, kind]);
 
   const answered = summary.learned.length + summary.review.length;
   const title = summaryTitle(summary);

@@ -32,6 +32,15 @@ jest.mock("expo-speech", () => ({
   VoiceQuality: { Default: "Default", Enhanced: "Enhanced" },
 }));
 
+jest.mock("expo-audio", () => ({
+  createAudioPlayer: jest.fn(() => ({ volume: 1, play: jest.fn(), remove: jest.fn() })),
+}));
+
+jest.mock("expo-haptics", () => ({
+  notificationAsync: jest.fn(async () => {}),
+  NotificationFeedbackType: { Success: "success" },
+}));
+
 jest.mock("expo-notifications", () => ({
   setNotificationHandler: jest.fn(),
   setNotificationChannelAsync: jest.fn(async () => null),

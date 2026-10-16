@@ -15,6 +15,7 @@
   "dependencies": {
     "@lexi/core": "*",
     "@supabase/supabase-js": "^2.117.3",
+    "canvas-confetti": "^1.9.3",
     "clsx": "^2.1.1",
     "lucide-react": "^1.55.0",
     "next": "16.4.0",
@@ -28,6 +29,7 @@
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",

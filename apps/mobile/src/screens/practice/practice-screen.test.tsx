@@ -2,6 +2,7 @@ import { getWord } from "@lexi/core/data/catalog";
 import { act, fireEvent, screen } from "@testing-library/react-native";
 import { State } from "react-native-gesture-handler";
 import { fireGestureHandler, getByGestureTestId } from "react-native-gesture-handler/jest-utils";
+import { MemoryStorage } from "@lexi/core/persistence/storage";
 import { renderWithServices } from "@/test/render";
 import { PracticeScreen } from "./practice-screen";
 
@@ -65,7 +66,7 @@ describe("PracticeScreen (mobile)", () => {
   });
 
   it("goes back to change an answer and finishes on the last word", async () => {
-    const { store } = await renderWithServices(<PracticeScreen />);
+    const { store, effects } = await renderWithServices(<PracticeScreen />);
     await act(async () => store.updatePreferences({ sessionSize: 5 }));
     await fireEvent.press(screen.getByText("Empezar"));
 
@@ -80,6 +81,10 @@ describe("PracticeScreen (mobile)", () => {
     for (let i = 0; i < 3; i += 1) await fireEvent.press(screen.getByLabelText("Palabra siguiente"));
     await fireEvent.press(screen.getByLabelText("Terminar sesión"));
     expect(screen.getByText("Sesión completada")).toBeTruthy();
+    // One answer is enough for the (normal) celebration.
+    expect(effects.confetti).toHaveBeenCalledTimes(1);
+    expect(effects.confetti).toHaveBeenCalledWith("normal");
+    expect(effects.sound).toHaveBeenCalledWith("normal");
     expect(screen.getByLabelText("Sin responder: 4")).toBeTruthy();
     expect(store.getSnapshot().state.sessions).toHaveLength(1);
   });
@@ -94,5 +99,19 @@ describe("PracticeScreen (mobile)", () => {
     expect(store.getSnapshot().state.preferences.autoPronounce).toBe(false);
     await fireEvent.press(screen.getByLabelText("Palabra siguiente"));
     expect(spoken).toHaveLength(1);
+  });
+
+  it("celebrates a perfect session, without sound when it is off on this device", async () => {
+    const storage = new MemoryStorage();
+    storage.setItem("lexi:celebration-sound", "off");
+    const { store, effects } = await renderWithServices(<PracticeScreen />, { storage });
+    await act(async () => store.updatePreferences({ sessionSize: 5 }));
+    await fireEvent.press(screen.getByText("Empezar"));
+    for (let i = 0; i < 5; i += 1) await fireEvent.press(screen.getByText("La aprendí"));
+
+    expect(screen.getByText("Todas aprendidas")).toBeTruthy();
+    expect(effects.confetti).toHaveBeenCalledWith("perfect");
+    expect(effects.confetti).toHaveBeenCalledTimes(1);
+    expect(effects.sound).not.toHaveBeenCalled();
   });
 });

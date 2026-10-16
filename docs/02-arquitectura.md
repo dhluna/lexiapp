@@ -117,6 +117,11 @@ el contenido. Lo que cambia por usuario es qué paquetes están activos, que se 
 preferencias (formato v5) y se sincroniza con ellas. `getActiveWords(state)` es la única
 puerta de la práctica y de las estadísticas; Vocabulario sigue usando `WORDS` completo.
 
+**ADR-18 · Celebración con efectos inyectables.** `Celebrator` (núcleo) decide qué celebrar y
+en qué orden; cada plataforma aporta el confeti y el sonido. El sonido es una partitura en el
+núcleo (`CHIME`): la web la sintetiza y el móvil reproduce WAV generados con ella, así que no
+hay archivos con licencia y las dos suenan igual. Ver `docs/09-celebracion.md`.
+
 ## Preparación para el futuro (no implementado)
 
 - **Cuentas / BD remota:** `UserProgressState` ya es un documento serializable con

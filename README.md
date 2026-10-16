@@ -16,7 +16,8 @@ por categoría. Cuentas opcionales para sincronizar el progreso entre dispositiv
   palabras por repasar, luego las nuevas. Cada tarjeta muestra significado y ejemplos desde
   el principio y pronuncia la palabra al aparecer (se puede desactivar). Una barra flotante
   permite marcar *aprendida* o *por repasar*; las flechas anterior / siguiente permiten
-  revisar o cambiar respuestas. Resumen al terminar. Atajos de teclado (`Espacio` escuchar,
+  revisar o cambiar respuestas. Resumen al terminar con confeti y un acorde breve (dorado si
+  aprendiste todas). Atajos de teclado (`Espacio` escuchar,
   `1`, `2`, `←`, `→`).
 - **Vocabulario:** 330 palabras en 7 paquetes: Esenciales (las 150 más frecuentes, siempre
   activo) y paquetes temáticos que se añaden a la práctica (tarjetas con el progreso de cada
@@ -26,7 +27,7 @@ por categoría. Cuentas opcionales para sincronizar el progreso entre dispositiv
 - **Progreso:** resumen (racha, aprendidas, por repasar y calendario de 4 semanas),
   palabras por repasar y avance por paquete.
 - **Ajustes** (icono ⚙ de la cabecera): cuenta, palabras por sesión, pronunciación
-  automática, velocidad y borrado del progreso.
+  automática, velocidad, sonido de celebración y borrado del progreso.
 - **Cuentas y sincronización (opcional):** con Google o email y contraseña. El progreso se
   sincroniza entre dispositivos y sigue funcionando sin conexión. Sin configurar Supabase,
   Lexi funciona igual que sin cuenta.
@@ -102,6 +103,7 @@ El detalle está en `docs/`:
 - [06 · App móvil](docs/06-app-movil.md): Fase 4 con Expo.
 - [07 · Probar la app móvil](docs/07-movil-pruebas.md): Expo Go y builds internos con EAS.
 - [08 · Paquetes de palabras](docs/08-paquetes.md): Esenciales y paquetes temáticos.
+- [09 · Celebración](docs/09-celebracion.md): confeti y sonido al terminar una sesión.
 
 ## Verificación
 

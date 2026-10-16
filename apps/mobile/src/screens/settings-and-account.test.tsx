@@ -77,6 +77,16 @@ describe("SettingsScreen (mobile)", () => {
     expect(screen.queryByLabelText("Recordatorio diario")).toBeNull();
   });
 
+  it("turns the celebration sound off on this device", async () => {
+    const { storage } = await renderWithServices(<SettingsScreen />);
+    expect(screen.getByLabelText("Sonido de celebración").props.value).toBe(true);
+    await act(async () => {
+      await fireEvent(screen.getByLabelText("Sonido de celebración"), "valueChange", false);
+    });
+    expect(screen.getByLabelText("Sonido de celebración").props.value).toBe(false);
+    expect(storage.getItem("lexi:celebration-sound")).toBe("off");
+  });
+
   it("asks for confirmation before deleting progress", async () => {
     const { store } = await renderWithServices(<SettingsScreen />);
     await act(async () => store.recordAnswer("travel-fly", "learned"));

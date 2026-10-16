@@ -1,9 +1,12 @@
 import { getWord } from "@lexi/core/data/catalog";
+import { celebrationFor } from "@lexi/core/domain/celebration";
 import { summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
 import type { WordId } from "@lexi/core/domain/types";
 import { useRouter } from "expo-router";
+import { useEffect, useRef } from "react";
 import { Pressable, View } from "react-native";
 import { AppText, Button, Card, Screen } from "@/components/ui";
+import { useServices } from "@/hooks/services-context";
 import { FONTS, RADIUS, useTheme } from "@/theme";
 
 interface PracticeSummaryProps {
@@ -18,6 +21,16 @@ export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSu
   const summary = summarize(session);
   const answered = summary.learned.length + summary.review.length;
   const title = summaryTitle(summary);
+
+  // Celebrate once per finished session (same rule as the web).
+  const { celebrator } = useServices();
+  const celebrated = useRef<string | null>(null);
+  const kind = celebrationFor(summary);
+  useEffect(() => {
+    if (celebrated.current === session.id) return;
+    celebrated.current = session.id;
+    celebrator().celebrate(kind);
+  }, [celebrator, session.id, kind]);
 
   const counts = [
     { label: "Aprendidas", value: summary.learned.length, bg: colors["learned-soft"], fg: colors.learned },

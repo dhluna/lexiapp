@@ -6,11 +6,15 @@ import {
 import { SupabaseRemoteProgress } from "@lexi/core/persistence/remote-progress";
 import { MemoryStorage } from "@lexi/core/persistence/storage";
 import { SupabaseAuthService, type AuthService } from "@lexi/core/services/auth";
+import { CelebrationSettings } from "@lexi/core/services/celebration-settings";
+import { Celebrator } from "@lexi/core/services/celebrator";
 import { ProgressStore } from "@lexi/core/services/progress-store";
 import { SpeechService } from "@lexi/core/services/speech";
 import { SyncService } from "@lexi/core/services/sync-service";
 import { getSupabase } from "@/lib/supabase";
 import { webAuthPlatform } from "@/platform/auth-platform";
+import { playChime } from "@/platform/chime";
+import { launchConfetti } from "@/platform/confetti";
 import { createWebSpeechEngine, detectSpeechEnvironment } from "@/platform/speech";
 import { getBrowserStorage } from "@/platform/storage";
 import { browserIsOnline, browserSyncTriggers } from "@/platform/sync-triggers";
@@ -20,6 +24,8 @@ let progressStore: ProgressStore | null = null;
 let speechService: SpeechService | null = null;
 let authService: AuthService | null | undefined;
 let syncService: SyncService | null | undefined;
+let celebrationSettings: CelebrationSettings | null = null;
+let celebrator: Celebrator | null = null;
 
 export function getProgressStore(): ProgressStore {
   if (progressStore) return progressStore;
@@ -72,4 +78,19 @@ export function getSyncService(): SyncService | null {
   );
   syncService.start();
   return syncService;
+}
+
+/** Device setting: whether finishing a session plays the chime (not synced). */
+export function getCelebrationSettings(): CelebrationSettings {
+  celebrationSettings ??= new CelebrationSettings(getBrowserStorage() ?? new MemoryStorage());
+  return celebrationSettings;
+}
+
+export function getCelebrator(): Celebrator {
+  celebrator ??= new Celebrator(
+    getCelebrationSettings(),
+    { confetti: (kind) => void launchConfetti(kind), sound: playChime },
+    () => getSpeechService().stop(),
+  );
+  return celebrator;
 }

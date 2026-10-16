@@ -29,7 +29,7 @@ describe("PracticeView", () => {
 
   it("runs a full session, saving answers and showing a summary", async () => {
     const user = userEvent.setup();
-    const { store, synth } = renderWithServices(<PracticeView />);
+    const { store, synth, effects } = renderWithServices(<PracticeView />);
     act(() => {
       store.updatePreferences({ sessionSize: 5 });
       store.setPackActive("travel", true);
@@ -61,6 +61,10 @@ describe("PracticeView", () => {
     expect(screen.getByRole("heading", { name: "Sesión completada" })).toBeInTheDocument();
     const counts = screen.getAllByRole("definition").map((el) => el.textContent);
     expect(counts.slice(0, 3)).toEqual(["3", "2", "0"]);
+    // Confetti and chime, once: not every word was learned, so the normal celebration.
+    expect(effects.confetti).toHaveBeenCalledTimes(1);
+    expect(effects.confetti).toHaveBeenCalledWith("normal");
+    expect(effects.sound).toHaveBeenCalledWith("normal");
 
     const { state } = store.getSnapshot();
     expect(Object.keys(state.words)).toHaveLength(5);
@@ -114,7 +118,7 @@ describe("PracticeView", () => {
 
   it("moves forward without answering and reports unanswered words", async () => {
     const user = userEvent.setup();
-    const { store } = renderWithServices(<PracticeView />);
+    const { store, effects } = renderWithServices(<PracticeView />);
     act(() => store.updatePreferences({ sessionSize: 5 }));
     await user.click(screen.getByRole("button", { name: "Empezar" }));
     for (let i = 0; i < 4; i += 1) await user.click(screen.getAllByRole("button", { name: "Palabra siguiente" })[0]);
@@ -125,6 +129,37 @@ describe("PracticeView", () => {
     expect(within(list).getAllByRole("link")).toHaveLength(5);
     expect(store.getSnapshot().state.words).toEqual({});
     expect(store.getSnapshot().state.practiceDays).toEqual([]);
+    // Nothing answered, nothing to celebrate.
+    expect(effects.confetti).not.toHaveBeenCalled();
+  });
+
+  it("celebrates a perfect session in gold, silently when the sound is off", async () => {
+    const user = userEvent.setup();
+    const { store, effects, rerender } = renderWithServices(<PracticeView />);
+    act(() => store.updatePreferences({ sessionSize: 5 }));
+    await user.click(screen.getByRole("button", { name: "Empezar" }));
+    for (let i = 0; i < 5; i += 1) await user.click(screen.getByRole("button", { name: /La aprendí/ }));
+
+    expect(screen.getByRole("heading", { name: "Todas aprendidas" })).toBeInTheDocument();
+    expect(effects.confetti).toHaveBeenCalledWith("perfect");
+    expect(effects.sound).toHaveBeenCalledWith("perfect");
+
+    // Re-rendering the summary does not celebrate again.
+    rerender(<PracticeView />);
+    expect(effects.confetti).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps the confetti but skips the chime when the device setting is off", async () => {
+    const user = userEvent.setup();
+    const storage = new MemoryStorage();
+    storage.setItem("lexi:celebration-sound", "off");
+    const { store, effects } = renderWithServices(<PracticeView />, storage);
+    act(() => store.updatePreferences({ sessionSize: 5 }));
+    await user.click(screen.getByRole("button", { name: "Empezar" }));
+    for (let i = 0; i < 5; i += 1) await user.click(screen.getByRole("button", { name: /Repasar/ }));
+
+    expect(effects.confetti).toHaveBeenCalledWith("normal");
+    expect(effects.sound).not.toHaveBeenCalled();
   });
 
   it("goes back to a previous word and changes its answer", async () => {

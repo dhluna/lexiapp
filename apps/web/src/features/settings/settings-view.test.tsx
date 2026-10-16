@@ -21,6 +21,19 @@ describe("SettingsView", () => {
     });
   });
 
+  it("turns the celebration sound off on this device only", async () => {
+    const user = userEvent.setup();
+    const { storage, store } = renderWithServices(<SettingsView />);
+    const sound = screen.getByRole("switch", { name: /Sonido de celebración/ });
+    expect(sound).toBeChecked();
+
+    await user.click(sound);
+    expect(sound).not.toBeChecked();
+    expect(storage.getItem("lexi:celebration-sound")).toBe("off");
+    // A device setting: it is not part of the synced preferences.
+    expect(store.getSnapshot().state.preferencesUpdatedAt).toBe("1970-01-01T00:00:00.000Z");
+  });
+
   it("asks for confirmation before deleting progress", async () => {
     const user = userEvent.setup();
     const { store } = renderWithServices(<SettingsView />);

@@ -6,6 +6,8 @@ import { LocalStorageProgressRepository } from "@lexi/core/persistence/progress-
 import { MemoryStorage } from "@lexi/core/persistence/storage";
 import { ProgressStore } from "@lexi/core/services/progress-store";
 import type { AuthService } from "@lexi/core/services/auth";
+import { CelebrationSettings } from "@lexi/core/services/celebration-settings";
+import { Celebrator } from "@lexi/core/services/celebrator";
 import { SpeechService } from "@lexi/core/services/speech";
 import { createWebSpeechEngine, type SpeechEnvironment } from "@/platform/speech";
 import type { SyncService } from "@lexi/core/services/sync-service";
@@ -40,8 +42,16 @@ export function renderWithServices(
   // Accounts are off unless a test provides them (as in an install without Supabase).
   const auth = extra.auth ?? null;
   const sync = extra.sync ? extra.sync(store) : null;
+  // Real celebration logic with spy effects: jsdom has no canvas or audio.
+  const celebrationSettings = new CelebrationSettings(storage);
+  const effects = { confetti: vi.fn(), sound: vi.fn() };
+  const celebrator = new Celebrator(celebrationSettings, effects, () => speech.service.stop());
   const result = render(
-    <ServicesProvider value={{ progressStore: store, speech: speech.service, auth, sync }}>{ui}</ServicesProvider>,
+    <ServicesProvider
+      value={{ progressStore: store, speech: speech.service, auth, sync, celebrator, celebrationSettings }}
+    >
+      {ui}
+    </ServicesProvider>,
   );
-  return { ...result, store, storage, synth: speech.synth };
+  return { ...result, store, storage, synth: speech.synth, effects };
 }

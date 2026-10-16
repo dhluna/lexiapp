@@ -5,6 +5,7 @@ import { VoiceNotice } from "@/components/voice-notice";
 import { AccountSection } from "@/features/account/account-section";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
+import { useCelebrationSound } from "@/hooks/use-celebration";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { cn } from "@/lib/cn";
 
@@ -19,6 +20,7 @@ const RATES = [
 export function SettingsView() {
   const snapshot = useProgress();
   const actions = useProgressActions();
+  const [celebrationSound, setCelebrationSound] = useCelebrationSound();
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -42,27 +44,22 @@ export function SettingsView() {
           value={state.preferences.sessionSize}
           onChange={(sessionSize) => actions.updatePreferences({ sessionSize })}
         />
+        <Switch
+          label="Sonido de celebración"
+          hint="Un acorde breve al terminar una sesión, junto al confeti. Solo en este dispositivo."
+          checked={celebrationSound}
+          onChange={setCelebrationSound}
+        />
       </Group>
 
       <Group title="Pronunciación">
         <VoiceNotice />
-        <label className="flex cursor-pointer items-center justify-between gap-4">
-          <span>
-            <span className="block font-semibold">Pronunciación automática</span>
-            <span className="block text-ink-soft">Escucha cada palabra al aparecer en la práctica.</span>
-          </span>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={state.preferences.autoPronounce}
-            onChange={(e) => actions.updatePreferences({ autoPronounce: e.target.checked })}
-            className="peer sr-only"
-          />
-          <span
-            aria-hidden
-            className="relative h-8 w-14 shrink-0 rounded-full bg-sunken ring-1 ring-line transition-colors peer-checked:bg-accent peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent after:absolute after:top-1 after:left-1 after:size-6 after:rounded-full after:bg-surface after:shadow after:transition-transform peer-checked:after:translate-x-6"
-          />
-        </label>
+        <Switch
+          label="Pronunciación automática"
+          hint="Escucha cada palabra al aparecer en la práctica."
+          checked={state.preferences.autoPronounce}
+          onChange={(autoPronounce) => actions.updatePreferences({ autoPronounce })}
+        />
         <RadioChips
           legend="Velocidad"
           name="velocidad"
@@ -166,5 +163,37 @@ function RadioChips({
         })}
       </div>
     </fieldset>
+  );
+}
+
+function Switch({
+  label,
+  hint,
+  checked,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="flex cursor-pointer items-center justify-between gap-4">
+      <span>
+        <span className="block font-semibold">{label}</span>
+        <span className="block text-ink-soft">{hint}</span>
+      </span>
+      <input
+        type="checkbox"
+        role="switch"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="peer sr-only"
+      />
+      <span
+        aria-hidden
+        className="relative h-8 w-14 shrink-0 rounded-full bg-sunken ring-1 ring-line transition-colors peer-checked:bg-accent peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent after:absolute after:top-1 after:left-1 after:size-6 after:rounded-full after:bg-surface after:shadow after:transition-transform peer-checked:after:translate-x-6"
+      />
+    </label>
   );
 }

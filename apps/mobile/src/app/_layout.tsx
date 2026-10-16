@@ -10,6 +10,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ConfettiLayer } from "@/components/confetti";
 import { useServices } from "@/hooks/services-context";
 import { FONTS, useTheme } from "@/theme";
 
@@ -57,6 +58,7 @@ export default function RootLayout() {
         <Stack.Screen name="restablecer" options={{ title: "Nueva contraseña" }} />
         <Stack.Screen name="auth/callback" options={{ title: "Iniciando sesión" }} />
       </Stack>
+      <ConfettiLayer />
     </GestureHandlerRootView>
   );
 }
