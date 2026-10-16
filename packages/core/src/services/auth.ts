@@ -42,8 +42,8 @@ export const MIN_PASSWORD_LENGTH = 8;
 const MESSAGES: Record<string, string> = {
   invalid_credentials: "El email o la contraseña no son correctos.",
   email_not_confirmed: "Confirma tu email con el enlace que te enviamos.",
-  user_already_exists: "Ya hay una cuenta con este email. Inicia sesión.",
-  email_exists: "Ya hay una cuenta con este email. Inicia sesión.",
+  user_already_exists: "Ya hay una cuenta con este email. Inicia sesión con tu contraseña o con «Continuar con Google».",
+  email_exists: "Ya hay una cuenta con este email. Inicia sesión con tu contraseña o con «Continuar con Google».",
   weak_password: `La contraseña necesita al menos ${MIN_PASSWORD_LENGTH} caracteres y no puede ser una contraseña conocida.`,
   same_password: "La nueva contraseña debe ser distinta de la anterior.",
   over_request_rate_limit: "Demasiados intentos. Espera un momento y vuelve a probar.",
