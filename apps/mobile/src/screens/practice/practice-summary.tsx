@@ -1,6 +1,6 @@
 import { getWord } from "@lexi/core/data/catalog";
 import { celebrationFor } from "@lexi/core/domain/celebration";
-import { summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
+import { isQuiz, summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
 import type { WordId } from "@lexi/core/domain/types";
 import { useRouter } from "expo-router";
 import { useEffect, useRef } from "react";
@@ -20,7 +20,9 @@ export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSu
   const router = useRouter();
   const summary = summarize(session);
   const answered = summary.learned.length + summary.review.length;
-  const title = summaryTitle(summary);
+  const quiz = isQuiz(session);
+  const baseTitle = summaryTitle(summary);
+  const title = quiz && baseTitle === "Todas aprendidas" ? "Todas correctas" : baseTitle;
 
   // Celebrate once per finished session (same rule as the web).
   const { celebrator } = useServices();
@@ -33,7 +35,7 @@ export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSu
   }, [celebrator, session.id, kind]);
 
   const counts = [
-    { label: "Aprendidas", value: summary.learned.length, bg: colors["learned-soft"], fg: colors.learned },
+    { label: quiz ? "Acertadas" : "Aprendidas", value: summary.learned.length, bg: colors["learned-soft"], fg: colors.learned },
     { label: "Por repasar", value: summary.review.length, bg: colors["review-soft"], fg: colors.review },
     { label: "Sin responder", value: summary.skipped.length, bg: colors["surface-sunken"], fg: colors["ink-soft"] },
   ];

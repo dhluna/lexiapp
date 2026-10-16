@@ -1,27 +1,41 @@
-import { getActiveWords, isPackActive } from "@lexi/core/data/catalog";
+import { getActiveWords, getWord, isPackActive } from "@lexi/core/data/catalog";
+import { selectQuizWords } from "@lexi/core/domain/exercise";
 import { isPackId } from "@lexi/core/data/packs";
 import {
   answerCurrent,
+  createQuiz,
   createSession,
   goNext,
   goPrevious,
+  isQuiz,
+  recordCurrent,
   selectSessionWords,
   type PracticeSession,
   type SessionAnswer,
 } from "@lexi/core/domain/session";
-import type { PackId, UserProgressState } from "@lexi/core/domain/types";
+import type { PackId, UserProgressState, Word } from "@lexi/core/domain/types";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
+import { ExerciseCard } from "./exercise-card";
 import { PracticeCard } from "./practice-card";
 import { PracticeSetup } from "./practice-setup";
 import { PracticeSummary } from "./practice-summary";
 
-/** A session over the active packs (or one of them). */
-function buildSession(state: UserProgressState, packId: PackId | null): PracticeSession {
+type PracticeMode = "cards" | "quiz";
+
+/** A session over the active packs (or one of them): flashcards or "Ponerme a prueba". */
+function buildSession(state: UserProgressState, packId: PackId | null, mode: PracticeMode = "cards"): PracticeSession {
   const pack = packId && isPackActive(state, packId) ? packId : null;
-  const ids = selectSessionWords(getActiveWords(state), state, { size: state.preferences.sessionSize, packId: pack });
-  return createSession(ids, new Date(), pack);
+  const options = { size: state.preferences.sessionSize, packId: pack };
+  if (mode === "quiz") {
+    const words = selectQuizWords(getActiveWords(state), state, options).flatMap((id): Word[] => {
+      const word = getWord(id);
+      return word ? [word] : [];
+    });
+    return createQuiz(words, new Date(), pack);
+  }
+  return createSession(selectSessionWords(getActiveWords(state), state, options), new Date(), pack);
 }
 
 /**
@@ -45,15 +59,15 @@ export function PracticeScreen() {
     setSession(buildSession(state, linkedPack));
   }
 
-  const start = (packId: PackId | null) => setSession(buildSession(state, packId));
+  const start = (packId: PackId | null, mode: PracticeMode = "cards") => setSession(buildSession(state, packId, mode));
 
-  if (!session) return <PracticeSetup state={state} onStart={start} />;
+  if (!session) return <PracticeSetup state={state} onStart={(pack) => start(pack)} onStartQuiz={() => start(null, "quiz")} />;
 
   if (session.finished) {
     return (
       <PracticeSummary
         session={session}
-        onRestart={() => start(session.packId)}
+        onRestart={() => start(session.packId, isQuiz(session) ? "quiz" : "cards")}
         onChoosePack={() => setSession(null)}
       />
     );
@@ -70,6 +84,16 @@ export function PracticeScreen() {
     if (session.answers[wordId] !== value) actions.recordAnswer(wordId, value);
     finishIfDone(answerCurrent(session, value));
   };
+
+  if (isQuiz(session)) {
+    // Saved as soon as it is checked; "Siguiente" only moves on.
+    const check = (value: SessionAnswer) => {
+      const wordId = session.wordIds[session.index];
+      if (!session.answers[wordId]) actions.recordAnswer(wordId, value);
+      setSession(recordCurrent(session, value));
+    };
+    return <ExerciseCard session={session} onCheck={check} onNext={() => finishIfDone(goNext(session))} />;
+  }
 
   return (
     <PracticeCard

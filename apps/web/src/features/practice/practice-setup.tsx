@@ -1,19 +1,20 @@
-import { ChevronRight, Plus } from "lucide-react";
+import { ChevronRight, PencilLine, Plus } from "lucide-react";
 import Link from "next/link";
 import { PackIcon } from "@/components/pack-icon";
 import { Button } from "@/components/ui/button";
 import { activePackIds } from "@lexi/core/data/catalog";
 import { getPack, PACKS } from "@lexi/core/data/packs";
 import type { PackId, UserProgressState } from "@lexi/core/domain/types";
-import { planSession, planText, poolCounts } from "@lexi/core/planning/session-plan";
+import { planSession, planText, poolCounts, quizCount, quizText } from "@lexi/core/planning/session-plan";
 
 interface PracticeSetupProps {
   state: UserProgressState;
   onStart: (packId: PackId | null) => void;
+  onStartQuiz: () => void;
 }
 
 /** One obvious action (today's session) and, below, one tap per active pack. No filters. */
-export function PracticeSetup({ state, onStart }: PracticeSetupProps) {
+export function PracticeSetup({ state, onStart, onStartQuiz }: PracticeSetupProps) {
   const size = state.preferences.sessionSize;
   const today = planSession(state, size);
   const packs = activePackIds(state).flatMap((id) => getPack(id) ?? []);
@@ -35,6 +36,26 @@ export function PracticeSetup({ state, onStart }: PracticeSetupProps) {
             Cambiar palabras por sesión
           </Link>
         </p>
+      </section>
+
+      <section aria-labelledby="prueba" className="rounded-3xl border border-line bg-surface p-6 sm:p-8">
+        <h2 id="prueba" className="flex items-center gap-2 font-display text-xl font-semibold">
+          <PencilLine aria-hidden className="size-5 text-accent" />
+          Ponerme a prueba
+        </h2>
+        <p className="mt-1 text-ink-soft">
+          Escucha y escribe, o completa frases con las palabras que ya has visto. Si aciertas, quedan aprendidas.
+        </p>
+        <p className="mt-2 text-sm font-semibold text-ink-soft">{quizText(state, size)}</p>
+        <Button
+          variant="secondary"
+          size="lg"
+          className="mt-4 w-full sm:w-auto"
+          disabled={quizCount(state) === 0}
+          onClick={onStartQuiz}
+        >
+          Ponerme a prueba
+        </Button>
       </section>
 
       <section aria-labelledby="por-paquete">

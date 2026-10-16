@@ -48,3 +48,17 @@ export function planText({ review, fresh, learned, total }: SessionPlan): string
   const list = parts.length > 1 ? `${parts.slice(0, -1).join(", ")} y ${parts.at(-1)}` : parts[0];
   return `Sesión de ${total} palabras: ${list}.`;
 }
+
+/** How many already seen words of the active packs (or one pack) a quiz can test. */
+export function quizCount(state: UserProgressState, packId: PackId | null = null): number {
+  const active = getActiveWords(state);
+  const pool = packId ? active.filter((w) => w.pack === packId) : active;
+  return pool.filter((w) => state.words[w.id]).length;
+}
+
+/** "5 palabras para comprobar." */
+export function quizText(state: UserProgressState, size: number): string {
+  const n = Math.min(size, quizCount(state));
+  if (n === 0) return "Practica primero con las tarjetas: aquí se comprueban las palabras que ya has visto.";
+  return `${n} ${n === 1 ? "palabra" : "palabras"} para comprobar escribiéndolas.`;
+}

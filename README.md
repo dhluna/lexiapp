@@ -17,7 +17,8 @@ por categoría. Cuentas opcionales para sincronizar el progreso entre dispositiv
   el principio y pronuncia la palabra al aparecer (se puede desactivar). Una barra flotante
   permite marcar *aprendida* o *por repasar*; las flechas anterior / siguiente permiten
   revisar o cambiar respuestas. Resumen al terminar con confeti y un acorde breve (dorado si
-  aprendiste todas). Atajos de teclado (`Espacio` escuchar,
+  aprendiste todas). **Ponerme a prueba:** dictado («Escucha y escribe») y «Completa la
+  frase» con las palabras ya vistas, corregidos automáticamente y con tolerancia. Atajos de teclado (`Espacio` escuchar,
   `1`, `2`, `←`, `→`).
 - **Vocabulario:** 330 palabras en 7 paquetes: Esenciales (las 150 más frecuentes, siempre
   activo) y paquetes temáticos que se añaden a la práctica (tarjetas con el progreso de cada
@@ -104,6 +105,7 @@ El detalle está en `docs/`:
 - [07 · Probar la app móvil](docs/07-movil-pruebas.md): Expo Go y builds internos con EAS.
 - [08 · Paquetes de palabras](docs/08-paquetes.md): Esenciales y paquetes temáticos.
 - [09 · Celebración](docs/09-celebracion.md): confeti y sonido al terminar una sesión.
+- [10 · Ponerme a prueba](docs/10-ejercicios.md): dictado y completar la frase.
 
 ## Verificación
 

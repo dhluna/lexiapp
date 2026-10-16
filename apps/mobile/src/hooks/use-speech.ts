@@ -6,7 +6,8 @@ import { useServices } from "./services-context";
 export interface UseSpeech {
   availability: VoiceAvailability;
   speakingText: string | null;
-  speak: (text: string) => void;
+  /** `rate` overrides the learner's speed (e.g. "Más lento" in dictation). */
+  speak: (text: string, rate?: number) => void;
   stop: () => void;
 }
 
@@ -16,7 +17,10 @@ export function useSpeech(): UseSpeech {
   const subscribe = useCallback((onChange: () => void) => speech().subscribe(onChange), [speech]);
   const availability = useSyncExternalStore(subscribe, () => speech().availability);
   const speakingText = useSyncExternalStore(subscribe, () => speech().speakingText);
-  const speak = useCallback((text: string) => void speech().speak(text, { rate }), [speech, rate]);
+  const speak = useCallback(
+    (text: string, override?: number) => void speech().speak(text, { rate: override ?? rate }),
+    [speech, rate],
+  );
   const stop = useCallback(() => speech().stop(), [speech]);
   return { availability, speakingText, speak, stop };
 }

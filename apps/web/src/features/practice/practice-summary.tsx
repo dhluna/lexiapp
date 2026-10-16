@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { getWord } from "@lexi/core/data/catalog";
 import { celebrationFor } from "@lexi/core/domain/celebration";
-import { summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
+import { isQuiz, summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
 import type { WordId } from "@lexi/core/domain/types";
 import { useServices } from "@/hooks/services-context";
 
@@ -31,7 +31,9 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
   }, [celebrator, session.id, kind]);
 
   const answered = summary.learned.length + summary.review.length;
-  const title = summaryTitle(summary);
+  const quiz = isQuiz(session);
+  const baseTitle = summaryTitle(summary);
+  const title = quiz && baseTitle === "Todas aprendidas" ? "Todas correctas" : baseTitle;
 
   return (
     <div className="mx-auto grid max-w-2xl gap-6">
@@ -45,7 +47,7 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
             : `Respondiste ${answered} de ${summary.total} palabras. Ya está todo guardado.`}
         </p>
         <dl className="mt-6 grid grid-cols-3 gap-3 text-center">
-          <Count term="Aprendidas" value={summary.learned.length} className="bg-learned-soft text-learned" />
+          <Count term={quiz ? "Acertadas" : "Aprendidas"} value={summary.learned.length} className="bg-learned-soft text-learned" />
           <Count term="Por repasar" value={summary.review.length} className="bg-review-soft text-review" />
           <Count term="Sin responder" value={summary.skipped.length} className="bg-sunken text-ink-soft" />
         </dl>

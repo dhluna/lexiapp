@@ -9,7 +9,8 @@ export interface UseSpeech {
   /** `null` while unknown (server render). */
   availability: VoiceAvailability | null;
   speakingText: string | null;
-  speak: (text: string) => void;
+  /** `rate` overrides the learner's speed (e.g. "Más lento" in dictation). */
+  speak: (text: string, rate?: number) => void;
   stop: () => void;
 }
 
@@ -24,7 +25,10 @@ export function useSpeech(): UseSpeech {
   const availability = useSyncExternalStore(subscribe, () => speech().availability, getNull);
   const speakingText = useSyncExternalStore(subscribe, () => speech().speakingText, getNull);
 
-  const speak = useCallback((text: string) => void speech().speak(text, { rate }), [speech, rate]);
+  const speak = useCallback(
+    (text: string, override?: number) => void speech().speak(text, { rate: override ?? rate }),
+    [speech, rate],
+  );
   const stop = useCallback(() => speech().stop(), [speech]);
 
   return { availability, speakingText, speak, stop };

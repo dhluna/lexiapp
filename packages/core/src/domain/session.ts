@@ -1,3 +1,4 @@
+import { chooseExercise, type Exercise } from "./exercise";
 import type { PackId, StoredStatus, UserProgressState, Word, WordId } from "./types";
 
 /** Answers given in a session. Words left unanswered count as skipped in the summary. */
@@ -11,6 +12,8 @@ export interface PracticeSession {
   index: number;
   answers: Record<WordId, SessionAnswer>;
   finished: boolean;
+  /** Only in "Ponerme a prueba": the exercise chosen for each word. */
+  exercises?: Record<WordId, Exercise>;
 }
 
 export interface SelectOptions {
@@ -76,6 +79,27 @@ export function createSession(
   };
 }
 
+/** A "Ponerme a prueba" session: the same flow, with an exercise chosen for each word. */
+export function createQuiz(
+  words: readonly Word[],
+  now: Date,
+  packId: PackId | null = null,
+  random: () => number = Math.random,
+): PracticeSession {
+  const session = createSession(
+    words.map((w) => w.id),
+    now,
+    packId,
+  );
+  const exercises: Record<WordId, Exercise> = {};
+  for (const word of words) exercises[word.id] = chooseExercise(word, random);
+  return { ...session, exercises };
+}
+
+export function isQuiz(session: PracticeSession): boolean {
+  return session.exercises !== undefined;
+}
+
 export function currentWordId(session: PracticeSession): WordId | null {
   return session.finished ? null : (session.wordIds[session.index] ?? null);
 }
@@ -95,6 +119,13 @@ export function goPrevious(session: PracticeSession): PracticeSession {
 
 export function isLastWord(session: PracticeSession): boolean {
   return session.index >= session.wordIds.length - 1;
+}
+
+/** Records the answer for the current word without moving (quiz: the result is shown first). */
+export function recordCurrent(session: PracticeSession, answer: SessionAnswer): PracticeSession {
+  const wordId = currentWordId(session);
+  if (!wordId) return session;
+  return { ...session, answers: { ...session.answers, [wordId]: answer } };
 }
 
 /** Records (or changes) the answer for the current word and moves forward. */
