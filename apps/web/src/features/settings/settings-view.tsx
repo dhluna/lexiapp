@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { VoiceNotice } from "@/components/voice-notice";
 import { AccountSection } from "@/features/account/account-section";
@@ -109,6 +110,12 @@ export function SettingsView() {
           </p>
         </div>
       </Group>
+
+      <p className="text-center text-sm">
+        <Link href="/privacidad" className="font-semibold text-accent underline-offset-4 hover:underline">
+          Política de privacidad
+        </Link>
+      </p>
     </div>
   );
 }

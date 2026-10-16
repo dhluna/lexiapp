@@ -2,9 +2,10 @@ import { MIN_PASSWORD_LENGTH, safeNextPath, type AuthResult } from "@lexi/core/s
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Eye, EyeOff, Mail } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Pressable, TextInput, View, type TextInputProps } from "react-native";
+import { ActivityIndicator, Linking, Pressable, TextInput, View, type TextInputProps } from "react-native";
 import { AppText, Button, Card, Notice, Screen } from "@/components/ui";
 import { useAuth } from "@/hooks/use-account";
+import { PRIVACY_URL } from "@/legal";
 import { FONTS, RADIUS, useTheme } from "@/theme";
 
 type Mode = "signin" | "signup" | "reset";
@@ -242,6 +243,21 @@ export function SignInScreen() {
           variant="ghost"
           onPress={() => switchMode(mode === "reset" ? "signin" : "reset")}
         />
+        {mode !== "reset" && (
+          <AppText variant="small">
+            Al continuar, aceptas que Lexi guarde tu email y tu progreso según la{" "}
+            <AppText
+              variant="small"
+              color={colors.accent}
+              accessibilityRole="link"
+              style={{ fontWeight: "600" }}
+              onPress={() => void Linking.openURL(PRIVACY_URL)}
+            >
+              política de privacidad
+            </AppText>
+            .
+          </AppText>
+        )}
       </Card>
     </Screen>
   );

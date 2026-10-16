@@ -106,6 +106,7 @@ El detalle está en `docs/`:
 - [08 · Paquetes de palabras](docs/08-paquetes.md): Esenciales y paquetes temáticos.
 - [09 · Celebración](docs/09-celebracion.md): confeti y sonido al terminar una sesión.
 - [10 · Ponerme a prueba](docs/10-ejercicios.md): dictado y completar la frase.
+- Política de privacidad: [`/privacidad`](https://lexiapp-es.vercel.app/privacidad).
 
 ## Verificación
 

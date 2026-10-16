@@ -97,6 +97,9 @@ describe("/entrar", () => {
     const auth = new FakeAuth();
     renderWithServices(<SignInView />, undefined, { auth });
 
+    // Consent is informed before signing in or signing up (Google included).
+    expect(screen.getByRole("link", { name: "política de privacidad" })).toHaveAttribute("href", "/privacidad");
+
     await user.type(screen.getByLabelText("Email"), "ana@example.com");
     await user.type(screen.getByLabelText("Contraseña"), "secreto-123");
     await user.click(screen.getByRole("button", { name: "Iniciar sesión" }));

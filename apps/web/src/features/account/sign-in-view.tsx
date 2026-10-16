@@ -259,6 +259,16 @@ export function SignInView() {
           </Button>
         </form>
 
+        {mode !== "reset" && (
+          <p className="text-sm text-ink-soft">
+            Al continuar, aceptas que Lexi guarde tu email y tu progreso según la{" "}
+            <Link href="/privacidad" className="font-semibold text-accent underline-offset-4 hover:underline">
+              política de privacidad
+            </Link>
+            .
+          </p>
+        )}
+
         {mode === "signin" && (
           <button
             type="button"

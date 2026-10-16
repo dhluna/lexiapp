@@ -101,3 +101,16 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clave pública>
    navegador una lectura de las tablas; solo debe devolver sus propias filas.
 7. **Eliminar cuenta** en Ajustes y comprueba en **Table Editor** que sus filas
    desaparecieron.
+
+## 8. Antes de abrir Lexi al público
+
+- **Política de privacidad** en `/privacidad` (`apps/web/src/features/legal/privacy-policy.tsx`).
+  El responsable y el email de contacto están en constantes al principio del archivo; si
+  cambian el tratamiento de datos o los proveedores, actualiza el texto y la fecha. La app
+  móvil enlaza a la misma página (`apps/mobile/src/legal.ts`).
+- **Icono y vista previa al compartir:** `apps/web/src/app/icon.svg`, `apple-icon.tsx`,
+  `opengraph-image.tsx` (con las fuentes de `apps/web/assets/fonts`, licencia OFL) y
+  `manifest.ts`. Los iconos de la app móvil se generan con
+  `node scripts/generate-app-icons.mjs` a partir del mismo diseño.
+- Correo propio en Supabase (SMTP), Google en modo producción (Google Auth Platform ›
+  Audience › **Publish app**) y, si quieres, CAPTCHA en el registro.

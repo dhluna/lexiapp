@@ -9,6 +9,7 @@ import { useAuth, useSync } from "@/hooks/use-account";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { useCelebrationSound } from "@/hooks/use-celebration";
 import { useReminder } from "@/hooks/use-reminder";
+import { PRIVACY_URL } from "@/legal";
 import { useTheme } from "@/theme";
 
 const SESSION_SIZES = [5, 10, 15, 20];
@@ -300,6 +301,8 @@ export function SettingsScreen() {
           </AppText>
         )}
       </Group>
+
+      <Button title="Política de privacidad" variant="ghost" accessibilityRole="link" onPress={() => void Linking.openURL(PRIVACY_URL)} />
     </Screen>
   );
 }

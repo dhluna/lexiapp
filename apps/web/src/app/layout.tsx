@@ -27,9 +27,26 @@ const ipa = Noto_Sans({
   preload: false,
 });
 
+const DESCRIPTION = "Practica vocabulario en inglés cada día, con pronunciación y ejemplos traducidos.";
+
+/** Absolute URLs for the share preview: production domain on Vercel, localhost while developing. */
+const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "Lexi — vocabulario en inglés", template: "%s · Lexi" },
-  description: "Practica vocabulario en inglés cada día, con pronunciación y ejemplos traducidos.",
+  description: DESCRIPTION,
+  applicationName: "Lexi",
+  openGraph: {
+    type: "website",
+    siteName: "Lexi",
+    locale: "es_CO",
+    title: "Lexi — vocabulario en inglés",
+    description: DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
