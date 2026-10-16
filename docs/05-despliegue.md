@@ -131,3 +131,18 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clave pública>
   `/progreso`) quedan fuera. Las fichas declaran su URL canónica.
 - El dominio está verificado en Google Search Console (registro TXT `google-site-verification`
   en Cloudflare: no lo borres). Envía allí `https://lexiapp.app/sitemap.xml` en **Sitemaps**.
+
+## 11. Correo de autenticación con Resend
+
+El SMTP incluido en Supabase solo envía a los miembros del equipo y muy pocos correos por hora.
+Lexi usa Resend sobre su dominio:
+
+1. Resend › **Domains**: `lexiapp.app` verificado. Sus registros DNS (DKIM en
+   `resend._domainkey`, SPF y MX en `send`) están en Cloudflare con **DNS only** y no chocan con
+   los del reenvío de `hola@`. Recomendado: TXT `_dmarc` = `v=DMARC1; p=none;`.
+2. Resend › **API Keys**: una clave con *Sending access* limitada a `lexiapp.app`. Se pega solo
+   en Supabase; nunca en el código ni en Vercel.
+3. Supabase › **Authentication › Emails › SMTP Settings**: host `smtp.resend.com`, puerto
+   `465`, usuario `resend`, contraseña = la API key; remitente `Lexi <no-responder@lexiapp.app>`.
+4. Supabase › **Authentication › Rate Limits**: sube el límite de correos por hora (p. ej. 100).
+5. Plantillas en español: `supabase/templates/` (asuntos e instrucciones en su README).
