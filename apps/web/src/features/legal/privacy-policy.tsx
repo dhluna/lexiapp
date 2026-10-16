@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 /** The person responsible for the data (Ley 1581 de 2012) and how to reach them. */
 export const DATA_CONTROLLER = "Diego Hernández";
-export const PRIVACY_CONTACT = "PENDIENTE@ejemplo.com";
+export const PRIVACY_CONTACT = "hola@lexiapp.app";
 export const PRIVACY_UPDATED = "16 de octubre de 2026";
 
 export function PrivacyPolicy() {

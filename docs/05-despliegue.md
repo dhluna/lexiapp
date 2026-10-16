@@ -43,10 +43,11 @@ de correo incluido sirve para pruebas, pero envía muy pocos correos por hora.
 ## 4. URL permitidas
 
 En **Authentication › URL Configuration**:
-- **Site URL**: la URL de producción (la de Lexi es `https://lexiapp-es.vercel.app`).
+- **Site URL**: la URL de producción (la de Lexi es `https://lexiapp.app`).
 - **Redirect URLs** (añade todas las que uses):
   - `http://localhost:3000/**`
-  - `https://lexiapp-es.vercel.app/**`
+  - `https://lexiapp.app/**`
+  - `https://lexiapp-es.vercel.app/**` (dominio anterior, redirige a `lexiapp.app`)
   - `lexi://**` y `exp://**` (app móvil, ver [docs/07](07-movil-pruebas.md))
   - Si usas despliegues de vista previa de Vercel:
     `https://*-<tu-equipo>.vercel.app/**`
@@ -114,3 +115,11 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clave pública>
   `node scripts/generate-app-icons.mjs` a partir del mismo diseño.
 - Correo propio en Supabase (SMTP), Google en modo producción (Google Auth Platform ›
   Audience › **Publish app**) y, si quieres, CAPTCHA en el registro.
+
+## 9. Dominio `lexiapp.app` (Cloudflare)
+
+- Registrado en Cloudflare. DNS: un **CNAME** en la raíz hacia Vercel (con la nube **gris,
+  «DNS only»**: si va por el proxy de Cloudflare, Vercel avisa de «Proxy Detected»).
+- Correo: Cloudflare Email Routing reenvía `hola@lexiapp.app` al Gmail del responsable (MX y SPF
+  de Cloudflare; no toques esos registros). Es el contacto de la política de privacidad.
+- En Vercel, `lexiapp-es.vercel.app` y `www.lexiapp.app` redirigen a `lexiapp.app`.

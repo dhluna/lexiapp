@@ -29,10 +29,13 @@ const ipa = Noto_Sans({
 
 const DESCRIPTION = "Practica vocabulario en inglés cada día, con pronunciación y ejemplos traducidos.";
 
-/** Absolute URLs for the share preview: production domain on Vercel, localhost while developing. */
-const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "http://localhost:3000";
+/** Absolute URLs for the share preview: the real domain in production, the deployment URL in previews. */
+const SITE_URL =
+  process.env.VERCEL_ENV === "production"
+    ? "https://lexiapp.app"
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
