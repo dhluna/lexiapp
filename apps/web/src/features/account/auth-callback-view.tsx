@@ -1,15 +1,17 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState, Skeleton } from "@/components/ui/empty-state";
 import { useServices } from "@/hooks/services-context";
 import { safeNextPath } from "@lexi/core/services/auth";
 
 /**
- * Landing page for Google and for the email confirmation link. supabase-js exchanges the
- * one-time code from the URL when it starts; here we wait for that and move on.
+ * Landing page for Google and for the email confirmation link.
+ * - Google returns `?code=`: supabase-js exchanges it when it starts; here we wait for that.
+ * - The confirmation email links `?token_hash=&type=`: verified here, so the link works even
+ *   in another browser or device than the one used to sign up.
  */
 export function AuthCallbackView() {
   const params = useSearchParams();
@@ -18,11 +20,23 @@ export function AuthCallbackView() {
   const [failed, setFailed] = useState(false);
   const providerError = params.get("error_description") ?? params.get("error");
   const next = safeNextPath(params.get("next"));
+  const tokenHash = params.get("token_hash");
+  const verified = useRef<string | null>(null);
 
   useEffect(() => {
     if (providerError) return;
     const service = auth();
     if (!service) return;
+    if (tokenHash) {
+      // Single-use token: verify it once, even if the effect runs again.
+      if (verified.current === tokenHash) return;
+      verified.current = tokenHash;
+      void service.completeRedirect(window.location.href).then((result) => {
+        if (result.ok) router.replace(next);
+        else setFailed(true);
+      });
+      return;
+    }
     let cancelled = false;
     void service.ready().then((snapshot) => {
       if (cancelled) return;
@@ -32,7 +46,7 @@ export function AuthCallbackView() {
     return () => {
       cancelled = true;
     };
-  }, [auth, next, providerError, router]);
+  }, [auth, next, providerError, router, tokenHash]);
 
   if (providerError || failed) {
     return (

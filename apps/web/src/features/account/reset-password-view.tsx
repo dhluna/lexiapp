@@ -1,12 +1,16 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState, Skeleton } from "@/components/ui/empty-state";
 import { useAuth } from "@/hooks/use-account";
 import { MIN_PASSWORD_LENGTH } from "@lexi/core/services/auth";
 
-/** Opened from the password-reset email: the link signs the user in, then they pick a password. */
+/**
+ * Opened from the password-reset email: the link signs the user in, then they pick a password.
+ * The email carries `?token_hash=&type=recovery`, verified here so it works in any browser or
+ * device (a PKCE `?code=` would only work where the reset was requested).
+ */
 export function ResetPasswordView() {
   const { available, snapshot, service } = useAuth();
   const [password, setPassword] = useState("");
@@ -14,8 +18,27 @@ export function ResetPasswordView() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  // An email link must be verified before showing the form. On the server (no window) this
+  // stays "ready", but the first render shows the skeleton anyway while auth loads.
+  const [link, setLink] = useState<"verifying" | "ready">(() =>
+    typeof window !== "undefined" && /[?&]token_hash=/.test(window.location.search) ? "verifying" : "ready",
+  );
 
-  if (available === null || (available && (!snapshot || snapshot.status === "loading"))) {
+  useEffect(() => {
+    if (link !== "verifying" || !service) return;
+    let cancelled = false;
+    void service.completeRedirect(window.location.href).then(() => {
+      if (cancelled) return;
+      // The token is single-use: drop it from the address bar either way.
+      window.history.replaceState(null, "", window.location.pathname);
+      setLink("ready");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [link, service]);
+
+  if (link !== "ready" || available === null || (available && (!snapshot || snapshot.status === "loading"))) {
     return <Skeleton className="mx-auto h-72 max-w-md" />;
   }
 

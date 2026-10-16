@@ -18,12 +18,12 @@
             </tr>
             <tr>
               <td style="padding:28px 32px 0;">
-                <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#3a3ed6;color:#ffffff;text-decoration:none;font-size:16px;font-weight:bold;padding:14px 28px;border-radius:12px;">Elegir una contraseña nueva</a>
+                <a href="{{ .SiteURL }}/restablecer-contrasena?token_hash={{ .TokenHash }}&type=recovery" style="display:inline-block;background:#3a3ed6;color:#ffffff;text-decoration:none;font-size:16px;font-weight:bold;padding:14px 28px;border-radius:12px;">Elegir una contraseña nueva</a>
               </td>
             </tr>
             <tr>
               <td style="padding:20px 32px 0;font-size:14px;line-height:1.6;color:#4b5070;">
-                ¿No funciona el botón? <a href="{{ .ConfirmationURL }}" style="color:#3a3ed6;">Abre este enlace</a>.
+                ¿No funciona el botón? <a href="{{ .SiteURL }}/restablecer-contrasena?token_hash={{ .TokenHash }}&type=recovery" style="color:#3a3ed6;">Abre este enlace</a>.
                 Caduca en una hora y solo sirve una vez.
               </td>
             </tr>

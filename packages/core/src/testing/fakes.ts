@@ -68,7 +68,7 @@ export class FakeAuth implements AuthService {
     return this.next;
   });
   completeRedirect = vi.fn(async (url: string) => {
-    const code = /[?&#]code=([^&#]+)/.exec(url)?.[1];
+    const code = /[?&#](?:code|token_hash)=([^&#]+)/.exec(url)?.[1];
     if (!code) return { ok: false as const, message: "No se pudo iniciar sesión.", code: "flow_state_not_found" };
     this.signIn({ id: `user-${code}`, email: null, provider: "google" });
     return { ok: true as const };

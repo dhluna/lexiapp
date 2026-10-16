@@ -30,9 +30,9 @@ export interface AuthService {
   signOut(): Promise<AuthResult>;
   deleteAccount(): Promise<AuthResult>;
   /**
-   * Finishes a sign-in from the URL the provider or an email link returned to
-   * (`?code=…` or `?error_description=…`). Needed in native apps; on the web supabase-js
-   * reads the URL by itself.
+   * Finishes a sign-in from the URL the provider or an email link returned to:
+   * `?code=…` (Google, PKCE), `?token_hash=…&type=…` (email links, valid in any browser or
+   * device) or `?error_description=…`. On the web supabase-js reads `code` by itself.
    */
   completeRedirect(url: string): Promise<AuthResult>;
 }
@@ -205,6 +205,13 @@ export class SupabaseAuthService implements AuthService {
     const params = readUrlParams(url);
     if (params.error_description || params.error) {
       return fail({ message: params.error_description ?? params.error ?? "error", code: params.error_code });
+    }
+    // Email links carry a one-time token hash: unlike `code`, it does not need the PKCE
+    // verifier stored by the browser that asked for the email, so it works anywhere.
+    if (params.token_hash && params.type) {
+      const type = params.type === "recovery" ? "recovery" : "email";
+      const { error } = await this.client.auth.verifyOtp({ token_hash: params.token_hash, type });
+      return error ? fail(error) : { ok: true };
     }
     if (!params.code) return fail({ message: "missing code", code: "flow_state_not_found" });
     const { error } = await this.client.auth.exchangeCodeForSession(params.code);
