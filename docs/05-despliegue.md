@@ -123,3 +123,11 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clave pública>
 - Correo: Cloudflare Email Routing reenvía `hola@lexiapp.app` al Gmail del responsable (MX y SPF
   de Cloudflare; no toques esos registros). Es el contacto de la política de privacidad.
 - En Vercel, `lexiapp-es.vercel.app` y `www.lexiapp.app` redirigen a `lexiapp.app`.
+
+## 10. Buscadores
+
+- `apps/web/src/app/robots.ts` y `sitemap.ts` (inicio, Vocabulario, Practicar, privacidad y una
+  entrada por palabra). Las pantallas de cuenta y personales (`/entrar`, `/auth/`, `/ajustes`,
+  `/progreso`) quedan fuera. Las fichas declaran su URL canónica.
+- El dominio está verificado en Google Search Console (registro TXT `google-site-verification`
+  en Cloudflare: no lo borres). Envía allí `https://lexiapp.app/sitemap.xml` en **Sitemaps**.

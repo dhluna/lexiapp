@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BottomNav, SettingsLink, TopNav } from "@/components/layout/app-nav";
 import { PersistenceNotice } from "@/components/layout/persistence-notice";
 import { SyncBootstrap } from "@/hooks/use-account";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -29,13 +30,6 @@ const ipa = Noto_Sans({
 
 const DESCRIPTION = "Practica vocabulario en inglés cada día, con pronunciación y ejemplos traducidos.";
 
-/** Absolute URLs for the share preview: the real domain in production, the deployment URL in previews. */
-const SITE_URL =
-  process.env.VERCEL_ENV === "production"
-    ? "https://lexiapp.app"
-    : process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -13,7 +13,11 @@ export async function generateMetadata({ params }: PageProps<"/vocabulario/[id]"
   const { id } = await params;
   const word = getWord(id);
   return word
-    ? { title: `${word.term}: ${word.translation}`, description: word.definition }
+    ? {
+        title: `${word.term}: ${word.translation}`,
+        description: word.definition,
+        alternates: { canonical: `/vocabulario/${word.id}` },
+      }
     : { title: "Palabra no encontrada" };
 }
 
