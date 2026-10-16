@@ -39,7 +39,7 @@ describe("Ponerme a prueba", () => {
   it("is disabled until some words have been seen", () => {
     renderWithServices(<PracticeView />);
     expect(screen.getByRole("button", { name: "Ponerme a prueba" })).toBeDisabled();
-    expect(screen.getByText(/Practica primero con las tarjetas/)).toBeInTheDocument();
+    expect(screen.getByText(/se activa cuando hayas visto alguna palabra/)).toBeInTheDocument();
   });
 
   it("dictates the words already seen and grades them tolerantly", async () => {
@@ -53,7 +53,6 @@ describe("Ponerme a prueba", () => {
     ]);
     const { store, synth, effects } = renderWithServices(<PracticeView />, storage);
 
-    expect(screen.getByText("4 palabras para comprobar escribiéndolas.")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Ponerme a prueba" }));
 
     // 1. Pending review first: "eat", said out loud. Exact answer.

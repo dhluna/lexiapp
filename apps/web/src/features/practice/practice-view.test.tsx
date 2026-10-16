@@ -220,10 +220,9 @@ describe("PracticeView", () => {
 
     expect(screen.getByText("Sesión de 10 palabras: 1 por repasar y 9 nuevas.")).toBeInTheDocument();
     expect(screen.queryByRole("radio")).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Cambiar palabras por sesión" })).toHaveAttribute(
-      "href",
-      "/ajustes",
-    );
+    // Two clear actions, no explanatory text: the session size lives in Ajustes.
+    expect(screen.getByRole("button", { name: "Empezar" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Ponerme a prueba" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Practicar Viajes: 1 por repasar" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Practicar Esenciales: 150 nuevas" })).toBeInTheDocument();
     // Packs not added are not offered; a link leads to them.

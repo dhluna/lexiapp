@@ -55,10 +55,3 @@ export function quizCount(state: UserProgressState, packId: PackId | null = null
   const pool = packId ? active.filter((w) => w.pack === packId) : active;
   return pool.filter((w) => state.words[w.id]).length;
 }
-
-/** "5 palabras para comprobar." */
-export function quizText(state: UserProgressState, size: number): string {
-  const n = Math.min(size, quizCount(state));
-  if (n === 0) return "Practica primero con las tarjetas: aquí se comprueban las palabras que ya has visto.";
-  return `${n} ${n === 1 ? "palabra" : "palabras"} para comprobar escribiéndolas.`;
-}

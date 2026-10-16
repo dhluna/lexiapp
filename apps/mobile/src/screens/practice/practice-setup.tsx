@@ -1,8 +1,8 @@
 import { activePackIds } from "@lexi/core/data/catalog";
 import { getPack, PACKS } from "@lexi/core/data/packs";
 import type { PackId, UserProgressState } from "@lexi/core/domain/types";
-import { planSession, planText, poolCounts, quizCount, quizText } from "@lexi/core/planning/session-plan";
-import { Link, useRouter } from "expo-router";
+import { planSession, planText, poolCounts, quizCount } from "@lexi/core/planning/session-plan";
+import { useRouter } from "expo-router";
 import { ChevronRight, PencilLine, Plus } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 import { PackIcon } from "@/components/pack-icon";
@@ -22,6 +22,7 @@ export function PracticeSetup({
   const { colors } = useTheme();
   const router = useRouter();
   const size = state.preferences.sessionSize;
+  const canQuiz = quizCount(state) > 0;
   const packs = activePackIds(state).flatMap((id) => getPack(id) ?? []);
 
   return (
@@ -32,26 +33,14 @@ export function PracticeSetup({
         </AppText>
         <AppText variant="muted">{planText(planSession(state, size))}</AppText>
         <Button title="Empezar" onPress={() => onStart(null)} />
-        <AppText variant="small">
-          Primero salen las palabras por repasar y luego las nuevas.{" "}
-          <Link href="/ajustes" style={{ color: colors.accent, fontWeight: "600" }}>
-            Cambiar palabras por sesión
-          </Link>
-        </AppText>
-      </Card>
-
-      <Card>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <PencilLine size={20} color={colors.accent} />
-          <AppText variant="heading" accessibilityRole="header">
-            Ponerme a prueba
-          </AppText>
-        </View>
-        <AppText variant="muted">
-          Escucha y escribe, o completa frases con las palabras que ya has visto. Si aciertas, quedan aprendidas.
-        </AppText>
-        <AppText variant="label">{quizText(state, size)}</AppText>
-        <Button title="Ponerme a prueba" variant="secondary" disabled={quizCount(state) === 0} onPress={onStartQuiz} />
+        <Button
+          title="Ponerme a prueba"
+          variant="secondary"
+          icon={<PencilLine size={18} color={colors.ink} />}
+          disabled={!canQuiz}
+          onPress={onStartQuiz}
+        />
+        {!canQuiz && <AppText variant="small">«Ponerme a prueba» se activa cuando hayas visto alguna palabra.</AppText>}
       </Card>
 
       <AppText variant="heading">O practica un paquete</AppText>

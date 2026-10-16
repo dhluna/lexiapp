@@ -27,7 +27,7 @@ describe("Ponerme a prueba (mobile)", () => {
   it("is disabled until some words have been seen", async () => {
     await renderWithServices(<PracticeScreen />);
     expect(screen.getByRole("button", { name: "Ponerme a prueba" }).props.accessibilityState.disabled).toBe(true);
-    expect(screen.getByText(/Practica primero con las tarjetas/)).toBeTruthy();
+    expect(screen.getByText(/se activa cuando hayas visto alguna palabra/)).toBeTruthy();
   });
 
   it("dictates, grades tolerantly and saves each result", async () => {

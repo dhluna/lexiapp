@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { activePackIds } from "@lexi/core/data/catalog";
 import { getPack, PACKS } from "@lexi/core/data/packs";
 import type { PackId, UserProgressState } from "@lexi/core/domain/types";
-import { planSession, planText, poolCounts, quizCount, quizText } from "@lexi/core/planning/session-plan";
+import { planSession, planText, poolCounts, quizCount } from "@lexi/core/planning/session-plan";
 
 interface PracticeSetupProps {
   state: UserProgressState;
@@ -13,12 +13,13 @@ interface PracticeSetupProps {
   onStartQuiz: () => void;
 }
 
-/** One obvious action (today's session) and, below, one tap per active pack. No filters. */
+/** Two clear actions (cards or a quiz) and, below, one tap per active pack. No filters. */
 export function PracticeSetup({ state, onStart, onStartQuiz }: PracticeSetupProps) {
   const size = state.preferences.sessionSize;
   const today = planSession(state, size);
   const packs = activePackIds(state).flatMap((id) => getPack(id) ?? []);
   const morePacks = packs.length < PACKS.length;
+  const canQuiz = quizCount(state) > 0;
 
   return (
     <div className="mx-auto grid max-w-2xl gap-10">
@@ -27,35 +28,18 @@ export function PracticeSetup({ state, onStart, onStartQuiz }: PracticeSetupProp
           Practicar
         </h1>
         <p className="mt-2 text-lg text-ink-soft">{planText(today)}</p>
-        <Button size="lg" className="mt-6 w-full sm:w-auto sm:px-10" onClick={() => onStart(null)}>
-          Empezar
-        </Button>
-        <p className="mt-4 text-sm text-ink-soft">
-          Primero salen las palabras por repasar y luego las nuevas.{" "}
-          <Link href="/ajustes" className="font-semibold text-accent underline-offset-4 hover:underline">
-            Cambiar palabras por sesión
-          </Link>
-        </p>
-      </section>
-
-      <section aria-labelledby="prueba" className="rounded-3xl border border-line bg-surface p-6 sm:p-8">
-        <h2 id="prueba" className="flex items-center gap-2 font-display text-xl font-semibold">
-          <PencilLine aria-hidden className="size-5 text-accent" />
-          Ponerme a prueba
-        </h2>
-        <p className="mt-1 text-ink-soft">
-          Escucha y escribe, o completa frases con las palabras que ya has visto. Si aciertas, quedan aprendidas.
-        </p>
-        <p className="mt-2 text-sm font-semibold text-ink-soft">{quizText(state, size)}</p>
-        <Button
-          variant="secondary"
-          size="lg"
-          className="mt-4 w-full sm:w-auto"
-          disabled={quizCount(state) === 0}
-          onClick={onStartQuiz}
-        >
-          Ponerme a prueba
-        </Button>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <Button size="lg" onClick={() => onStart(null)}>
+            Empezar
+          </Button>
+          <Button size="lg" variant="secondary" disabled={!canQuiz} onClick={onStartQuiz}>
+            <PencilLine aria-hidden className="size-5" />
+            Ponerme a prueba
+          </Button>
+        </div>
+        {!canQuiz && (
+          <p className="mt-3 text-sm text-ink-soft">«Ponerme a prueba» se activa cuando hayas visto alguna palabra.</p>
+        )}
       </section>
 
       <section aria-labelledby="por-paquete">

@@ -11,7 +11,7 @@ En las tarjetas, la propia persona decide si se sabe una palabra. «Ponerme a pr
 
 | ID | Requisito |
 | --- | --- |
-| RF-40 | En Practicar, bajo «Empezar», el bloque «Ponerme a prueba» con su plan («5 palabras para comprobar escribiéndolas»). Desactivado, con explicación, si aún no hay palabras vistas. Enlace directo: `/practicar?prueba=1`. |
+| RF-40 | En Practicar, el botón «Ponerme a prueba» junto a «Empezar», en la misma tarjeta y sin más texto. Desactivado, con una línea que explica por qué, si aún no hay palabras vistas. Enlace directo: `/practicar?prueba=1`. |
 | RF-41 | Solo se comprueban palabras ya vistas de los paquetes activos: primero las de repasar y luego las aprendidas, las más antiguas primero, con el tamaño de sesión de Ajustes. |
 | RF-42 | **Escucha y escribe:** Lexi dice la palabra al aparecer, con botones «Escuchar» y «Más lento». Si la palabra tiene varias, se indica cuántas. Sin voz en inglés, se muestra la traducción. |
 | RF-43 | **Completa la frase:** un ejemplo con un hueco, su traducción y la traducción de la palabra como pista. Se escribe la forma de la frase (*flights*, *gave up*). |
@@ -38,7 +38,7 @@ las palabras tienen frase.
 | --- | --- |
 | Ejercicios, comprobación y selección | `packages/core/src/domain/exercise.ts` |
 | Sesión de prueba (`createQuiz`, `isQuiz`, `recordCurrent`) | `packages/core/src/domain/session.ts` (`exercises` en `PracticeSession`) |
-| Plan y texto del botón | `quizCount` y `quizText` en `planning/session-plan.ts` |
+| Si el botón está activo | `quizCount` en `planning/session-plan.ts` |
 | Web | `apps/web/src/features/practice/exercise-card.tsx` |
 | Móvil | `apps/mobile/src/screens/practice/exercise-card.tsx` (campo sin autocorrección ni mayúsculas automáticas) |
 
