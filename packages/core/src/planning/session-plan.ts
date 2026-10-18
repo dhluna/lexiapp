@@ -49,9 +49,9 @@ export function planText({ review, fresh, learned, total }: SessionPlan): string
   return `Sesión de ${total} palabras: ${list}.`;
 }
 
-/** How many already seen words of the active packs (or one pack) a quiz can test. */
+/** How many learned words of the active packs (or one pack) a quiz can test. */
 export function quizCount(state: UserProgressState, packId: PackId | null = null): number {
   const active = getActiveWords(state);
   const pool = packId ? active.filter((w) => w.pack === packId) : active;
-  return pool.filter((w) => state.words[w.id]).length;
+  return pool.filter((w) => state.words[w.id]?.status === "learned").length;
 }

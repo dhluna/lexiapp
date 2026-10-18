@@ -40,7 +40,7 @@ export function PracticeSetup({
           disabled={!canQuiz}
           onPress={onStartQuiz}
         />
-        {!canQuiz && <AppText variant="small">«Ponerme a prueba» se activa cuando hayas visto alguna palabra.</AppText>}
+        {!canQuiz && <AppText variant="small">«Ponerme a prueba» se activa cuando tengas palabras aprendidas.</AppText>}
       </Card>
 
       <AppText variant="heading">O practica un paquete</AppText>

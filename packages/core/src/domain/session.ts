@@ -1,4 +1,5 @@
 import { chooseExercise, type Exercise } from "./exercise";
+import { shuffle } from "./random";
 import type { PackId, StoredStatus, UserProgressState, Word, WordId } from "./types";
 
 /** Answers given in a session. Words left unanswered count as skipped in the summary. */
@@ -21,15 +22,6 @@ export interface SelectOptions {
   packId?: PackId | null;
   /** Returns a number in [0, 1). Injected for deterministic tests. */
   random?: () => number;
-}
-
-function shuffle<T>(items: readonly T[], random: () => number): T[] {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
 }
 
 /**

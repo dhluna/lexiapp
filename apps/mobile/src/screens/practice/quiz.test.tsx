@@ -24,44 +24,57 @@ const answerField = () => screen.getByLabelText("Tu respuesta en inglés");
 afterEach(() => jest.restoreAllMocks());
 
 describe("Ponerme a prueba (mobile)", () => {
-  it("is disabled until some words have been seen", async () => {
-    await renderWithServices(<PracticeScreen />);
+  it("is disabled until some words are learned (words pending review do not count)", async () => {
+    await renderWithServices(<PracticeScreen />, { storage: seen([["essentials-time", "review"]]) });
     expect(screen.getByRole("button", { name: "Ponerme a prueba" }).props.accessibilityState.disabled).toBe(true);
-    expect(screen.getByText(/se activa cuando hayas visto alguna palabra/)).toBeTruthy();
+    expect(screen.getByText(/se activa cuando tengas palabras aprendidas/)).toBeTruthy();
   });
 
-  it("dictates, grades tolerantly and saves each result", async () => {
+  it("tests only learned words without touching progress, then optionally sends failures to review", async () => {
     jest.spyOn(Math, "random").mockReturnValue(0.9); // dictation for every word
     const storage = seen([
-      ["essentials-eat", "review"],
       ["essentials-time", "review"],
       ["essentials-water", "learned"],
+      ["essentials-friend", "learned"],
+      ["essentials-money", "learned"],
     ]);
     const { store, spoken } = await renderWithServices(<PracticeScreen />, { storage });
+    const before = store.getSnapshot().state;
 
     await fireEvent.press(screen.getByRole("button", { name: "Ponerme a prueba" }));
-    expect(screen.getByText("Escucha y escribe")).toBeTruthy();
-    expect(spoken.at(-1)).toBe("eat");
+    const asked: string[] = [];
 
-    await fireEvent.changeText(answerField(), "Eat");
+    asked.push(spoken.at(-1)!);
+    await fireEvent.changeText(answerField(), asked[0].toUpperCase());
     await fireEvent.press(screen.getByText("Comprobar"));
     expect(screen.getByText("¡Correcto!")).toBeTruthy();
     await fireEvent.press(screen.getByText("Siguiente"));
 
-    await fireEvent.changeText(answerField(), "tine");
+    asked.push(spoken.at(-1)!);
+    await fireEvent.changeText(answerField(), `${asked[1].slice(0, -1)}q`);
     await fireEvent(answerField(), "submitEditing");
-    expect(screen.getByText("Casi: se escribe «time».")).toBeTruthy();
+    expect(screen.getByText(`Casi: se escribe «${asked[1]}».`)).toBeTruthy();
     await fireEvent.press(screen.getByText("Siguiente"));
 
+    asked.push(spoken.at(-1)!);
     await fireEvent.press(screen.getByText("No lo sé"));
-    expect(screen.getByText("No es correcto. Queda para repasar.")).toBeTruthy();
+    expect(screen.getByText("No es correcto.")).toBeTruthy();
     await fireEvent.press(screen.getByText("Ver resultados"));
 
-    const words = store.getSnapshot().state.words;
-    expect(words["essentials-eat"].status).toBe("learned");
-    expect(words["essentials-time"].status).toBe("learned");
-    expect(words["essentials-water"].status).toBe("review");
+    expect(asked.sort()).toEqual(["friend", "money", "water"]);
+    const after = store.getSnapshot().state;
+    expect(after.words).toEqual(before.words);
+    expect(after.practiceDays).toEqual(before.practiceDays);
+    expect(after.sessions).toEqual(before.sessions);
     expect(screen.getByLabelText("Acertadas: 2")).toBeTruthy();
+    expect(screen.getByLabelText("Falladas: 1")).toBeTruthy();
+
+    await fireEvent.press(screen.getByText("Mandar la fallada a repasar"));
+    expect(screen.getByText("Listo: 1 palabra para repasar.")).toBeTruthy();
+    const reviewed = ["essentials-water", "essentials-friend", "essentials-money"].filter(
+      (id) => store.getSnapshot().state.words[id].status === "review",
+    );
+    expect(reviewed).toHaveLength(1);
   });
 
   it("completes a sentence and accepts the base form with a note", async () => {

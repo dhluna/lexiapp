@@ -232,7 +232,7 @@ function ExerciseBody({
               {check.result === "wrong" ? <X aria-hidden className="size-5" /> : <Check aria-hidden className="size-5" strokeWidth={3} />}
               {check.result === "correct" && "¡Correcto!"}
               {check.result === "almost" && "¡Casi! Cuenta como acierto."}
-              {check.result === "wrong" && "No es correcto. Queda para repasar."}
+              {check.result === "wrong" && "No es correcto."}
             </p>
             {check.note && <p>{check.note}</p>}
             <div className="flex items-center gap-3 text-ink">

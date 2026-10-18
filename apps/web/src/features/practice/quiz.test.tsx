@@ -36,59 +36,65 @@ describe("Ponerme a prueba", () => {
   });
   afterEach(() => vi.restoreAllMocks());
 
-  it("is disabled until some words have been seen", () => {
-    renderWithServices(<PracticeView />);
+  it("is disabled until some words are learned (words pending review do not count)", () => {
+    renderWithServices(<PracticeView />, seen([["essentials-time", "review"]]));
     expect(screen.getByRole("button", { name: "Ponerme a prueba" })).toBeDisabled();
-    expect(screen.getByText(/se activa cuando hayas visto alguna palabra/)).toBeInTheDocument();
+    expect(screen.getByText(/se activa cuando tengas palabras aprendidas/)).toBeInTheDocument();
   });
 
-  it("dictates the words already seen and grades them tolerantly", async () => {
+  it("tests only learned words, grades them tolerantly and leaves progress untouched", async () => {
     vi.spyOn(Math, "random").mockReturnValue(0.9); // dictation for every word
     const user = userEvent.setup();
-    const storage = seen([
-      ["essentials-eat", "review"],
-      ["essentials-time", "review"],
-      ["essentials-water", "learned"],
-      ["essentials-friend", "learned"],
-    ]);
+    const learned = ["essentials-water", "essentials-friend", "essentials-money", "essentials-house"];
+    const storage = seen([["essentials-time", "review"], ...learned.map((id): [string, StoredStatus] => [id, "learned"])]);
     const { store, synth, effects } = renderWithServices(<PracticeView />, storage);
+    const before = store.getSnapshot().state;
 
     await user.click(screen.getByRole("button", { name: "Ponerme a prueba" }));
+    const field = () => screen.getByRole("textbox", { name: "Tu respuesta en inglés" });
+    const asked: string[] = [];
 
-    // 1. Pending review first: "eat", said out loud. Exact answer.
-    expect(screen.getByText("Escucha y escribe")).toBeInTheDocument();
-    expect(spokenLast(synth)).toBe("eat");
-    await user.type(screen.getByRole("textbox", { name: "Tu respuesta en inglés" }), "Eat{Enter}");
+    // 1. Exact answer.
+    asked.push(spokenLast(synth)!);
+    await user.type(field(), `${asked[0]}{Enter}`);
     expect(screen.getByText("¡Correcto!")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Siguiente" }));
 
-    // 2. "time" with one wrong letter: counts, with the right spelling.
-    expect(spokenLast(synth)).toBe("time");
-    await user.type(screen.getByRole("textbox", { name: "Tu respuesta en inglés" }), "tine{Enter}");
+    // 2. One wrong letter: counts, with the right spelling.
+    asked.push(spokenLast(synth)!);
+    await user.type(field(), `${asked[1].slice(0, -1)}q{Enter}`);
     expect(screen.getByText("¡Casi! Cuenta como acierto.")).toBeInTheDocument();
-    expect(screen.getByText("Casi: se escribe «time».")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Siguiente" }));
 
-    // 3. "water", wrong: shows the answer.
-    await user.type(screen.getByRole("textbox", { name: "Tu respuesta en inglés" }), "fire{Enter}");
-    expect(screen.getByText("No es correcto. Queda para repasar.")).toBeInTheDocument();
-    expect(screen.getByText("water", { selector: "p" })).toBeInTheDocument();
+    // 3. Wrong, then 4. "No lo sé".
+    asked.push(spokenLast(synth)!);
+    await user.type(field(), "zzzz{Enter}");
+    expect(screen.getByText("No es correcto.")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Siguiente" }));
-
-    // 4. "friend": "No lo sé".
+    asked.push(spokenLast(synth)!);
     await user.click(screen.getByRole("button", { name: "No lo sé" }));
     await user.click(screen.getByRole("button", { name: "Ver resultados" }));
 
-    const words = store.getSnapshot().state.words;
-    expect(words["essentials-eat"].status).toBe("learned");
-    expect(words["essentials-time"].status).toBe("learned");
-    expect(words["essentials-water"].status).toBe("review");
-    expect(words["essentials-friend"].status).toBe("review");
+    // Only learned words were asked, never the one pending review.
+    expect(asked.sort()).toEqual(["friend", "house", "money", "water"]);
+    // The quiz changed nothing: progress, practice days and sessions stay as they were.
+    const after = store.getSnapshot().state;
+    expect(after.words).toEqual(before.words);
+    expect(after.practiceDays).toEqual(before.practiceDays);
+    expect(after.sessions).toEqual(before.sessions);
 
-    expect(screen.getByRole("heading", { name: "Sesión completada" })).toBeInTheDocument();
     expect(screen.getByText("Acertadas", { selector: "dt" }).nextElementSibling).toHaveTextContent("2");
+    expect(screen.getByText("Falladas", { selector: "dt" }).nextElementSibling).toHaveTextContent("2");
     expect(effects.confetti).toHaveBeenCalledWith("normal");
-  });
+
+    // Optional: send the failed ones to review.
+    await user.click(screen.getByRole("button", { name: "Mandar las 2 falladas a repasar" }));
+    expect(screen.getByText("Listo: 2 palabras para repasar.")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /falladas a repasar/ })).not.toBeInTheDocument();
+    const statuses = Object.fromEntries(learned.map((id) => [id, store.getSnapshot().state.words[id].status]));
+    expect(Object.values(statuses).filter((s) => s === "review")).toHaveLength(2);
+    expect(store.getSnapshot().state.practiceDays).toEqual(before.practiceDays);
+  }, 20_000); // Many simulated keystrokes: slow when the whole suite runs in parallel.
 
   it("completes a sentence and accepts the base form with a note", async () => {
     vi.spyOn(Math, "random").mockReturnValue(0); // a gap sentence whenever possible
@@ -105,6 +111,8 @@ describe("Ponerme a prueba", () => {
     await user.click(screen.getByRole("button", { name: "Ver resultados" }));
 
     expect(screen.getByRole("heading", { name: "Todas correctas" })).toBeInTheDocument();
-    expect(store.getSnapshot().state.words["essentials-child"].timesSeen).toBe(2);
+    // Nothing to send to review, and progress untouched.
+    expect(screen.queryByRole("button", { name: /a repasar/ })).not.toBeInTheDocument();
+    expect(store.getSnapshot().state.words["essentials-child"].timesSeen).toBe(1);
   });
 });

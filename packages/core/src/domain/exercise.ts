@@ -1,3 +1,4 @@
+import { shuffle } from "./random";
 import { normalizeText } from "./search";
 import type { PackId, UserProgressState, Word, WordId } from "./types";
 
@@ -142,21 +143,23 @@ export function wordCount(answer: string): number {
 export interface QuizOptions {
   size: number;
   packId?: PackId | null;
+  /** Returns a number in [0, 1). Injected for deterministic tests. */
+  random?: () => number;
 }
 
 /**
- * Words to test: only those already seen (pending review first, then learned), oldest
- * first, from the given catalog (the active packs) or one pack of it.
+ * Words to test: only the learned ones (the quiz checks what the learner claims to know), from
+ * the given catalog (the active packs) or one pack of it, in random order. The quiz does not
+ * change progress, so ordering by last review would always pick the same words.
  */
 export function selectQuizWords(
   catalog: readonly Word[],
   state: UserProgressState,
-  { size, packId = null }: QuizOptions,
+  { size, packId = null, random = Math.random }: QuizOptions,
 ): WordId[] {
   const pool = packId ? catalog.filter((w) => w.pack === packId) : catalog;
-  const byOldest = (a: Word, b: Word) =>
-    (state.words[a.id]?.lastReviewedAt ?? "").localeCompare(state.words[b.id]?.lastReviewedAt ?? "");
-  const review = pool.filter((w) => state.words[w.id]?.status === "review").sort(byOldest);
-  const learned = pool.filter((w) => state.words[w.id]?.status === "learned").sort(byOldest);
-  return [...review, ...learned].slice(0, size).map((w) => w.id);
+  const learned = pool.filter((w) => state.words[w.id]?.status === "learned");
+  return shuffle(learned, random)
+    .slice(0, size)
+    .map((w) => w.id);
 }

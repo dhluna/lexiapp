@@ -3,10 +3,11 @@ import { celebrationFor } from "@lexi/core/domain/celebration";
 import { isQuiz, summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
 import type { WordId } from "@lexi/core/domain/types";
 import { useRouter } from "expo-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
 import { AppText, Button, Card, Screen } from "@/components/ui";
 import { useServices } from "@/hooks/services-context";
+import { useProgressActions } from "@/hooks/use-progress";
 import { FONTS, RADIUS, useTheme } from "@/theme";
 
 interface PracticeSummaryProps {
@@ -34,9 +35,18 @@ export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSu
     celebrator().celebrate(kind);
   }, [celebrator, session.id, kind]);
 
+  // Quiz: failed words go to review only if the learner asks for it.
+  const { setWordStatus } = useProgressActions();
+  const [sentToReview, setSentToReview] = useState(false);
+  const failed = summary.review.length;
+  const sendFailedToReview = () => {
+    for (const id of summary.review) setWordStatus(id, "review");
+    setSentToReview(true);
+  };
+
   const counts = [
     { label: quiz ? "Acertadas" : "Aprendidas", value: summary.learned.length, bg: colors["learned-soft"], fg: colors.learned },
-    { label: "Por repasar", value: summary.review.length, bg: colors["review-soft"], fg: colors.review },
+    { label: quiz ? "Falladas" : "Por repasar", value: summary.review.length, bg: colors["review-soft"], fg: colors.review },
     { label: "Sin responder", value: summary.skipped.length, bg: colors["surface-sunken"], fg: colors["ink-soft"] },
   ];
 
@@ -47,9 +57,13 @@ export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSu
           {title}
         </AppText>
         <AppText variant="muted">
-          {answered === 0
-            ? "No respondiste ninguna palabra, así que no hay cambios en tu progreso."
-            : `Respondiste ${answered} de ${summary.total} palabras. Ya está todo guardado.`}
+          {quiz
+            ? answered === 0
+              ? "No respondiste ninguna palabra."
+              : `Acertaste ${summary.learned.length} de ${summary.total}. La prueba no cambia tu progreso.`
+            : answered === 0
+              ? "No respondiste ninguna palabra, así que no hay cambios en tu progreso."
+              : `Respondiste ${answered} de ${summary.total} palabras. Ya está todo guardado.`}
         </AppText>
         <View style={{ flexDirection: "row", gap: 8 }}>
           {counts.map((c) => (
@@ -68,13 +82,25 @@ export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSu
             </View>
           ))}
         </View>
+        {quiz && failed > 0 && !sentToReview && (
+          <Button
+            title={failed === 1 ? "Mandar la fallada a repasar" : `Mandar las ${failed} falladas a repasar`}
+            variant="secondary"
+            onPress={sendFailedToReview}
+          />
+        )}
+        {sentToReview && (
+          <AppText variant="label" color={colors.review} accessibilityLiveRegion="polite">
+            {failed === 1 ? "Listo: 1 palabra para repasar." : `Listo: ${failed} palabras para repasar.`}
+          </AppText>
+        )}
         <Button title="Otra sesión" onPress={onRestart} />
         <Button title="Elegir otro paquete" variant="secondary" onPress={onChoosePack} />
         <Button title="Volver al inicio" variant="ghost" onPress={() => router.navigate("/")} />
       </Card>
 
-      <WordList title="Para repasar" ids={summary.review} />
-      <WordList title="Aprendidas" ids={summary.learned} />
+      <WordList title={quiz ? "Falladas" : "Para repasar"} ids={summary.review} />
+      <WordList title={quiz ? "Acertadas" : "Aprendidas"} ids={summary.learned} />
       <WordList title="Sin responder" ids={summary.skipped} />
     </Screen>
   );

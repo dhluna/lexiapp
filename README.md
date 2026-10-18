@@ -18,7 +18,8 @@ por categoría. Cuentas opcionales para sincronizar el progreso entre dispositiv
   permite marcar *aprendida* o *por repasar*; las flechas anterior / siguiente permiten
   revisar o cambiar respuestas. Resumen al terminar con confeti y un acorde breve (dorado si
   aprendiste todas). **Ponerme a prueba:** dictado («Escucha y escribe») y «Completa la
-  frase» con las palabras ya vistas, corregidos automáticamente y con tolerancia. Atajos de teclado (`Espacio` escuchar,
+  frase» con tus palabras aprendidas, corregidos con tolerancia; es un control aparte que no
+  cambia tu progreso (al final puedes mandar las falladas a repasar). Atajos de teclado (`Espacio` escuchar,
   `1`, `2`, `←`, `→`).
 - **Vocabulario:** 330 palabras en 7 paquetes: Esenciales (las 150 más frecuentes, siempre
   activo) y paquetes temáticos que se añaden a la práctica (tarjetas con el progreso de cada

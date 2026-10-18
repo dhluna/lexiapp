@@ -102,7 +102,8 @@ export function PracticeView() {
   }
 
   const finishIfDone = (next: PracticeSession) => {
-    if (next.finished) actions.completeSession(next);
+    // A quiz is a check apart: it is not recorded as a session nor as a practice day.
+    if (next.finished && !isQuiz(next)) actions.completeSession(next);
     setSession(next);
   };
 
@@ -116,12 +117,8 @@ export function PracticeView() {
   };
 
   if (isQuiz(session)) {
-    // Saved as soon as it is checked; "Siguiente" only moves on.
-    const check = (value: SessionAnswer) => {
-      const wordId = session.wordIds[session.index];
-      if (!session.answers[wordId]) actions.recordAnswer(wordId, value);
-      setSession(recordCurrent(session, value));
-    };
+    // Kept only in this session: the quiz never changes progress by itself.
+    const check = (value: SessionAnswer) => setSession(recordCurrent(session, value));
     return <ExerciseCard session={session} onCheck={check} onNext={() => finishIfDone(goNext(session))} />;
   }
 

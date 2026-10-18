@@ -38,7 +38,7 @@ export function PracticeSetup({ state, onStart, onStartQuiz }: PracticeSetupProp
           </Button>
         </div>
         {!canQuiz && (
-          <p className="mt-3 text-sm text-ink-soft">«Ponerme a prueba» se activa cuando hayas visto alguna palabra.</p>
+          <p className="mt-3 text-sm text-ink-soft">«Ponerme a prueba» se activa cuando tengas palabras aprendidas.</p>
         )}
       </section>
 

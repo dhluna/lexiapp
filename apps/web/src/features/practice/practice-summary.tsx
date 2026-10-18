@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { getWord } from "@lexi/core/data/catalog";
 import { celebrationFor } from "@lexi/core/domain/celebration";
 import { isQuiz, summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
 import type { WordId } from "@lexi/core/domain/types";
 import { useServices } from "@/hooks/services-context";
+import { useProgressActions } from "@/hooks/use-progress";
 
 interface PracticeSummaryProps {
   session: PracticeSession;
@@ -35,6 +36,15 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
   const baseTitle = summaryTitle(summary);
   const title = quiz && baseTitle === "Todas aprendidas" ? "Todas correctas" : baseTitle;
 
+  // Quiz: failed words go to review only if the learner asks for it.
+  const { setWordStatus } = useProgressActions();
+  const [sentToReview, setSentToReview] = useState(false);
+  const failed = summary.review.length;
+  const sendFailedToReview = () => {
+    for (const id of summary.review) setWordStatus(id, "review");
+    setSentToReview(true);
+  };
+
   return (
     <div className="mx-auto grid max-w-2xl gap-6">
       <section className="animate-card-in rounded-3xl bg-surface p-6 sm:p-8">
@@ -42,15 +52,27 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
           {title}
         </h1>
         <p className="mt-2 text-lg text-ink-soft">
-          {answered === 0
-            ? "No respondiste ninguna palabra, así que no hay cambios en tu progreso."
-            : `Respondiste ${answered} de ${summary.total} palabras. Ya está todo guardado.`}
+          {quiz
+            ? answered === 0
+              ? "No respondiste ninguna palabra."
+              : `Acertaste ${summary.learned.length} de ${summary.total}. La prueba no cambia tu progreso.`
+            : answered === 0
+              ? "No respondiste ninguna palabra, así que no hay cambios en tu progreso."
+              : `Respondiste ${answered} de ${summary.total} palabras. Ya está todo guardado.`}
         </p>
         <dl className="mt-6 grid grid-cols-3 gap-3 text-center">
           <Count term={quiz ? "Acertadas" : "Aprendidas"} value={summary.learned.length} className="bg-learned-soft text-learned" />
-          <Count term="Por repasar" value={summary.review.length} className="bg-review-soft text-review" />
+          <Count term={quiz ? "Falladas" : "Por repasar"} value={summary.review.length} className="bg-review-soft text-review" />
           <Count term="Sin responder" value={summary.skipped.length} className="bg-sunken text-ink-soft" />
         </dl>
+        {quiz && failed > 0 && !sentToReview && (
+          <Button size="lg" variant="review" className="mt-6 w-full sm:w-auto" onClick={sendFailedToReview}>
+            {failed === 1 ? "Mandar la fallada a repasar" : `Mandar las ${failed} falladas a repasar`}
+          </Button>
+        )}
+        <p aria-live="polite" className={sentToReview ? "mt-4 font-semibold text-review" : "sr-only"}>
+          {sentToReview && (failed === 1 ? "Listo: 1 palabra para repasar." : `Listo: ${failed} palabras para repasar.`)}
+        </p>
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Button size="lg" onClick={onRestart}>
             Otra sesión
@@ -64,8 +86,8 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
         </div>
       </section>
 
-      <WordList title="Para repasar" ids={summary.review} />
-      <WordList title="Aprendidas" ids={summary.learned} />
+      <WordList title={quiz ? "Falladas" : "Para repasar"} ids={summary.review} />
+      <WordList title={quiz ? "Acertadas" : "Aprendidas"} ids={summary.learned} />
       <WordList title="Sin responder" ids={summary.skipped} />
     </div>
   );

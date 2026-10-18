@@ -227,7 +227,7 @@ function ExerciseBody({
               <AppText variant="subheading" color={good ? colors.learned : colors.review}>
                 {check.result === "correct" && "¡Correcto!"}
                 {check.result === "almost" && "¡Casi! Cuenta como acierto."}
-                {check.result === "wrong" && "No es correcto. Queda para repasar."}
+                {check.result === "wrong" && "No es correcto."}
               </AppText>
             </View>
             {check.note && <AppText color={good ? colors.learned : colors.review}>{check.note}</AppText>}

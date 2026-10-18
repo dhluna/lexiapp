@@ -87,13 +87,19 @@ describe("checkAnswer", () => {
 describe("quiz sessions", () => {
   const now = new Date("2026-10-16T10:00:00Z");
 
-  it("tests only words already seen: pending review first, then learned, oldest first", () => {
+  it("tests only learned words, in random order, never the ones pending review", () => {
     const state = createEmptyState(now, 5);
     state.words["essentials-eat"] = applyAnswer(undefined, "learned", new Date("2026-10-01T10:00:00Z"));
+    state.words["essentials-water"] = applyAnswer(undefined, "learned", new Date("2026-10-02T10:00:00Z"));
+    state.words["essentials-friend"] = applyAnswer(undefined, "learned", new Date("2026-10-03T10:00:00Z"));
     state.words["essentials-time"] = applyAnswer(undefined, "review", new Date("2026-10-10T10:00:00Z"));
-    state.words["essentials-go"] = applyAnswer(undefined, "review", new Date("2026-10-05T10:00:00Z"));
-    expect(selectQuizWords(WORDS, state, { size: 10 })).toEqual(["essentials-go", "essentials-time", "essentials-eat"]);
-    expect(selectQuizWords(WORDS, state, { size: 2 })).toEqual(["essentials-go", "essentials-time"]);
+
+    const all = selectQuizWords(WORDS, state, { size: 10, random: () => 0.99 });
+    expect([...all].sort()).toEqual(["essentials-eat", "essentials-friend", "essentials-water"]);
+    expect(all).not.toContain("essentials-time");
+    // Different random sources give different orders: quizzes do not repeat the same words.
+    expect(selectQuizWords(WORDS, state, { size: 10, random: () => 0 })).not.toEqual(all);
+    expect(selectQuizWords(WORDS, state, { size: 2 })).toHaveLength(2);
     expect(selectQuizWords(WORDS, state, { size: 10, packId: "travel" })).toEqual([]);
   });
 
