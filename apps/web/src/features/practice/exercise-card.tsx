@@ -7,13 +7,13 @@ import { SpeakButton } from "@/components/speak-button";
 import { Button } from "@/components/ui/button";
 import { VoiceNotice } from "@/components/voice-notice";
 import { getWord } from "@lexi/core/data/catalog";
+import { EXTRA_SLOW_PLAYBACK_RATE } from "@lexi/core/domain/progress";
 import { checkAnswer, wordCount, type Exercise, type ExerciseCheck } from "@lexi/core/domain/exercise";
 import { isLastWord, type PracticeSession, type SessionAnswer } from "@lexi/core/domain/session";
 import type { Word } from "@lexi/core/domain/types";
 import { useSpeech } from "@/hooks/use-speech";
 import { cn } from "@/lib/cn";
 
-const SLOW_RATE = 0.7;
 
 interface ExerciseCardProps {
   session: PracticeSession;
@@ -148,7 +148,7 @@ function ExerciseBody({
                 <Volume2 aria-hidden className="size-5" />
                 Escuchar
               </Button>
-              <Button size="lg" variant="ghost" onClick={() => speak(exercise.answer, SLOW_RATE)}>
+              <Button size="lg" variant="ghost" onClick={() => speak(exercise.answer, EXTRA_SLOW_PLAYBACK_RATE)}>
                 <Snail aria-hidden className="size-5" />
                 Más lento
               </Button>

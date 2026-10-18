@@ -60,6 +60,10 @@ interface WordProgress {
   **v4** añade `removedWords`, `resetAt` y `preferencesUpdatedAt` para sincronizar (Fase 3).
   **v5** añade `preferences.activePacks` (vacío) y cambia `categoryId` por `packId` en las
   sesiones; las categorías que no son paquete pasan a `null` ([08](08-paquetes.md)).
+- Velocidad de voz: se guarda la opción (0,8 «Lenta» / 1 «Normal» / 1,2 «Rápida»), pero «Lenta»
+  se reproduce a 0,6 (`playbackRate` en `domain/progress.ts`): a 0,8 una palabra suelta solo dura
+  un 25 % más y suena igual que «Normal». Así no hace falta migrar los datos ni la sincronización.
+  «Más lento» del dictado va a 0,5.
 - Al leer: `JSON.parse` → si `version < CURRENT`, se aplican migraciones en cadena
   (`migrations[n]: (state_n) => state_{n+1}`) → `sanitize()` normaliza tipos y descarta
   entradas inválidas campo a campo (nunca el documento entero por un campo roto).

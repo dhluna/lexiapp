@@ -7,7 +7,10 @@ import {
   clampSessionSize,
   computeStats,
   createEmptyState,
+  EXTRA_SLOW_PLAYBACK_RATE,
   getWordStatus,
+  playbackRate,
+  SLOW_PLAYBACK_RATE,
 } from "./progress";
 
 const now = new Date("2026-10-10T12:00:00Z");
@@ -83,5 +86,15 @@ describe("clampSessionSize", () => {
     expect(clampSessionSize(2)).toBe(5);
     expect(clampSessionSize(50)).toBe(20);
     expect(clampSessionSize(Number.NaN)).toBe(10);
+  });
+});
+
+describe("playbackRate", () => {
+  it("plays 'Lenta' clearly slower than the stored 0.8 and keeps the other speeds", () => {
+    expect(playbackRate(0.8)).toBe(SLOW_PLAYBACK_RATE);
+    expect(SLOW_PLAYBACK_RATE).toBeLessThanOrEqual(0.6);
+    expect(playbackRate(1)).toBe(1);
+    expect(playbackRate(1.2)).toBe(1.2);
+    expect(EXTRA_SLOW_PLAYBACK_RATE).toBeLessThan(SLOW_PLAYBACK_RATE);
   });
 });

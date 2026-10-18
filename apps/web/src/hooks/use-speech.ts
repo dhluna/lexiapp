@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useSyncExternalStore } from "react";
+import { playbackRate } from "@lexi/core/domain/progress";
 import type { VoiceAvailability } from "@lexi/core/services/speech";
 import { useProgress } from "./use-progress";
 import { useServices } from "./services-context";
@@ -19,7 +20,8 @@ const getNull = () => null;
 export function useSpeech(): UseSpeech {
   const { speech } = useServices();
   const snapshot = useProgress();
-  const rate = snapshot?.state.preferences.speechRate;
+  const preference = snapshot?.state.preferences.speechRate;
+  const rate = preference === undefined ? undefined : playbackRate(preference);
 
   const subscribe = useCallback((onChange: () => void) => speech().subscribe(onChange), [speech]);
   const availability = useSyncExternalStore(subscribe, () => speech().availability, getNull);

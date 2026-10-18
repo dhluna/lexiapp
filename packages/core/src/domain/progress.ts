@@ -157,6 +157,19 @@ export function clampSessionSize(value: number): number {
   return Math.min(SESSION_SIZE_MAX, Math.max(SESSION_SIZE_MIN, Math.round(value)));
 }
 
+/**
+ * Rate the voice actually plays for a speed preference. The stored options stay 0.8 / 1 / 1.2
+ * (saved data and sync keep working), but "Lenta" plays at 0.6: at 0.8 a single word is only
+ * ~25 % longer and sounds the same as "Normal" (measured with Google US English in Chrome).
+ */
+export const SLOW_PLAYBACK_RATE = 0.6;
+export function playbackRate(preference: number): number {
+  return preference < 1 ? SLOW_PLAYBACK_RATE : preference;
+}
+
+/** "Más lento" in dictation: always slower than the slowest preference. */
+export const EXTRA_SLOW_PLAYBACK_RATE = 0.5;
+
 export function clampSpeechRate(value: number): number {
   if (!Number.isFinite(value)) return DEFAULT_PREFERENCES.speechRate;
   return Math.min(1.2, Math.max(0.6, Math.round(value * 10) / 10));

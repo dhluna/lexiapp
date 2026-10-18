@@ -1,4 +1,5 @@
 import { getWord } from "@lexi/core/data/catalog";
+import { EXTRA_SLOW_PLAYBACK_RATE } from "@lexi/core/domain/progress";
 import { checkAnswer, wordCount, type Exercise, type ExerciseCheck } from "@lexi/core/domain/exercise";
 import { isLastWord, type PracticeSession, type SessionAnswer } from "@lexi/core/domain/session";
 import type { Word } from "@lexi/core/domain/types";
@@ -13,7 +14,6 @@ import { VoiceNotice } from "@/components/voice-notice";
 import { useSpeech } from "@/hooks/use-speech";
 import { FONTS, RADIUS, useTheme } from "@/theme";
 
-const SLOW_RATE = 0.7;
 
 interface ExerciseCardProps {
   session: PracticeSession;
@@ -150,7 +150,7 @@ function ExerciseBody({
                 title="Más lento"
                 variant="ghost"
                 icon={<Snail size={18} color={colors["ink-soft"]} />}
-                onPress={() => speak(exercise.answer, SLOW_RATE)}
+                onPress={() => speak(exercise.answer, EXTRA_SLOW_PLAYBACK_RATE)}
               />
             </View>
           ) : (
