@@ -11,10 +11,12 @@ import {
   getProgressStore,
   getSpeechService,
   getSyncService,
+  getVoiceSettings,
 } from "@/services/instances";
 import type { ProgressStore } from "@lexi/core/services/progress-store";
 import type { SpeechService } from "@lexi/core/services/speech";
 import type { SyncService } from "@lexi/core/services/sync-service";
+import type { VoiceSettings } from "@lexi/core/services/voice-settings";
 
 interface Services {
   progressStore?: ProgressStore;
@@ -24,6 +26,7 @@ interface Services {
   sync?: SyncService | null;
   celebrator?: Celebrator;
   celebrationSettings?: CelebrationSettings;
+  voiceSettings?: VoiceSettings;
 }
 
 export interface ServiceResolvers {
@@ -33,6 +36,7 @@ export interface ServiceResolvers {
   sync: () => SyncService | null;
   celebrator: () => Celebrator;
   celebrationSettings: () => CelebrationSettings;
+  voiceSettings: () => VoiceSettings;
 }
 
 const ServicesContext = createContext<Services>({});
@@ -56,6 +60,7 @@ export function useServices(): ServiceResolvers {
       sync: () => (services.sync !== undefined ? services.sync : getSyncService()),
       celebrator: () => services.celebrator ?? getCelebrator(),
       celebrationSettings: () => services.celebrationSettings ?? getCelebrationSettings(),
+      voiceSettings: () => services.voiceSettings ?? getVoiceSettings(),
     }),
     [services],
   );

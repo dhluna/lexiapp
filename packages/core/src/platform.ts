@@ -35,6 +35,29 @@ export interface SpeechEngine {
   isBusy(): boolean;
 }
 
+// ─── Recorded audio ───────────────────────────────────────────────────────────
+
+export interface ClipRequest {
+  /** 1 = normal; slower speeds keep the pitch. */
+  rate: number;
+  /** Called once when the clip ends or is stopped. */
+  onDone: () => void;
+  /** Called instead of `onDone` when the clip cannot play (no network, missing file…). */
+  onError: () => void;
+}
+
+/**
+ * Plays Lexi's recorded pronunciations (`<voice>/<key>.mp3`, see `domain/audio.ts`).
+ * Optional: without it, every word is spoken with the system voice.
+ */
+export interface AudioClipPlayer {
+  /** Keys of the recordings that exist (the same for every voice). May reject when offline. */
+  loadIndex(): Promise<readonly string[]>;
+  /** `clip` is "<voice>/<key>". May throw; the caller handles it. */
+  play(clip: string, request: ClipRequest): void;
+  stop(): void;
+}
+
 // ─── Sync triggers ──────────────────────────────────────────────────────────
 
 /**

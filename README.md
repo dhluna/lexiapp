@@ -114,6 +114,7 @@ El detalle está en `docs/`:
 - [11 · Pendientes](docs/11-pendientes.md): CAPTCHA, comprobaciones antes de anunciar, app móvil y opcionales.
 - [12 · Niveles e insignias](docs/12-niveles.md): puntos, niveles e insignias de paquete.
 - [13 · Compartir Lexi](docs/13-compartir.md): página de compartir, redes y código QR.
+- [14 · Audio grabado](docs/14-audio.md): voces neuronales, selector de voz y cómo regenerar el audio.
 - Política de privacidad: [`/privacidad`](https://lexiapp.app/privacidad).
 
 ## Verificación
@@ -128,12 +129,11 @@ El detalle está en `docs/`:
 
 - **La pronunciación automática necesita una interacción previa** (política de los navegadores).
   En la práctica siempre la hay; si se bloqueara, el botón de escuchar sigue funcionando.
-- **La pronunciación depende del navegador y del sistema operativo.** Algunos sistemas no
-  tienen voces en inglés instaladas; entonces se usa la voz por defecto con `lang="en-US"`
-  y la app muestra un aviso con cómo instalar una. La calidad (y el ruido de fondo) depende
-  de la voz: las de Chrome («Google») y Edge («Natural») suenan mucho mejor que las voces
-  locales antiguas de Windows.
-  Si el navegador no tiene `speechSynthesis`, los botones aparecen desactivados con un aviso.
+- **La pronunciación se oye con voces grabadas** (neuronales, 4 voces a elegir en Ajustes:
+  EE. UU. o Reino Unido, mujer u hombre), iguales en todos los dispositivos
+  ([docs/14](docs/14-audio.md)). Si una grabación no está disponible (sin conexión en el
+  móvil, texto nuevo aún sin grabar), se usa la voz del navegador o del sistema, cuya
+  calidad depende del dispositivo; si no tiene voces en inglés, la app avisa.
   Las pruebas automáticas usan un motor de voz simulado.
 - **El progreso es local a cada navegador y dispositivo.** Borrar los datos del sitio lo elimina.
   En modo privado o con el almacenamiento bloqueado, la app avisa y funciona solo en memoria.

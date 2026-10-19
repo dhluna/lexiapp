@@ -68,9 +68,10 @@ export function PrivacyPolicy() {
         </p>
         <h3 className="font-semibold">Pronunciación</h3>
         <p>
-          Lexi usa las voces de tu navegador o de tu teléfono. Si tu sistema usa voces en línea, el texto de la
-          palabra que se pronuncia puede enviarse a su servicio de voz (por ejemplo, Google, Microsoft o Apple). No
-          se envía ningún dato personal.
+          Las palabras y los ejemplos se oyen con grabaciones de Lexi, que se descargan desde lexiapp.app como
+          cualquier otro archivo de la web. Si una grabación no está disponible (por ejemplo, sin conexión), se usa
+          la voz de tu navegador o de tu teléfono; si tu sistema usa voces en línea, el texto que se pronuncia puede
+          enviarse a su servicio de voz (Google, Microsoft o Apple). No se envía ningún dato personal.
         </p>
       </Section>
 

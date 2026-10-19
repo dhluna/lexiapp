@@ -3,6 +3,7 @@ import { MemoryStorage } from "@lexi/core/persistence/storage";
 import type { SpeechEngine } from "@lexi/core/platform";
 import type { AuthService } from "@lexi/core/services/auth";
 import { CelebrationSettings } from "@lexi/core/services/celebration-settings";
+import { VoiceSettings } from "@lexi/core/services/voice-settings";
 import { Celebrator } from "@lexi/core/services/celebrator";
 import { ProgressStore } from "@lexi/core/services/progress-store";
 import { SpeechService } from "@lexi/core/services/speech";
@@ -60,6 +61,7 @@ export async function renderWithServices(
   const reminders = new ReminderService(store, storage, options.notifications ?? fakeNotifications().port);
   // Real celebration logic with spy effects (no confetti layer or audio in Jest).
   const celebrationSettings = new CelebrationSettings(storage);
+  const voiceSettings = new VoiceSettings(storage);
   const effects = { confetti: jest.fn(), sound: jest.fn() };
   const celebrator = new Celebrator(celebrationSettings, effects);
   const result = await render(
@@ -67,17 +69,18 @@ export async function renderWithServices(
       <ServicesProvider
         value={{
           progressStore: store,
-          speech: new SpeechService(speech.engine),
+          speech: new SpeechService(speech.engine, { voices: voiceSettings }),
           auth: options.auth ?? null,
           sync: options.sync ?? null,
           reminders,
           celebrator,
           celebrationSettings,
+          voiceSettings,
         }}
       >
         {ui}
       </ServicesProvider>
     </SafeAreaProvider>,
   );
-  return { ...result, store, storage, spoken: speech.spoken, reminders, effects };
+  return { ...result, store, storage, spoken: speech.spoken, reminders, effects, voiceSettings };
 }
