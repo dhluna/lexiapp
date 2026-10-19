@@ -2,7 +2,7 @@ import { getWord } from "@lexi/core/data/catalog";
 import { STATUS_LABELS } from "@lexi/core/domain/labels";
 import { isLastWord, type PracticeSession, type SessionAnswer } from "@lexi/core/domain/session";
 import { useRouter } from "expo-router";
-import { Check, ChevronLeft, ChevronRight, Flag, Repeat, Volume2, VolumeOff, X } from "lucide-react-native";
+import { Check, ChevronLeft, ChevronRight, Flag, RotateCcw, Volume2, VolumeOff, X } from "lucide-react-native";
 import { useEffect, type ReactNode } from "react";
 import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
@@ -185,21 +185,19 @@ export function PracticeCard({
           label="Repasar"
           selected={currentAnswer === "review"}
           onPress={() => onAnswer("review")}
-          background={currentAnswer === "review" ? colors["review-soft"] : colors["surface-sunken"]}
+          background={colors["accent-soft"]}
           color={colors.ink}
-          ring={colors.review}
-          icon={<Repeat size={18} color={colors.review} />}
-          flex={1}
+          ring={colors.accent}
+          icon={<RotateCcw size={20} color={colors.accent} strokeWidth={2.5} />}
         />
         <AnswerButton
-          label="La aprendí"
+          label="La sé"
           selected={currentAnswer === "learned"}
           onPress={() => onAnswer("learned")}
           background={colors.accent}
           color={colors["accent-ink"]}
           ring={colors.ink}
-          icon={<Check size={18} color={colors["accent-ink"]} strokeWidth={2.75} />}
-          flex={1.4}
+          icon={<Check size={20} color={colors["accent-ink"]} strokeWidth={3} />}
         />
       </View>
     </View>
@@ -214,7 +212,6 @@ function AnswerButton({
   color,
   ring,
   icon,
-  flex,
 }: {
   label: string;
   selected: boolean;
@@ -223,7 +220,6 @@ function AnswerButton({
   color: string;
   ring: string;
   icon: ReactNode;
-  flex: number;
 }) {
   return (
     <Pressable
@@ -231,14 +227,14 @@ function AnswerButton({
       accessibilityState={{ selected }}
       onPress={onPress}
       style={({ pressed }) => ({
-        flex,
-        minHeight: 52,
+        flex: 1,
+        minHeight: 64,
         borderRadius: RADIUS.md,
         backgroundColor: background,
-        flexDirection: "row",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 8,
+        gap: 4,
         borderWidth: selected ? 2 : 0,
         borderColor: ring,
         transform: [{ scale: pressed ? 0.98 : 1 }],

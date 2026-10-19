@@ -51,7 +51,7 @@ describe("PracticeView", () => {
       await user.click(screen.getByRole("button", { name: `Escuchar la pronunciación de «${term}»` }));
       expect(lastSpoken(synth)).toBe(term);
 
-      await user.click(screen.getByRole("button", { name: i % 2 === 0 ? /La aprendí/ : /Repasar/ }));
+      await user.click(screen.getByRole("button", { name: i % 2 === 0 ? /La sé/ : /Repasar/ }));
     }
 
     expect(new Set(seen).size).toBe(5);
@@ -81,7 +81,7 @@ describe("PracticeView", () => {
 
     await user.click(screen.getByRole("button", { name: "Empezar" }));
     const term = currentTerm();
-    await user.click(screen.getByRole("button", { name: /La aprendí/ }));
+    await user.click(screen.getByRole("button", { name: /La sé/ }));
     first.unmount();
 
     // A fresh store over the same storage behaves like a page reload.
@@ -138,7 +138,7 @@ describe("PracticeView", () => {
     const { store, effects, rerender } = renderWithServices(<PracticeView />);
     act(() => store.updatePreferences({ sessionSize: 5 }));
     await user.click(screen.getByRole("button", { name: "Empezar" }));
-    for (let i = 0; i < 5; i += 1) await user.click(screen.getByRole("button", { name: /La aprendí/ }));
+    for (let i = 0; i < 5; i += 1) await user.click(screen.getByRole("button", { name: /La sé/ }));
 
     expect(screen.getByRole("heading", { name: "Todas aprendidas" })).toBeInTheDocument();
     expect(effects.confetti).toHaveBeenCalledWith("perfect");
@@ -179,7 +179,7 @@ describe("PracticeView", () => {
     expect(screen.getByText("Marcaste: por repasar")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Repasar/ })).toHaveAttribute("aria-pressed", "true");
 
-    await user.click(screen.getByRole("button", { name: /La aprendí/ }));
+    await user.click(screen.getByRole("button", { name: /La sé/ }));
     const entries = Object.entries(store.getSnapshot().state.words);
     expect(entries).toHaveLength(1);
     expect(getWord(entries[0][0])?.term).toBe(first);

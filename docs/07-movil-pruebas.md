@@ -64,7 +64,7 @@ El inicio con Google usa el mismo cliente OAuth que la web: no hay que tocar Goo
 ### Qué comprobar
 
 - **Practicar:** la palabra suena sola al aparecer; deslizar a la izquierda pasa a la siguiente
-  y a la derecha vuelve; «Repasar» y «La aprendí» guardan la respuesta.
+  y a la derecha vuelve; «Repasar» y «La sé» guardan la respuesta.
 - **Voz:** si aparece «Tu dispositivo no tiene una voz en inglés», instala una (el aviso dice
   dónde) y vuelve a abrir Lexi.
 - **Recordatorio:** en Ajustes › Recordatorio, actívalo y elige una hora cercana. Llega a esa

@@ -39,7 +39,7 @@ describe("PracticeScreen (mobile)", () => {
     const first = currentTerm();
     expect(spoken).toContain(first); // automatic pronunciation
 
-    await fireEvent.press(screen.getByText("La aprendí"));
+    await fireEvent.press(screen.getByText("La sé"));
     const learned = Object.entries(store.getSnapshot().state.words);
     expect(learned).toHaveLength(1);
     expect(getWord(learned[0][0])?.term).toBe(first);
@@ -75,7 +75,7 @@ describe("PracticeScreen (mobile)", () => {
     await fireEvent.press(screen.getByLabelText("Palabra anterior"));
     expect(currentTerm()).toBe(first);
     expect(screen.getByText("Marcaste: por repasar")).toBeTruthy();
-    await fireEvent.press(screen.getByText("La aprendí"));
+    await fireEvent.press(screen.getByText("La sé"));
     expect(Object.values(store.getSnapshot().state.words)[0]).toMatchObject({ status: "learned", timesSeen: 2 });
 
     for (let i = 0; i < 3; i += 1) await fireEvent.press(screen.getByLabelText("Palabra siguiente"));
@@ -107,7 +107,7 @@ describe("PracticeScreen (mobile)", () => {
     const { store, effects } = await renderWithServices(<PracticeScreen />, { storage });
     await act(async () => store.updatePreferences({ sessionSize: 5 }));
     await fireEvent.press(screen.getByText("Empezar"));
-    for (let i = 0; i < 5; i += 1) await fireEvent.press(screen.getByText("La aprendí"));
+    for (let i = 0; i < 5; i += 1) await fireEvent.press(screen.getByText("La sé"));
 
     expect(screen.getByText("Todas aprendidas")).toBeTruthy();
     expect(effects.confetti).toHaveBeenCalledWith("perfect");

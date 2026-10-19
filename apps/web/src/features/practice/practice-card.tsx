@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronLeft, ChevronRight, Flag, Repeat, Volume2, VolumeOff, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Flag, Repeat, RotateCcw, Volume2, VolumeOff, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, type ReactNode } from "react";
 import { getWord } from "@lexi/core/data/catalog";
@@ -261,11 +261,11 @@ function AnswerBar({
         shortcut="1"
         pressed={currentAnswer === "review"}
         className={cn(
-          "flex-1 text-ink",
-          currentAnswer === "review" ? "bg-review-soft ring-2 ring-review/60 ring-inset" : "bg-sunken hover:bg-line/70",
+          "bg-accent-soft text-ink hover:brightness-[0.97]",
+          currentAnswer === "review" && "ring-2 ring-accent ring-inset",
         )}
       >
-        <Repeat aria-hidden className="size-[18px] text-review" />
+        <RotateCcw aria-hidden className="size-5 text-accent" strokeWidth={2.5} />
         Repasar
       </AnswerButton>
       <AnswerButton
@@ -273,12 +273,12 @@ function AnswerBar({
         shortcut="2"
         pressed={currentAnswer === "learned"}
         className={cn(
-          "flex-[1.4] bg-accent text-accent-ink hover:brightness-110",
-          currentAnswer === "learned" && "ring-2 ring-accent/35 ring-offset-2 ring-offset-surface",
+          "bg-accent text-accent-ink hover:brightness-110",
+          currentAnswer === "learned" && "ring-2 ring-accent/40 ring-offset-2 ring-offset-surface",
         )}
       >
-        <Check aria-hidden className="size-[18px]" strokeWidth={2.75} />
-        La aprendí
+        <Check aria-hidden className="size-5" strokeWidth={3} />
+        La sé
       </AnswerButton>
     </div>
   );
@@ -305,11 +305,18 @@ function AnswerButton({
       aria-pressed={pressed}
       title={`Atajo: ${shortcut}`}
       className={cn(
-        "inline-flex h-13 min-w-0 items-center justify-center gap-2 rounded-xl px-3 font-semibold whitespace-nowrap transition active:scale-[0.98]",
+        "relative inline-flex min-h-16 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-3 py-2.5 text-lg font-semibold whitespace-nowrap transition active:scale-[0.98]",
         className,
       )}
     >
       {children}
+      {/* Keyboard shortcut, only where there is a keyboard. */}
+      <kbd
+        aria-hidden
+        className="absolute top-1.5 right-2 hidden rounded px-1 font-sans text-xs font-semibold opacity-60 md:inline"
+      >
+        {shortcut}
+      </kbd>
     </button>
   );
 }

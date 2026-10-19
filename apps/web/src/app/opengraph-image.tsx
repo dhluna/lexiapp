@@ -82,7 +82,7 @@ export default async function OpenGraphImage() {
               Repasar
             </div>
             <div style={{ display: "flex", flex: 1, justifyContent: "center", padding: "14px 0", borderRadius: 16, background: "#0f7448", color: "#ffffff", fontSize: 22 }}>
-              La aprendí
+              La sé
             </div>
           </div>
         </div>
