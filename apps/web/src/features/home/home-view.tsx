@@ -1,6 +1,6 @@
 "use client";
 
-import { Flame, Plus } from "lucide-react";
+import { ArrowRight, Flame, Heart, Plus } from "lucide-react";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
@@ -109,6 +109,16 @@ export function HomeView() {
           )}
         </div>
       </section>
+      <p className="text-center">
+        <Link
+          href="/compartir"
+          className="inline-flex min-h-11 items-center gap-2 font-semibold text-accent underline-offset-4 hover:underline"
+        >
+          <Heart aria-hidden className="size-4" />
+          ¿Te gusta Lexi? Compártela
+          <ArrowRight aria-hidden className="size-4" />
+        </Link>
+      </p>
     </div>
   );
 }

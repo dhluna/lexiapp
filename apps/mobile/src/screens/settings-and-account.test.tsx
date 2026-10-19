@@ -37,6 +37,16 @@ function fakeAuth(next: AuthResult = { ok: true }) {
 beforeEach(() => Object.values(router).forEach((fn) => (fn as jest.Mock).mockClear()));
 
 describe("SettingsScreen (mobile)", () => {
+  it("shares Lexi with the system sheet and shows the QR code", async () => {
+    const { Share } = jest.requireActual<typeof import("react-native")>("react-native");
+    const share = jest.spyOn(Share, "share").mockResolvedValue({ action: "sharedAction" });
+    await renderWithServices(<SettingsScreen />);
+    expect(screen.getByLabelText("Código QR que abre lexiapp.app")).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole("button", { name: "Compartir Lexi" }));
+    expect(share).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("https://lexiapp.app") }));
+    share.mockRestore();
+  });
+
   it("hides the account group without Supabase and updates preferences", async () => {
     const { store } = await renderWithServices(<SettingsScreen />);
     expect(screen.queryByText("Cuenta")).toBeNull();

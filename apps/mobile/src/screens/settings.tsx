@@ -1,9 +1,11 @@
+import { SHARE_TEXT, SHARE_URL } from "@lexi/core/data/share";
 import { REMINDER_HOURS } from "@lexi/core/domain/reminder";
 import { achievedCount, formatPoints, levelFor } from "@lexi/core/domain/levels";
 import { formatAgo } from "@lexi/core/domain/relative-time";
 import { useRouter } from "expo-router";
 import { useState, type ReactNode } from "react";
-import { Linking, Pressable, Switch, View } from "react-native";
+import { Linking, Pressable, Share, Switch, View } from "react-native";
+import { LexiQr } from "@/components/lexi-qr";
 import { LevelBadge } from "@/components/levels";
 import { VoiceNotice } from "@/components/voice-notice";
 import { AppText, Button, Card, Chip, Notice, Screen } from "@/components/ui";
@@ -252,6 +254,27 @@ function ReminderGroup() {
   );
 }
 
+/** Share Lexi: the system share sheet (WhatsApp, Instagram…) and the QR code to show to someone. */
+function ShareGroup() {
+  const { colors } = useTheme();
+  return (
+    <Group title="Compartir Lexi">
+      <View style={{ flexDirection: "row", gap: 16, alignItems: "center" }}>
+        <View style={{ padding: 6, borderRadius: RADIUS.lg, borderWidth: 1, borderColor: colors.line, backgroundColor: "#ffffff" }}>
+          <LexiQr size={132} />
+        </View>
+        <AppText variant="small" style={{ flex: 1 }}>
+          Muéstrale el código a alguien para que lo escanee con la cámara, o envíale el enlace.
+        </AppText>
+      </View>
+      <Button
+        title="Compartir Lexi"
+        onPress={() => void Share.share({ message: `${SHARE_TEXT} ${SHARE_URL}`, url: SHARE_URL }).catch(() => {})}
+      />
+    </Group>
+  );
+}
+
 export function SettingsScreen() {
   const [celebrationSound, setCelebrationSound] = useCelebrationSound();
   const { colors } = useTheme();
@@ -298,6 +321,8 @@ export function SettingsScreen() {
       </Group>
 
       <ReminderGroup />
+
+      <ShareGroup />
 
       <Group title="Datos">
         <AppText variant="subheading">Borrar progreso</AppText>
