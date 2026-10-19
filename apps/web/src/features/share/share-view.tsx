@@ -53,7 +53,7 @@ export function ShareView() {
       </header>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[auto_minmax(0,1fr)]">
-        <section aria-labelledby="qr-titulo" className="grid justify-items-center gap-4 rounded-3xl bg-surface p-6 sm:p-8">
+        <section aria-labelledby="qr-titulo" className="grid min-w-0 justify-items-center gap-4 rounded-3xl bg-surface p-6 sm:p-8">
           <h2 id="qr-titulo" className="sr-only">
             Código QR
           </h2>
@@ -63,17 +63,17 @@ export function ShareView() {
           <p className="text-sm text-ink-soft">Escanéalo con la cámara del móvil.</p>
           <div className="grid w-full grid-cols-2 gap-2">
             <a href="/qr/lexiapp-qr.png" download="lexi-qr.png" className={buttonClasses("secondary", "md", "text-sm")}>
-              <Download aria-hidden className="size-4" />
+              <Download aria-hidden className="size-4 shrink-0" />
               QR (PNG)
             </a>
             <a href="/qr/lexiapp-qr.svg" download="lexi-qr.svg" className={buttonClasses("secondary", "md", "text-sm")}>
-              <Printer aria-hidden className="size-4" />
+              <Printer aria-hidden className="size-4 shrink-0" />
               Para imprimir
             </a>
           </div>
         </section>
 
-        <section aria-labelledby="enlace-titulo" className="grid content-start gap-5 rounded-3xl bg-surface p-6 sm:p-8">
+        <section aria-labelledby="enlace-titulo" className="grid min-w-0 grid-cols-1 content-start gap-5 rounded-3xl bg-surface p-6 sm:p-8">
           <div>
             <h2 id="enlace-titulo" className="font-display text-xl font-semibold">
               Enlace
@@ -106,10 +106,10 @@ export function ShareView() {
             <Button
               variant="secondary"
               size="lg"
-              className="w-full"
+              className="w-full py-2 text-center whitespace-normal"
               onClick={() => void navigator.share({ title: "Lexi", text: SHARE_TEXT, url: SHARE_URL }).catch(() => {})}
             >
-              <Share2 aria-hidden className="size-5 text-accent" />
+              <Share2 aria-hidden className="size-5 shrink-0 text-accent" />
               Compartir… (WhatsApp, Instagram…)
             </Button>
           )}
@@ -127,7 +127,7 @@ export function ShareView() {
                       rel="noopener noreferrer"
                       className={buttonClasses("secondary", "md", "w-full justify-start")}
                     >
-                      <Icon aria-hidden className="size-4 text-accent" />
+                      <Icon aria-hidden className="size-4 shrink-0 text-accent" />
                       {label}
                       <span className="sr-only"> (se abre en otra pestaña)</span>
                     </a>
