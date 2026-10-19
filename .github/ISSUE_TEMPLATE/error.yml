@@ -1,0 +1,53 @@
+name: Reportar un error
+description: Algo no funciona como debería.
+labels: ["error"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por avisar. Si es un problema de **seguridad**, no lo publiques aquí:
+        escribe a hola@lexiapp.app (ver SECURITY.md).
+  - type: textarea
+    id: que-paso
+    attributes:
+      label: ¿Qué pasó?
+      description: Lo que viste y lo que esperabas ver.
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducirlo
+      placeholder: |
+        1. Entra en Practicar
+        2. Pulsa «La sé»
+        3. …
+    validations:
+      required: true
+  - type: dropdown
+    id: donde
+    attributes:
+      label: ¿Dónde?
+      options:
+        - Web (lexiapp.app)
+        - App móvil (versión de prueba)
+    validations:
+      required: true
+  - type: input
+    id: dispositivo
+    attributes:
+      label: Navegador o dispositivo
+      placeholder: Chrome 140 en Windows, Samsung A54…
+  - type: dropdown
+    id: cuenta
+    attributes:
+      label: ¿Usabas una cuenta?
+      options:
+        - Sin cuenta
+        - Con email y contraseña
+        - Con Google
+  - type: textarea
+    id: capturas
+    attributes:
+      label: Capturas o mensajes de error
+      description: Puedes arrastrar imágenes aquí. No incluyas datos personales.

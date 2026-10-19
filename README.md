@@ -141,6 +141,13 @@ El detalle está en `docs/`:
 - Sin pruebas end-to-end automatizadas (Playwright) en esta fase; los flujos se cubren con
   React Testing Library y se revisaron a mano en el navegador.
 
+## Contribuir
+
+Las contribuciones son bienvenidas. Lee [CONTRIBUTING.md](CONTRIBUTING.md): primero un issue,
+luego un pull request desde tu fork. `master` está protegida: todo entra por PR con el CI en
+verde. Los fallos de seguridad se reportan en privado ([SECURITY.md](SECURITY.md)). Todos los espacios del proyecto siguen el
+[código de conducta](CODE_OF_CONDUCT.md).
+
 ## Licencia
 
 [MIT](LICENSE). Puedes usar, modificar y redistribuir el código, también en proyectos

@@ -1,0 +1,29 @@
+name: Corregir o sugerir una palabra
+description: Una traducción, un ejemplo o una pronunciación (AFI) que está mal, o una palabra que falta.
+labels: ["catálogo"]
+body:
+  - type: input
+    id: palabra
+    attributes:
+      label: Palabra
+      placeholder: luggage
+    validations:
+      required: true
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: ¿Qué hay que hacer?
+      options:
+        - Corregir la traducción o la definición
+        - Corregir un ejemplo
+        - Corregir la pronunciación (AFI)
+        - Añadir una palabra nueva
+    validations:
+      required: true
+  - type: textarea
+    id: detalle
+    attributes:
+      label: Detalle
+      description: Qué dice ahora y qué debería decir, con una fuente si la tienes.
+    validations:
+      required: true

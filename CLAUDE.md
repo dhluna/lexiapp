@@ -15,6 +15,9 @@ Monorepo con npm workspaces; los comandos de la raíz se ejecutan en todos los p
 - `npm run test:sql`: si cambias `supabase/migrations/`, añade la regla a
   `supabase/tests/10_sync_rules.sql` y ejecútalo (necesita Docker).
 - No ejecutes `npm run build` con un servidor de Next en marcha: comparten `.next`.
+- **Flujo de Git:** `master` está protegida (ruleset). Trabaja en una rama, abre un PR y
+  fusiona con *squash* cuando el CI (`.github/workflows/ci.yml`) esté en verde. Cada fusión
+  publica la web en Vercel. Ver `CONTRIBUTING.md`.
 - Móvil: `npm run start -w @lexi/mobile`; compila los paquetes con
   `npx expo export --platform android|ios` dentro de `apps/mobile`.
 

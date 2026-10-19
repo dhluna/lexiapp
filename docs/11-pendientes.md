@@ -62,6 +62,10 @@ Añadir Cloudflare a «Quién más interviene» en `/privacidad` y actualizar la
       durante 14 días, ficha (textos, capturas, icono 512×512 en `brand/`), formulario de
       seguridad de los datos y AAB con el perfil `production`. Ver la conversación de lanzamiento
       resumida en `docs/05-despliegue.md` y `docs/07-movil-pruebas.md`.
+- [ ] **Actualizar a Expo SDK 58** con `npx expo install expo@^58 --fix` y probar la app. Resuelve las
+      alertas de Dependabot de dependencias transitivas de Expo (`decode-uri-component`, `braces`,
+      `node-forge`, `uuid`…), que Dependabot no puede arreglar paquete a paquete. Hay que cambiar
+      también el React fijado si el SDK lo pide.
 - [ ] **iOS / TestFlight**: cuenta de Apple Developer e «Iniciar sesión con Apple» (obligatorio en
       la App Store si se ofrece Google).
 

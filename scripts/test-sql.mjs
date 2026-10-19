@@ -20,7 +20,9 @@ try {
   docker(["run", "-d", "--rm", "--name", NAME, "-e", "POSTGRES_HOST_AUTH_METHOD=trust", "postgres:16-alpine"]);
   for (let i = 0; ; i++) {
     try {
-      docker(["exec", NAME, "pg_isready", "-U", "postgres", "-q"]);
+      // TCP, not the socket: the image first runs a temporary socket-only server to
+      // initialise the database and restarts it, so the socket alone can answer too early.
+      docker(["exec", NAME, "pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-q"]);
       break;
     } catch {
       if (i > 60) throw new Error("Postgres did not start");
@@ -31,7 +33,7 @@ try {
     // psql prints NOTICE lines (the passed checks) on stderr.
     const run = spawnSync(
       "docker",
-      ["exec", "-i", NAME, "psql", "-U", "postgres", "-q", "-v", "ON_ERROR_STOP=1", "-f", "-"],
+      ["exec", "-i", NAME, "psql", "-h", "127.0.0.1", "-U", "postgres", "-q", "-v", "ON_ERROR_STOP=1", "-f", "-"],
       { input: readFileSync(file, "utf8"), encoding: "utf8" },
     );
     for (const line of run.stderr.split("\n")) {

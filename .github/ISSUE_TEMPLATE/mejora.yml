@@ -1,0 +1,27 @@
+name: Proponer una mejora
+description: Una idea, una función nueva o un cambio en una existente.
+labels: ["mejora"]
+body:
+  - type: textarea
+    id: problema
+    attributes:
+      label: ¿Qué problema resuelve?
+      description: Cuéntalo desde quien aprende inglés con Lexi.
+    validations:
+      required: true
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: ¿Qué propones?
+    validations:
+      required: true
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Alternativas que consideraste
+  - type: checkboxes
+    id: aporte
+    attributes:
+      label: Colaboración
+      options:
+        - label: Me gustaría implementarlo yo (espera a que se acepte la idea antes de abrir el PR).
