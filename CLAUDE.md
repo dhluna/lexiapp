@@ -56,7 +56,8 @@ apps/mobile     Expo (Fase 4)
 - **Cambios en el formato guardado:** sube `CURRENT_VERSION` en `persistence/schema.ts`,
   añade la migración en `MIGRATIONS[versiónAnterior]`, actualiza `sanitizeState` y añade
   una prueba. Nunca sobrescribas datos que no se pueden leer sin hacer copia.
-- **Estadísticas solo desde el estado real** (`computeStats`). Nada de números decorativos.
+- **Estadísticas solo desde el estado real** (`computeStats`, y puntos y niveles con
+  `domain/levels.ts`). Nada de números decorativos ni contadores guardados aparte.
 - **Racha:** días locales `YYYY-MM-DD` únicos. Solo cuentan las respuestas dadas en práctica.
 - **Sincronización (Fase 3):** nunca borres progreso sin dejar rastro: reiniciar una palabra
   registra `removedWords` y «borrar progreso» fija `resetAt`. Toda fusión pasa por

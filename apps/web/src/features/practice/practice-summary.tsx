@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { getWord } from "@lexi/core/data/catalog";
 import { celebrationFor } from "@lexi/core/domain/celebration";
+import type { Level } from "@lexi/core/domain/levels";
+import { LevelBadge } from "@/components/level-badge";
 import { isQuiz, summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
 import type { WordId } from "@lexi/core/domain/types";
 import { useServices } from "@/hooks/services-context";
@@ -14,9 +16,11 @@ interface PracticeSummaryProps {
   session: PracticeSession;
   onRestart: () => void;
   onChangeSettings: () => void;
+  /** The level reached during this session, if it went up. */
+  newLevel?: Level | null;
 }
 
-export function PracticeSummary({ session, onRestart, onChangeSettings }: PracticeSummaryProps) {
+export function PracticeSummary({ session, onRestart, onChangeSettings, newLevel = null }: PracticeSummaryProps) {
   const summary = summarize(session);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => headingRef.current?.focus(), []);
@@ -24,7 +28,8 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
   // Celebrate once per finished session (the ref survives re-renders and StrictMode's re-run).
   const { celebrator } = useServices();
   const celebrated = useRef<string | null>(null);
-  const kind = celebrationFor(summary);
+  // Reaching a new level gets the golden celebration.
+  const kind = newLevel ? "perfect" : celebrationFor(summary);
   useEffect(() => {
     if (celebrated.current === session.id) return;
     celebrated.current = session.id;
@@ -60,6 +65,17 @@ export function PracticeSummary({ session, onRestart, onChangeSettings }: Practi
               ? "No respondiste ninguna palabra, así que no hay cambios en tu progreso."
               : `Respondiste ${answered} de ${summary.total} palabras. Ya está todo guardado.`}
         </p>
+        <div aria-live="polite">
+          {newLevel && (
+            <div className="mt-5 flex items-center gap-3 rounded-2xl bg-accent-soft p-4">
+              <LevelBadge level={newLevel.number} />
+              <div>
+                <p className="font-display text-lg font-semibold text-accent">¡Subiste a {newLevel.name}!</p>
+                <p className="text-sm text-ink-soft">Nivel {newLevel.number}. Sigue así.</p>
+              </div>
+            </div>
+          )}
+        </div>
         <dl className="mt-6 grid grid-cols-3 gap-3 text-center">
           <Count term={quiz ? "Acertadas" : "Aprendidas"} value={summary.learned.length} className="bg-learned-soft text-learned" />
           <Count term={quiz ? "Falladas" : "Por repasar"} value={summary.review.length} className="bg-review-soft text-review" />

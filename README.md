@@ -26,6 +26,8 @@ por categoría. Cuentas opcionales para sincronizar el progreso entre dispositiv
   una), con transcripción fonética (AFI, inglés americano). Búsqueda en inglés o español (sin
   distinguir acentos) en todo el catálogo o dentro de un paquete, filtro por estado y
   ficha completa de cada palabra.
+- **Niveles e insignias:** 100 puntos por palabra aprendida, 8 niveles (de «Recién llegado» a
+  «Maestro») e insignias por paquete completado; todo se calcula del progreso real.
 - **Progreso:** resumen (racha, aprendidas, por repasar y calendario de 4 semanas),
   palabras por repasar y avance por paquete.
 - **Ajustes** (icono ⚙ de la cabecera): cuenta, palabras por sesión, pronunciación
@@ -108,6 +110,7 @@ El detalle está en `docs/`:
 - [09 · Celebración](docs/09-celebracion.md): confeti y sonido al terminar una sesión.
 - [10 · Ponerme a prueba](docs/10-ejercicios.md): dictado y completar la frase.
 - [11 · Pendientes](docs/11-pendientes.md): CAPTCHA, comprobaciones antes de anunciar, app móvil y opcionales.
+- [12 · Niveles e insignias](docs/12-niveles.md): puntos, niveles e insignias de paquete.
 - Política de privacidad: [`/privacidad`](https://lexiapp.app/privacidad).
 
 ## Verificación

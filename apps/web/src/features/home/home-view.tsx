@@ -10,6 +10,8 @@ import { PACKS } from "@lexi/core/data/packs";
 import { toDayKey } from "@lexi/core/domain/dates";
 import { useProgress, useStats } from "@/hooks/use-progress";
 import { PracticeCalendar } from "@/features/progress/practice-calendar";
+import { LevelSummary } from "@/features/levels/level-summary";
+import { achievedCount, levelFor } from "@lexi/core/domain/levels";
 import { planSession, planText } from "@lexi/core/planning/session-plan";
 
 export function HomeView() {
@@ -77,6 +79,8 @@ export function HomeView() {
         </div>
 
         <div className="rounded-3xl bg-surface p-6">
+          <LevelSummary status={levelFor(achievedCount(state))} />
+          <div className="my-5 border-t border-line" />
           <h2 className="font-display text-xl font-semibold">Tu vocabulario</h2>
           <p className="mt-1 text-ink-soft">
             Has estudiado {stats.studied} de {stats.totalWords} palabras

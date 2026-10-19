@@ -12,6 +12,8 @@ import { PACKS } from "@lexi/core/data/packs";
 import { toDayKey } from "@lexi/core/domain/dates";
 import { useProgress, useStats } from "@/hooks/use-progress";
 import { PracticeCalendar } from "./practice-calendar";
+import { BadgesSection } from "@/features/levels/badges-section";
+import { achievedCount, levelFor, packBadges } from "@lexi/core/domain/levels";
 
 const days = (n: number) => `${n} ${n === 1 ? "día" : "días"}`;
 
@@ -152,6 +154,8 @@ export function ProgressView() {
           </Link>
         )}
       </section>
+
+      <BadgesSection status={levelFor(achievedCount(state))} packs={packBadges(state)} />
     </div>
   );
 }

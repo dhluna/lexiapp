@@ -1,10 +1,12 @@
 import { getWord } from "@lexi/core/data/catalog";
 import { celebrationFor } from "@lexi/core/domain/celebration";
+import type { Level } from "@lexi/core/domain/levels";
 import { isQuiz, summarize, summaryTitle, type PracticeSession } from "@lexi/core/domain/session";
 import type { WordId } from "@lexi/core/domain/types";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, View } from "react-native";
+import { LevelBadge } from "@/components/levels";
 import { AppText, Button, Card, Screen } from "@/components/ui";
 import { useServices } from "@/hooks/services-context";
 import { useProgressActions } from "@/hooks/use-progress";
@@ -14,9 +16,11 @@ interface PracticeSummaryProps {
   session: PracticeSession;
   onRestart: () => void;
   onChoosePack: () => void;
+  /** The level reached during this session, if it went up. */
+  newLevel?: Level | null;
 }
 
-export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSummaryProps) {
+export function PracticeSummary({ session, onRestart, onChoosePack, newLevel = null }: PracticeSummaryProps) {
   const { colors } = useTheme();
   const router = useRouter();
   const summary = summarize(session);
@@ -28,7 +32,8 @@ export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSu
   // Celebrate once per finished session (same rule as the web).
   const { celebrator } = useServices();
   const celebrated = useRef<string | null>(null);
-  const kind = celebrationFor(summary);
+  // Reaching a new level gets the golden celebration.
+  const kind = newLevel ? "perfect" : celebrationFor(summary);
   useEffect(() => {
     if (celebrated.current === session.id) return;
     celebrated.current = session.id;
@@ -65,6 +70,20 @@ export function PracticeSummary({ session, onRestart, onChoosePack }: PracticeSu
               ? "No respondiste ninguna palabra, así que no hay cambios en tu progreso."
               : `Respondiste ${answered} de ${summary.total} palabras. Ya está todo guardado.`}
         </AppText>
+        {newLevel && (
+          <View
+            accessibilityLiveRegion="polite"
+            style={{ flexDirection: "row", alignItems: "center", gap: 12, padding: 14, borderRadius: RADIUS.lg, backgroundColor: colors["accent-soft"] }}
+          >
+            <LevelBadge level={newLevel.number} />
+            <View style={{ flex: 1 }}>
+              <AppText variant="subheading" color={colors.accent}>
+                ¡Subiste a {newLevel.name}!
+              </AppText>
+              <AppText variant="small">Nivel {newLevel.number}. Sigue así.</AppText>
+            </View>
+          </View>
+        )}
         <View style={{ flexDirection: "row", gap: 8 }}>
           {counts.map((c) => (
             <View

@@ -1,5 +1,6 @@
 import { getActiveWords, getWord, isPackActive } from "@lexi/core/data/catalog";
 import { selectQuizWords } from "@lexi/core/domain/exercise";
+import { achievedCount, levelUp } from "@lexi/core/domain/levels";
 import { isPackId } from "@lexi/core/data/packs";
 import {
   answerCurrent,
@@ -52,14 +53,20 @@ export function PracticeScreen() {
   const actions = useProgressActions();
   const [session, setSession] = useState<PracticeSession | null>(null);
   const [handledLink, setHandledLink] = useState<string | null>(null);
+  // Words achieved when the session started, to tell whether it raised the level.
+  const [startAchieved, setStartAchieved] = useState(0);
 
   // Start from a link during render (React re-renders before painting): no flash of the setup screen.
   if (linkToken && linkToken !== handledLink) {
     setHandledLink(linkToken);
+    setStartAchieved(achievedCount(state));
     setSession(buildSession(state, linkedPack));
   }
 
-  const start = (packId: PackId | null, mode: PracticeMode = "cards") => setSession(buildSession(state, packId, mode));
+  const start = (packId: PackId | null, mode: PracticeMode = "cards") => {
+    setStartAchieved(achievedCount(state));
+    setSession(buildSession(state, packId, mode));
+  };
 
   if (!session) return <PracticeSetup state={state} onStart={(pack) => start(pack)} onStartQuiz={() => start(null, "quiz")} />;
 
@@ -67,6 +74,7 @@ export function PracticeScreen() {
     return (
       <PracticeSummary
         session={session}
+        newLevel={levelUp(startAchieved, achievedCount(state))}
         onRestart={() => start(session.packId, isQuiz(session) ? "quiz" : "cards")}
         onChoosePack={() => setSession(null)}
       />

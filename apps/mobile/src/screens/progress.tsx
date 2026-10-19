@@ -1,10 +1,12 @@
 import { getActiveWords } from "@lexi/core/data/catalog";
+import { achievedCount, levelFor, packBadges } from "@lexi/core/domain/levels";
 import { PACKS } from "@lexi/core/data/packs";
 import { toDayKey } from "@lexi/core/domain/dates";
 import { useRouter } from "expo-router";
 import { Flame } from "lucide-react-native";
 import type { ReactNode } from "react";
 import { Pressable, View } from "react-native";
+import { BadgesCard } from "@/components/levels";
 import { PackIcon } from "@/components/pack-icon";
 import { PracticeCalendar } from "@/components/practice-calendar";
 import { AppText, Button, Card, ProgressBar, Screen } from "@/components/ui";
@@ -146,6 +148,8 @@ export function ProgressScreen() {
           <Button title="Añadir más paquetes" variant="ghost" onPress={() => router.navigate("/vocabulario")} />
         )}
       </Card>
+
+      <BadgesCard status={levelFor(achievedCount(state))} packs={packBadges(state)} />
     </Screen>
   );
 }

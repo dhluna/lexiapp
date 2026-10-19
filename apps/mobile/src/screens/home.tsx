@@ -1,10 +1,12 @@
 import { activePackIds } from "@lexi/core/data/catalog";
+import { achievedCount, levelFor } from "@lexi/core/domain/levels";
 import { PACKS } from "@lexi/core/data/packs";
 import { toDayKey } from "@lexi/core/domain/dates";
 import { planSession, planText } from "@lexi/core/planning/session-plan";
 import { useRouter } from "expo-router";
 import { Flame, Plus } from "lucide-react-native";
 import { View } from "react-native";
+import { LevelSummary } from "@/components/levels";
 import { PracticeCalendar } from "@/components/practice-calendar";
 import { AppText, Button, Card, ProgressBar, Screen } from "@/components/ui";
 import { useProgress, useStats } from "@/hooks/use-progress";
@@ -68,6 +70,8 @@ export function HomeScreen() {
       </Card>
 
       <Card>
+        <LevelSummary status={levelFor(achievedCount(state))} />
+        <View style={{ height: 1, backgroundColor: colors.line }} />
         <AppText variant="heading">Tu vocabulario</AppText>
         <AppText variant="muted">
           Has estudiado {stats.studied} de {stats.totalWords} palabras

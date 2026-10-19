@@ -5,6 +5,7 @@ import { useState } from "react";
 import { getActiveWords, getWord, isPackActive } from "@lexi/core/data/catalog";
 import { isPackId } from "@lexi/core/data/packs";
 import { selectQuizWords } from "@lexi/core/domain/exercise";
+import { achievedCount, levelUp } from "@lexi/core/domain/levels";
 import {
   answerCurrent,
   createQuiz,
@@ -61,12 +62,15 @@ export function PracticeView() {
   const actions = useProgressActions();
   const [session, setSession] = useState<PracticeSession | null>(null);
   const [announcement, setAnnouncement] = useState("");
+  // Words achieved when the session started, to tell whether it raised the level.
+  const [startAchieved, setStartAchieved] = useState(0);
   // Coming from a direct link: the setup screen is skipped entirely.
   const [autoStartPending, setAutoStartPending] = useState(autoStart);
 
   const start = (pack: PackId | null, mode: PracticeMode = "cards") => {
     if (!snapshot) return;
     setAnnouncement("");
+    setStartAchieved(achievedCount(snapshot.state));
     setSession(buildSession(snapshot.state, pack, mode));
   };
 
@@ -74,6 +78,7 @@ export function PracticeView() {
   // committing), so neither the setup screen nor an empty frame is ever painted.
   if (autoStartPending && snapshot) {
     setAutoStartPending(false);
+    setStartAchieved(achievedCount(snapshot.state));
     setSession(buildSession(snapshot.state, packId, linkedMode));
   }
 
@@ -95,6 +100,7 @@ export function PracticeView() {
     return (
       <PracticeSummary
         session={session}
+        newLevel={levelUp(startAchieved, achievedCount(snapshot.state))}
         onRestart={() => start(session.packId, isQuiz(session) ? "quiz" : "cards")}
         onChangeSettings={() => setSession(null)}
       />
