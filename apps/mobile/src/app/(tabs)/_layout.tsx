@@ -1,8 +1,11 @@
 import { Tabs, useRouter } from "expo-router";
 import { BookOpen, ChartNoAxesColumn, House, Layers, Settings, type LucideIcon } from "lucide-react-native";
-import type { ColorValue } from "react-native";
+import { achievedCount, levelFor } from "@lexi/core/domain/levels";
+import { View, type ColorValue } from "react-native";
+import { LevelBadge } from "@/components/levels";
 import { IconButton } from "@/components/ui";
 import { useSync } from "@/hooks/use-account";
+import { useProgress } from "@/hooks/use-progress";
 import { FONTS, useTheme } from "@/theme";
 
 function SettingsButton() {
@@ -13,6 +16,26 @@ function SettingsButton() {
     <IconButton label={failed ? "Ajustes: no se pudo sincronizar" : "Ajustes"} onPress={() => router.push("/ajustes")}>
       <Settings size={22} color={failed ? colors.danger : colors.ink} />
     </IconButton>
+  );
+}
+
+/** Current level, always in sight: opens the badges in Progreso. */
+function LevelButton() {
+  const router = useRouter();
+  const { level } = levelFor(achievedCount(useProgress().state));
+  return (
+    <IconButton label={`Nivel ${level.number}, ${level.name}: ver insignias`} onPress={() => router.navigate("/progreso")}>
+      <LevelBadge level={level.number} size={32} />
+    </IconButton>
+  );
+}
+
+function HeaderActions() {
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <LevelButton />
+      <SettingsButton />
+    </View>
   );
 }
 
@@ -32,7 +55,7 @@ export default function TabsLayout() {
         headerTintColor: colors.ink,
         headerTitleStyle: { fontFamily: FONTS.display, fontSize: 22 },
         headerShadowVisible: false,
-        headerRight: () => <SettingsButton />,
+        headerRight: () => <HeaderActions />,
         headerRightContainerStyle: { paddingRight: 8 },
         sceneStyle: { backgroundColor: colors.paper },
         tabBarActiveTintColor: colors.accent,

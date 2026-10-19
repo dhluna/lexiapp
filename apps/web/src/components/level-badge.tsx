@@ -13,6 +13,7 @@ const ICONS: Record<number, LucideIcon> = {
 };
 
 const SIZES = {
+  xs: { box: "size-8", icon: "size-4" },
   sm: { box: "size-10", icon: "size-5" },
   md: { box: "size-12", icon: "size-6" },
   lg: { box: "size-14", icon: "size-7" },

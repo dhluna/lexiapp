@@ -3,8 +3,11 @@
 import { BookOpen, ChartNoAxesColumn, House, Layers, Settings, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LevelBadge } from "@/components/level-badge";
 import { useSync } from "@/hooks/use-account";
+import { useProgress } from "@/hooks/use-progress";
 import { cn } from "@/lib/cn";
+import { achievedCount, levelFor } from "@lexi/core/domain/levels";
 
 interface NavItem {
   href: string;
@@ -47,6 +50,31 @@ export function TopNav() {
         })}
       </ul>
     </nav>
+  );
+}
+
+/** Current level, always in sight: badge (and name from `sm`) linking to the badges in Progreso. */
+export function LevelLink() {
+  const pathname = usePathname();
+  const snapshot = useProgress();
+  if (!snapshot) return <span aria-hidden className="size-11" />;
+  const { level } = levelFor(achievedCount(snapshot.state));
+  const active = isActive(pathname, "/progreso");
+  return (
+    <Link
+      href="/progreso#insignias"
+      aria-label={`Nivel ${level.number}, ${level.name}: ver insignias`}
+      title={`Nivel ${level.number} · ${level.name}`}
+      className={cn(
+        "inline-flex min-h-11 items-center gap-2 rounded-full px-1.5 font-semibold text-ink-soft transition-colors hover:bg-sunken hover:text-ink pr-3 md:pr-1.5 lg:pr-3",
+        active && "text-ink",
+      )}
+    >
+      <LevelBadge level={level.number} size="xs" />
+      <span aria-hidden className="text-sm md:hidden lg:inline">
+        {level.name}
+      </span>
+    </Link>
   );
 }
 

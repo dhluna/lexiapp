@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque, Noto_Sans } from "next/font/google";
 import Link from "next/link";
-import { BottomNav, SettingsLink, TopNav } from "@/components/layout/app-nav";
+import { BottomNav, LevelLink, SettingsLink, TopNav } from "@/components/layout/app-nav";
 import { PersistenceNotice } from "@/components/layout/persistence-notice";
 import { SyncBootstrap } from "@/hooks/use-account";
 import { SITE_URL } from "@/lib/site";
@@ -70,6 +70,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </Link>
             <div className="flex items-center gap-1">
               <TopNav />
+              <LevelLink />
               <SettingsLink />
             </div>
           </div>

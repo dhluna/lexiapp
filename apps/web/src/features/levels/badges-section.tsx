@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 export function BadgesSection({ status, packs }: { status: LevelStatus; packs: PackBadge[] }) {
   return (
     <section aria-labelledby="insignias" className="rounded-3xl bg-surface p-6 sm:p-8">
-      <h2 id="insignias" className="font-display text-xl font-semibold">
+      <h2 id="insignias" className="scroll-mt-6 font-display text-xl font-semibold">
         Insignias
       </h2>
       <p className="mt-1 text-ink-soft">

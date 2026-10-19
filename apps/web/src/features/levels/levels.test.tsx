@@ -5,6 +5,7 @@ import { getWordsByPack } from "@lexi/core/data/catalog";
 import { LocalStorageProgressRepository } from "@lexi/core/persistence/progress-repository";
 import { MemoryStorage } from "@lexi/core/persistence/storage";
 import { ProgressStore } from "@lexi/core/services/progress-store";
+import { LevelLink } from "@/components/layout/app-nav";
 import { HomeView } from "@/features/home/home-view";
 import { PracticeView } from "@/features/practice/practice-view";
 import { ProgressView } from "@/features/progress/progress-view";
@@ -30,6 +31,14 @@ describe("levels and badges", () => {
     expect(screen.getByText("Nivel 2 · Básico")).toBeInTheDocument();
     expect(screen.getByText("1.600 puntos")).toBeInTheDocument();
     expect(screen.getByText("9 palabras para Explorador")).toBeInTheDocument();
+  });
+
+  it("keeps the current level in the header, linking to the badges", () => {
+    renderWithServices(<LevelLink />, learned(16));
+    expect(screen.getByRole("link", { name: "Nivel 2, Básico: ver insignias" })).toHaveAttribute(
+      "href",
+      "/progreso#insignias",
+    );
   });
 
   it("starts at the first level with no progress", () => {

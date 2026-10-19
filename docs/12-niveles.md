@@ -17,6 +17,7 @@ a partir del progreso real.
 | RF-48 | Progreso muestra la sección «Insignias»: los 8 niveles (conseguidos en color, los demás en gris con su meta) y una insignia por paquete, que se consigue al tener todas sus palabras («18/30» mientras tanto). |
 | RF-49 | Si una sesión de tarjetas sube de nivel, el resumen lo anuncia («¡Subiste a …!») con la celebración dorada. «Ponerme a prueba» no sube de nivel porque no cambia el progreso. |
 | RF-50 | Los puntos, niveles e insignias se conservan por usuario y se sincronizan, porque se derivan del progreso, que ya se sincroniza. |
+| RF-51 | El nivel actual se ve siempre en la cabecera, junto a Ajustes: la insignia y el nombre del nivel lleva a las insignias de Progreso. En Ajustes, la tarjeta «Cuenta» muestra la insignia, el nivel y los puntos junto al email. |
 
 ## Niveles
 
@@ -48,6 +49,6 @@ a partir del progreso real.
 | Pieza | Dónde |
 | --- | --- |
 | Reglas (`levelFor`, `achievedCount`, `packBadges`, `levelUp`, `formatPoints`) | `packages/core/src/domain/levels.ts` |
-| Web | `components/level-badge.tsx`, `features/levels/` (resumen e insignias) |
-| Móvil | `components/levels.tsx` |
+| Web | `components/level-badge.tsx`, `features/levels/` (resumen e insignias), `LevelLink` en `components/layout/app-nav.tsx`, `features/account/account-section.tsx` |
+| Móvil | `components/levels.tsx`, `LevelButton` en `app/(tabs)/_layout.tsx`, `AccountLevel` en `screens/settings.tsx` |
 | Subida de nivel | la vista de práctica guarda las palabras conseguidas al empezar y el resumen recibe `newLevel` |

@@ -1,8 +1,10 @@
 import { REMINDER_HOURS } from "@lexi/core/domain/reminder";
+import { achievedCount, formatPoints, levelFor } from "@lexi/core/domain/levels";
 import { formatAgo } from "@lexi/core/domain/relative-time";
 import { useRouter } from "expo-router";
 import { useState, type ReactNode } from "react";
-import { Linking, Switch, View } from "react-native";
+import { Linking, Pressable, Switch, View } from "react-native";
+import { LevelBadge } from "@/components/levels";
 import { VoiceNotice } from "@/components/voice-notice";
 import { AppText, Button, Card, Chip, Notice, Screen } from "@/components/ui";
 import { useAuth, useSync } from "@/hooks/use-account";
@@ -10,7 +12,7 @@ import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { useCelebrationSound } from "@/hooks/use-celebration";
 import { useReminder } from "@/hooks/use-reminder";
 import { PRIVACY_URL } from "@/legal";
-import { useTheme } from "@/theme";
+import { RADIUS, useTheme } from "@/theme";
 
 const SESSION_SIZES = [5, 10, 15, 20];
 const RATES = [
@@ -71,6 +73,37 @@ function Toggle({ label, hint, value, onChange }: { label: string; hint: string;
   );
 }
 
+/** Level badge next to the account; opens the badges in Progreso. */
+function AccountLevel() {
+  const router = useRouter();
+  const { colors } = useTheme();
+  const { level, points } = levelFor(achievedCount(useProgress().state));
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Nivel ${level.number}, ${level.name}, ${formatPoints(points)} puntos: ver insignias`}
+      onPress={() => router.navigate("/progreso")}
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 12,
+        padding: 10,
+        borderRadius: RADIUS.lg,
+        borderWidth: 1,
+        borderColor: colors.line,
+      }}
+    >
+      <LevelBadge level={level.number} size={44} />
+      <View>
+        <AppText variant="label">
+          Nivel {level.number} · {level.name}
+        </AppText>
+        <AppText variant="small">{formatPoints(points)} puntos</AppText>
+      </View>
+    </Pressable>
+  );
+}
+
 function AccountGroup() {
   const { colors } = useTheme();
   const router = useRouter();
@@ -119,6 +152,7 @@ function AccountGroup() {
             <AppText variant="subheading">{user.email ?? "Cuenta sin email"}</AppText>
             <AppText variant="small">{user.provider === "google" ? "Con tu cuenta de Google" : "Con email y contraseña"}</AppText>
           </View>
+          <AccountLevel />
           {syncLine && (
             <AppText
               variant="small"

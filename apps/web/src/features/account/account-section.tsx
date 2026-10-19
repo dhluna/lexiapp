@@ -1,10 +1,14 @@
 "use client";
 
 import { CircleAlert, CloudCheck, CloudOff, RefreshCw } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
+import { LevelBadge } from "@/components/level-badge";
 import { useAuth, useSync } from "@/hooks/use-account";
+import { useProgress } from "@/hooks/use-progress";
+import { achievedCount, formatPoints, levelFor } from "@lexi/core/domain/levels";
 import type { SyncSnapshot } from "@lexi/core/services/sync-service";
 
 const RELATIVE = new Intl.RelativeTimeFormat("es", { numeric: "auto" });
@@ -49,10 +53,31 @@ function SyncLine({ sync }: { sync: SyncSnapshot }) {
   );
 }
 
+/** Level badge next to the account: who you are and how far you got. */
+function AccountLevel({ achieved }: { achieved: number }) {
+  const { level, points } = levelFor(achieved);
+  return (
+    <Link
+      href="/progreso#insignias"
+      aria-label={`Nivel ${level.number}, ${level.name}, ${formatPoints(points)} puntos: ver insignias`}
+      className="flex min-h-11 items-center gap-3 rounded-2xl border border-line py-2 pr-4 pl-2 transition-colors hover:bg-sunken"
+    >
+      <LevelBadge level={level.number} />
+      <span aria-hidden>
+        <span className="block text-sm leading-tight font-semibold">
+          Nivel {level.number} · {level.name}
+        </span>
+        <span className="block text-sm text-ink-soft">{formatPoints(points)} puntos</span>
+      </span>
+    </Link>
+  );
+}
+
 /** First group of Ajustes. Hidden when accounts are not configured. */
 export function AccountSection() {
   const { available, snapshot } = useAuth();
   const sync = useSync();
+  const progress = useProgress();
   const [confirm, setConfirm] = useState<null | "sign-out-offline" | "delete">(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: "ok" | "error"; text: string } | null>(null);
@@ -87,11 +112,14 @@ export function AccountSection() {
         </div>
       ) : (
         <div className="grid gap-4">
-          <div>
-            <p className="font-semibold break-all">{snapshot.user!.email ?? "Cuenta sin email"}</p>
-            <p className="text-sm text-ink-soft">
-              {snapshot.user!.provider === "google" ? "Con tu cuenta de Google" : "Con email y contraseña"}
-            </p>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="font-semibold break-all">{snapshot.user!.email ?? "Cuenta sin email"}</p>
+              <p className="text-sm text-ink-soft">
+                {snapshot.user!.provider === "google" ? "Con tu cuenta de Google" : "Con email y contraseña"}
+              </p>
+            </div>
+            {progress && <AccountLevel achieved={achievedCount(progress.state)} />}
           </div>
 
           {sync.snapshot && <SyncLine sync={sync.snapshot} />}
