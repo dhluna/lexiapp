@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 /** The person responsible for the data (Ley 1581 de 2012) and how to reach them. */
 export const DATA_CONTROLLER = "Diego Hernández";
 export const PRIVACY_CONTACT = "hola@lexiapp.app";
-export const PRIVACY_UPDATED = "16 de octubre de 2026";
+export const PRIVACY_UPDATED = "19 de octubre de 2026";
 
 export function PrivacyPolicy() {
   return (
@@ -18,7 +18,10 @@ export function PrivacyPolicy() {
         <ul className="list-disc space-y-1 pl-5">
           <li>Sin cuenta, tu progreso se guarda solo en tu dispositivo.</li>
           <li>Con cuenta, guardamos tu email y tu progreso para sincronizarlo entre dispositivos.</li>
-          <li>No hay publicidad, ni analítica, ni cookies de terceros, y no vendemos ni compartimos tus datos.</li>
+          <li>
+            Contamos las visitas de forma anónima y sin cookies, para saber cuánta gente usa Lexi. No hay publicidad
+            ni cookies de terceros, y no vendemos ni compartimos tus datos.
+          </li>
           <li>Puedes eliminar tu cuenta y todos sus datos cuando quieras, desde Ajustes.</li>
         </ul>
       </Section>
@@ -56,6 +59,13 @@ export function PrivacyPolicy() {
           Los usamos solo para identificarte, guardar tu progreso y sincronizarlo entre tus dispositivos. La base es
           la autorización que nos das al crear la cuenta, que puedes revocar en cualquier momento eliminándola.
         </p>
+        <h3 className="font-semibold">Estadísticas de visitas</h3>
+        <p>
+          La web cuenta las visitas con Vercel Web Analytics para saber cuánta gente usa Lexi y qué páginas son útiles.
+          Recoge la página visitada (sin los parámetros de la dirección), el país, el tipo de dispositivo y el
+          navegador, y de qué sitio llegas. No usa cookies, no guarda tu IP ni crea un perfil tuyo, y no se combina
+          con tu cuenta ni con tu progreso. La app móvil no envía estadísticas.
+        </p>
         <h3 className="font-semibold">Pronunciación</h3>
         <p>
           Lexi usa las voces de tu navegador o de tu teléfono. Si tu sistema usa voces en línea, el texto de la
@@ -71,7 +81,7 @@ export function PrivacyPolicy() {
             <strong>Supabase</strong>: autenticación y base de datos de las cuentas.
           </li>
           <li>
-            <strong>Vercel</strong>: alojamiento de la web.
+            <strong>Vercel</strong>: alojamiento de la web y estadísticas anónimas de visitas.
           </li>
           <li>
             <strong>Google</strong>: solo si eliges «Continuar con Google».

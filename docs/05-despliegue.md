@@ -146,3 +146,19 @@ Lexi usa Resend sobre su dominio:
    `465`, usuario `resend`, contraseña = la API key; remitente `Lexi <no-responder@lexiapp.app>`.
 4. Supabase › **Authentication › Rate Limits**: sube el límite de correos por hora (p. ej. 100).
 5. Plantillas en español: `supabase/templates/` (asuntos e instrucciones en su README).
+
+## 12. Estadísticas de visitas (Vercel Web Analytics)
+
+- **Activar:** en Vercel, proyecto lexiapp › **Analytics** › **Enable**. Los datos aparecen
+  en esa misma pestaña unos minutos después del siguiente despliegue.
+- **En el código:** `<SiteAnalytics />` en `app/layout.tsx` (`components/site-analytics.tsx`).
+  Solo envía datos en producción, no en `next dev` ni en las pruebas.
+- **Sin parámetros:** `beforeSend` quita la query y el hash de cada URL antes de enviarla. Los
+  enlaces de correo llevan tokens de un solo uso
+  (`/auth/callback?token_hash=…`, `/restablecer-contrasena?token_hash=…`) y no deben acabar
+  en las estadísticas. La prueba `components/site-analytics.test.ts` lo comprueba.
+- **Privacidad:** sin cookies y sin datos personales. Está declarado en la política de
+  privacidad, en el apartado «Estadísticas de visitas». La app móvil no envía estadísticas.
+- **Límite:** el plan gratuito de Vercel incluye un número limitado de eventos al mes. Si se
+  supera, hay que pasar a Pro o cambiar a Cloudflare Web Analytics, que también funciona sin
+  cookies.

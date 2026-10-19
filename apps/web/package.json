@@ -15,6 +15,7 @@
   "dependencies": {
     "@lexi/core": "*",
     "@supabase/supabase-js": "^2.117.3",
+    "@vercel/analytics": "^2.0.1",
     "canvas-confetti": "^1.9.3",
     "clsx": "^2.1.1",
     "lucide-react": "^1.55.0",

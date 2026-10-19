@@ -3,6 +3,7 @@ import { Atkinson_Hyperlegible_Next, Bricolage_Grotesque, Noto_Sans } from "next
 import Link from "next/link";
 import { BottomNav, LevelLink, SettingsLink, TopNav } from "@/components/layout/app-nav";
 import { PersistenceNotice } from "@/components/layout/persistence-notice";
+import { SiteAnalytics } from "@/components/site-analytics";
 import { SyncBootstrap } from "@/hooks/use-account";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </main>
         <BottomNav />
         <SyncBootstrap />
+        <SiteAnalytics />
       </body>
     </html>
   );
