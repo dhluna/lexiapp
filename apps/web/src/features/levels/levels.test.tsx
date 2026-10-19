@@ -41,6 +41,16 @@ describe("levels and badges", () => {
     );
   });
 
+  it("gives each level its own color: earned badges in full, locked ones faded", () => {
+    const { container } = renderWithServices(<ProgressView />, learned(16));
+    const badges = [...container.querySelectorAll("#insignias ~ ul li [data-earned]")];
+    expect(badges).toHaveLength(8);
+    expect(badges[1]).toHaveClass("text-lv2", "ring-2");
+    expect(badges[1]).not.toHaveClass("opacity-45");
+    expect(badges[2]).toHaveClass("text-lv3", "opacity-45");
+    expect(badges[2]).not.toHaveClass("ring-2");
+  });
+
   it("starts at the first level with no progress", () => {
     renderWithServices(<HomeView />);
     expect(screen.getByText("Nivel 1 · Recién llegado")).toBeInTheDocument();

@@ -1,6 +1,7 @@
 import { formatPoints, LEVELS, POINTS_PER_WORD, type LevelStatus, type PackBadge } from "@lexi/core/domain/levels";
 import { BookOpen, Check, Compass, Crown, Footprints, Gem, MessagesSquare, Rocket, Zap, type LucideIcon } from "lucide-react-native";
 import { View } from "react-native";
+import { levelColorTokens } from "@lexi/core/theme/tokens";
 import { PackIcon } from "@/components/pack-icon";
 import { AppText, Card, ProgressBar } from "@/components/ui";
 import { FONTS, RADIUS, useTheme } from "@/theme";
@@ -16,10 +17,11 @@ const ICONS: Record<number, LucideIcon> = {
   8: Crown,
 };
 
-/** Round badge of a level (same as the web): brand colors when earned, muted while locked. */
+/** Round badge of a level in its own color (same as the web): full with a ring when earned, faded while locked. */
 export function LevelBadge({ level, earned = true, size = 48 }: { level: number; earned?: boolean; size?: number }) {
-  const { colors } = useTheme();
+  const { colors, dark } = useTheme();
   const Icon = ICONS[level] ?? Footprints;
+  const { fg, bg } = levelColorTokens(level);
   return (
     <View
       accessibilityElementsHidden
@@ -30,12 +32,13 @@ export function LevelBadge({ level, earned = true, size = 48 }: { level: number;
         borderRadius: size / 2,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: earned ? colors["accent-soft"] : colors["surface-sunken"],
+        backgroundColor: colors[bg],
         borderWidth: earned ? 2 : 0,
-        borderColor: colors.accent + "40",
+        borderColor: colors[fg] + "40",
+        opacity: earned ? 1 : dark ? 0.6 : 0.45,
       }}
     >
-      <Icon size={size / 2} color={earned ? colors.accent : colors["ink-soft"]} strokeWidth={2.25} />
+      <Icon size={size / 2} color={colors[fg]} strokeWidth={2.25} />
     </View>
   );
 }

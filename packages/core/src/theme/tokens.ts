@@ -19,7 +19,23 @@ export type ColorToken =
   | "review"
   | "review-soft"
   | "danger"
-  | "danger-soft";
+  | "danger-soft"
+  | "lv1"
+  | "lv1-soft"
+  | "lv2"
+  | "lv2-soft"
+  | "lv3"
+  | "lv3-soft"
+  | "lv4"
+  | "lv4-soft"
+  | "lv5"
+  | "lv5-soft"
+  | "lv6"
+  | "lv6-soft"
+  | "lv7"
+  | "lv7-soft"
+  | "lv8"
+  | "lv8-soft";
 
 export type Palette = Record<ColorToken, string>;
 
@@ -40,6 +56,22 @@ export const LIGHT: Palette = {
   "review-soft": "#fff0d6",
   danger: "#b4232c",
   "danger-soft": "#fde7e8",
+  lv1: "#475569",
+  "lv1-soft": "#e7ebf1",
+  lv2: "#2563eb",
+  "lv2-soft": "#e0eaff",
+  lv3: "#15803d",
+  "lv3-soft": "#def5e3",
+  lv4: "#7c3aed",
+  "lv4-soft": "#efe6fe",
+  lv5: "#0e7490",
+  "lv5-soft": "#d8f3f8",
+  lv6: "#c2410c",
+  "lv6-soft": "#ffe8d9",
+  lv7: "#be185d",
+  "lv7-soft": "#fde4ef",
+  lv8: "#a16207",
+  "lv8-soft": "#fff3c4",
 };
 
 export const DARK: Palette = {
@@ -59,7 +91,29 @@ export const DARK: Palette = {
   "review-soft": "#33250f",
   danger: "#ff8a8f",
   "danger-soft": "#3a1518",
+  lv1: "#b4c0d3",
+  "lv1-soft": "#22293a",
+  lv2: "#8ab4ff",
+  "lv2-soft": "#172a4d",
+  lv3: "#6fdc8c",
+  "lv3-soft": "#13301c",
+  lv4: "#c4a2ff",
+  "lv4-soft": "#2b1d4d",
+  lv5: "#5ed3ec",
+  "lv5-soft": "#0f2d36",
+  lv6: "#ffa274",
+  "lv6-soft": "#3b1d0f",
+  lv7: "#ff8cc0",
+  "lv7-soft": "#3d1527",
+  lv8: "#f5c84c",
+  "lv8-soft": "#3a2e0c",
 };
+
+/** Badge color of each level (1–8): `lvN` for the icon, `lvN-soft` for its background. */
+export function levelColorTokens(level: number): { fg: ColorToken; bg: ColorToken } {
+  const n = Math.min(Math.max(Math.round(level), 1), 8);
+  return { fg: `lv${n}` as ColorToken, bg: `lv${n}-soft` as ColorToken };
+}
 
 /** Corner radii (px / pt), matching the web's rounded-xl / 2xl / 3xl. */
 export const RADIUS = { sm: 8, md: 12, lg: 16, xl: 24, full: 999 } as const;
