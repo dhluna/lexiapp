@@ -28,6 +28,8 @@ por categoría. Cuentas opcionales para sincronizar el progreso entre dispositiv
   ficha completa de cada palabra.
 - **Niveles e insignias:** 100 puntos por palabra aprendida, 8 niveles (de «Recién llegado» a
   «Maestro») e insignias por paquete completado; todo se calcula del progreso real.
+- **Compartir:** página `/compartir` con código QR (descargable), enlace copiable, WhatsApp y
+  redes; en el móvil, la hoja de compartir del sistema.
 - **Progreso:** resumen (racha, aprendidas, por repasar y calendario de 4 semanas),
   palabras por repasar y avance por paquete.
 - **Ajustes** (icono ⚙ de la cabecera): cuenta, palabras por sesión, pronunciación
@@ -111,6 +113,7 @@ El detalle está en `docs/`:
 - [10 · Ponerme a prueba](docs/10-ejercicios.md): dictado y completar la frase.
 - [11 · Pendientes](docs/11-pendientes.md): CAPTCHA, comprobaciones antes de anunciar, app móvil y opcionales.
 - [12 · Niveles e insignias](docs/12-niveles.md): puntos, niveles e insignias de paquete.
+- [13 · Compartir Lexi](docs/13-compartir.md): página de compartir, redes y código QR.
 - Política de privacidad: [`/privacidad`](https://lexiapp.app/privacidad).
 
 ## Verificación

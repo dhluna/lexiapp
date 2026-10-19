@@ -1,10 +1,11 @@
 "use client";
 
+import { Share2 } from "lucide-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { VoiceNotice } from "@/components/voice-notice";
 import { AccountSection } from "@/features/account/account-section";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
 import { useCelebrationSound } from "@/hooks/use-celebration";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
@@ -68,6 +69,16 @@ export function SettingsView() {
           value={state.preferences.speechRate}
           onChange={(speechRate) => actions.updatePreferences({ speechRate })}
         />
+      </Group>
+
+      <Group title="Compartir Lexi">
+        <div>
+          <p className="text-ink-soft">Envía el enlace o muestra el código QR a quien quiera aprender inglés.</p>
+          <ButtonLink href="/compartir" className="mt-4">
+            <Share2 aria-hidden className="size-4" />
+            Compartir Lexi
+          </ButtonLink>
+        </div>
       </Group>
 
       <Group title="Datos">
