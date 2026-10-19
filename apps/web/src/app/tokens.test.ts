@@ -7,7 +7,7 @@ import { DARK, LIGHT, type Palette } from "@lexi/core/theme/tokens";
 function readRoot(css: string, start: number): Record<string, string> {
   const open = css.indexOf(":root {", start);
   const block = css.slice(open, css.indexOf("}", open));
-  return Object.fromEntries([...block.matchAll(/--([a-z-]+):\s*(#[0-9a-f]{6})/gi)].map((m) => [m[1], m[2].toLowerCase()]));
+  return Object.fromEntries([...block.matchAll(/--([a-z0-9-]+):\s*(#[0-9a-f]{6})/gi)].map((m) => [m[1], m[2].toLowerCase()]));
 }
 
 const toCss = (palette: Palette) =>

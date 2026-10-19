@@ -12,6 +12,18 @@ const ICONS: Record<number, LucideIcon> = {
   8: Crown,
 };
 
+/** Literal classes per level (Tailwind only generates classes it can read in the source). */
+const COLORS: Record<number, string> = {
+  1: "bg-lv1-soft text-lv1 ring-lv1/25",
+  2: "bg-lv2-soft text-lv2 ring-lv2/25",
+  3: "bg-lv3-soft text-lv3 ring-lv3/25",
+  4: "bg-lv4-soft text-lv4 ring-lv4/25",
+  5: "bg-lv5-soft text-lv5 ring-lv5/25",
+  6: "bg-lv6-soft text-lv6 ring-lv6/25",
+  7: "bg-lv7-soft text-lv7 ring-lv7/25",
+  8: "bg-lv8-soft text-lv8 ring-lv8/25",
+};
+
 const SIZES = {
   xs: { box: "size-8", icon: "size-4" },
   sm: { box: "size-10", icon: "size-5" },
@@ -19,7 +31,7 @@ const SIZES = {
   lg: { box: "size-14", icon: "size-7" },
 } as const;
 
-/** Round badge of a level: brand colors when earned, muted while locked. Decorative. */
+/** Round badge of a level in its own color: full with a ring when earned, faded while locked. Decorative. */
 export function LevelBadge({
   level,
   earned = true,
@@ -33,10 +45,12 @@ export function LevelBadge({
   return (
     <span
       aria-hidden
+      data-earned={earned}
       className={cn(
         "flex shrink-0 items-center justify-center rounded-full",
         SIZES[size].box,
-        earned ? "bg-accent-soft text-accent ring-2 ring-accent/25" : "bg-sunken text-ink-soft/60",
+        COLORS[level] ?? COLORS[1],
+        earned ? "ring-2" : "opacity-45 dark:opacity-60",
       )}
     >
       <Icon className={SIZES[size].icon} strokeWidth={2.25} />

@@ -17,7 +17,7 @@ a partir del progreso real.
 | RF-48 | Progreso muestra la sección «Insignias»: los 8 niveles (conseguidos en color, los demás en gris con su meta) y una insignia por paquete, que se consigue al tener todas sus palabras («18/30» mientras tanto). |
 | RF-49 | Si una sesión de tarjetas sube de nivel, el resumen lo anuncia («¡Subiste a …!») con la celebración dorada. «Ponerme a prueba» no sube de nivel porque no cambia el progreso. |
 | RF-50 | Los puntos, niveles e insignias se conservan por usuario y se sincronizan, porque se derivan del progreso, que ya se sincroniza. |
-| RF-51 | El nivel actual se ve siempre en la cabecera, junto a Ajustes: la insignia y el nombre del nivel lleva a las insignias de Progreso. En Ajustes, la tarjeta «Cuenta» muestra la insignia, el nivel y los puntos junto al email. |
+| RF-51 | El nivel actual se ve siempre en la cabecera, junto a Ajustes: la insignia del nivel (el nombre va en su etiqueta accesible y en el tooltip) lleva a las insignias de Progreso. En Ajustes, la tarjeta «Cuenta» muestra la insignia, el nivel y los puntos junto al email. |
 
 ## Niveles
 
@@ -41,7 +41,10 @@ a partir del progreso real.
 - **Si el catálogo crece:** hay que revisar la tabla de niveles. Una prueba exige que el último
   nivel sea el catálogo completo.
 - **Insignias de nivel:** iconos `Footprints`, `BookOpen`, `Compass`, `MessagesSquare`, `Zap`,
-  `Rocket`, `Gem` y `Crown`. Conseguidas en `accent-soft`/`accent`; bloqueadas en `sunken`.
+  `Rocket`, `Gem` y `Crown`. Cada nivel tiene su color (tokens `lvN` para el icono y `lvN-soft`
+  para el fondo, en `packages/core/src/theme/tokens.ts` y `globals.css`): pizarra, azul, verde,
+  violeta, cian, naranja, rubí y oro. Conseguidas: color pleno con aro; bloqueadas: su color al
+  45 % (60 % en modo oscuro) y sin aro, para que la colección se distinga desde el principio. Contraste icono/fondo ≥ 4:1.
 - **Insignias de paquete:** usan el icono del paquete.
 
 ## Diseño
