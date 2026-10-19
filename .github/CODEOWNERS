@@ -1,0 +1,8 @@
+# Todo cambio pide la revisión del responsable del proyecto.
+*                     @dhluna
+
+# Zonas sensibles: seguridad de datos, sincronización y formato guardado.
+/supabase/            @dhluna
+/packages/core/src/persistence/  @dhluna
+/packages/core/src/domain/merge.ts  @dhluna
+/.github/             @dhluna

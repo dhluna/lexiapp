@@ -1,0 +1,35 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    labels: ["dependencias"]
+    groups:
+      menores:
+        update-types: ["minor", "patch"]
+    ignore:
+      # Expo fija estas versiones por SDK: se actualizan con `npx expo install --fix`
+      # al cambiar de SDK, nunca sueltas. React está fijado en 19.2.3 en todo el monorepo.
+      - dependency-name: "expo"
+      - dependency-name: "expo-*"
+      - dependency-name: "@expo/*"
+      - dependency-name: "react-native"
+      - dependency-name: "react-native-*"
+      - dependency-name: "@react-native/*"
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+      - dependency-name: "@types/react"
+      - dependency-name: "jest"
+      - dependency-name: "jest-expo"
+      - dependency-name: "@types/jest"
+      # Las versiones mayores se revisan a mano.
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    labels: ["dependencias"]
