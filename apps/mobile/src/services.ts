@@ -6,6 +6,8 @@ import { Celebrator } from "@lexi/core/services/celebrator";
 import { ProgressStore } from "@lexi/core/services/progress-store";
 import { SpeechService } from "@lexi/core/services/speech";
 import { SyncService } from "@lexi/core/services/sync-service";
+import { VoiceSettings } from "@lexi/core/services/voice-settings";
+import { createExpoClipPlayer } from "@/platform/audio-clips";
 import { deviceAuthPlatform } from "@/platform/auth-platform";
 import { playChime } from "@/platform/chime";
 import { confettiBus } from "@/platform/confetti-bus";
@@ -24,6 +26,7 @@ let syncService: SyncService | null | undefined;
 let reminderService: ReminderService | null = null;
 let celebrationSettings: CelebrationSettings | null = null;
 let celebrator: Celebrator | null = null;
+let voiceSettings: VoiceSettings | null = null;
 
 export function getProgressStore(): ProgressStore {
   progressStore ??= new ProgressStore(new LocalStorageProgressRepository(deviceStorage));
@@ -31,8 +34,18 @@ export function getProgressStore(): ProgressStore {
 }
 
 export function getSpeechService(): SpeechService {
-  speechService ??= new SpeechService(createExpoSpeechEngine());
+  // Recorded neural voices streamed from lexiapp.app, with the system voice as a fallback.
+  speechService ??= new SpeechService(createExpoSpeechEngine(), {
+    clips: createExpoClipPlayer(),
+    voices: getVoiceSettings(),
+  });
   return speechService;
+}
+
+/** Device setting: which recorded voice plays (not synced). */
+export function getVoiceSettings(): VoiceSettings {
+  voiceSettings ??= new VoiceSettings(deviceStorage);
+  return voiceSettings;
 }
 
 /** `null` when accounts are not configured: the app then works without them. */

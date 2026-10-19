@@ -1,4 +1,5 @@
 import { SHARE_TEXT, SHARE_URL } from "@lexi/core/data/share";
+import { VOICE_SAMPLE, VOICES } from "@lexi/core/data/voices";
 import { REMINDER_HOURS } from "@lexi/core/domain/reminder";
 import { achievedCount, formatPoints, levelFor } from "@lexi/core/domain/levels";
 import { formatAgo } from "@lexi/core/domain/relative-time";
@@ -12,6 +13,8 @@ import { AppText, Button, Card, Chip, Notice, Screen } from "@/components/ui";
 import { useAuth, useSync } from "@/hooks/use-account";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { useCelebrationSound } from "@/hooks/use-celebration";
+import { useSpeech } from "@/hooks/use-speech";
+import { useVoice } from "@/hooks/use-voice";
 import { useReminder } from "@/hooks/use-reminder";
 import { PRIVACY_URL } from "@/legal";
 import { RADIUS, useTheme } from "@/theme";
@@ -34,7 +37,7 @@ function Group({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-function Choices<T extends number>({
+function Choices<T extends string | number>({
   legend,
   options,
   value,
@@ -277,6 +280,8 @@ function ShareGroup() {
 
 export function SettingsScreen() {
   const [celebrationSound, setCelebrationSound] = useCelebrationSound();
+  const [voice, setVoice] = useVoice();
+  const { speak } = useSpeech();
   const { colors } = useTheme();
   const { state } = useProgress();
   const actions = useProgressActions();
@@ -312,6 +317,16 @@ export function SettingsScreen() {
           value={state.preferences.autoPronounce}
           onChange={(autoPronounce) => actions.updatePreferences({ autoPronounce })}
         />
+        <Choices
+          legend="Voz"
+          options={VOICES.map((v) => ({ value: v.id, label: v.label }))}
+          value={voice}
+          onChange={(next) => {
+            setVoice(next);
+            speak(VOICE_SAMPLE);
+          }}
+        />
+        <AppText variant="small">Voces grabadas, iguales en todos tus dispositivos. El AFI de las fichas es de inglés americano.</AppText>
         <Choices
           legend="Velocidad"
           options={RATES}

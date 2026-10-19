@@ -11,8 +11,10 @@ import { Celebrator } from "@lexi/core/services/celebrator";
 import { ProgressStore } from "@lexi/core/services/progress-store";
 import { SpeechService } from "@lexi/core/services/speech";
 import { SyncService } from "@lexi/core/services/sync-service";
+import { VoiceSettings } from "@lexi/core/services/voice-settings";
 import { getSupabase } from "@/lib/supabase";
 import { webAuthPlatform } from "@/platform/auth-platform";
+import { createWebClipPlayer } from "@/platform/audio-clips";
 import { playChime } from "@/platform/chime";
 import { launchConfetti } from "@/platform/confetti";
 import { createWebSpeechEngine, detectSpeechEnvironment } from "@/platform/speech";
@@ -26,6 +28,7 @@ let authService: AuthService | null | undefined;
 let syncService: SyncService | null | undefined;
 let celebrationSettings: CelebrationSettings | null = null;
 let celebrator: Celebrator | null = null;
+let voiceSettings: VoiceSettings | null = null;
 
 export function getProgressStore(): ProgressStore {
   if (progressStore) return progressStore;
@@ -46,8 +49,18 @@ export function getProgressStore(): ProgressStore {
 export function getSpeechService(): SpeechService {
   if (speechService) return speechService;
   const env = detectSpeechEnvironment();
-  speechService = new SpeechService(env ? createWebSpeechEngine(env) : null);
+  speechService = new SpeechService(env ? createWebSpeechEngine(env) : null, {
+    // Recorded neural voices from /audio, with the system voice as a fallback.
+    clips: typeof window !== "undefined" && typeof Audio !== "undefined" ? createWebClipPlayer() : null,
+    voices: getVoiceSettings(),
+  });
   return speechService;
+}
+
+/** Device setting: which recorded voice plays (not synced). */
+export function getVoiceSettings(): VoiceSettings {
+  voiceSettings ??= new VoiceSettings(getBrowserStorage() ?? new MemoryStorage());
+  return voiceSettings;
 }
 
 /** `null` when accounts are not configured: the app then works without them. */

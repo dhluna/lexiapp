@@ -21,6 +21,20 @@ describe("SettingsView", () => {
     });
   });
 
+  it("chooses the recorded voice on this device and plays a sample", async () => {
+    const user = userEvent.setup();
+    const { voiceSettings, storage, synth, store } = renderWithServices(<SettingsView />);
+    expect(screen.getByRole("radio", { name: "EE. UU. · Mujer" })).toBeChecked();
+
+    await user.click(screen.getByRole("radio", { name: "Reino Unido · Hombre" }));
+
+    expect(voiceSettings.get()).toBe("uk-male");
+    expect(storage.getItem("lexi:voice")).toBe("uk-male");
+    expect(synth.speak).toHaveBeenCalled(); // the sample (system voice: no recordings in tests)
+    // Not part of the synced progress.
+    expect(JSON.stringify(store.getSnapshot().state)).not.toContain("uk-male");
+  });
+
   it("turns the celebration sound off on this device only", async () => {
     const user = userEvent.setup();
     const { storage, store } = renderWithServices(<SettingsView />);

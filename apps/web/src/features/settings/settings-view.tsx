@@ -8,6 +8,9 @@ import { AccountSection } from "@/features/account/account-section";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
 import { useCelebrationSound } from "@/hooks/use-celebration";
+import { useSpeech } from "@/hooks/use-speech";
+import { useVoice } from "@/hooks/use-voice";
+import { VOICE_SAMPLE, VOICES } from "@lexi/core/data/voices";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { cn } from "@/lib/cn";
 
@@ -23,6 +26,8 @@ export function SettingsView() {
   const snapshot = useProgress();
   const actions = useProgressActions();
   const [celebrationSound, setCelebrationSound] = useCelebrationSound();
+  const [voice, setVoice] = useVoice();
+  const { speak } = useSpeech();
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -62,6 +67,21 @@ export function SettingsView() {
           checked={state.preferences.autoPronounce}
           onChange={(autoPronounce) => actions.updatePreferences({ autoPronounce })}
         />
+        <div>
+          <RadioChips
+            legend="Voz"
+            name="voz"
+            options={VOICES.map((v) => ({ value: v.id, label: v.label }))}
+            value={voice}
+            onChange={(next) => {
+              setVoice(next);
+              speak(VOICE_SAMPLE);
+            }}
+          />
+          <p className="mt-2 text-sm text-ink-soft">
+            Voces grabadas, iguales en todos tus dispositivos. El AFI de las fichas es de inglés americano.
+          </p>
+        </div>
         <RadioChips
           legend="Velocidad"
           name="velocidad"
@@ -140,7 +160,7 @@ function Group({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-function RadioChips({
+function RadioChips<T extends string | number>({
   legend,
   name,
   options,
@@ -149,9 +169,9 @@ function RadioChips({
 }: {
   legend: string;
   name: string;
-  options: readonly { value: number; label: string }[];
-  value: number;
-  onChange: (value: number) => void;
+  options: readonly { value: T; label: string }[];
+  value: T;
+  onChange: (value: T) => void;
 }) {
   return (
     <fieldset>

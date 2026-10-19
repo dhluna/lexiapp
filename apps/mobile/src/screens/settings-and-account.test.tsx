@@ -37,6 +37,13 @@ function fakeAuth(next: AuthResult = { ok: true }) {
 beforeEach(() => Object.values(router).forEach((fn) => (fn as jest.Mock).mockClear()));
 
 describe("SettingsScreen (mobile)", () => {
+  it("chooses the recorded voice on this device and plays a sample", async () => {
+    const { voiceSettings, spoken } = await renderWithServices(<SettingsScreen />);
+    await fireEvent.press(screen.getByRole("radio", { name: "Reino Unido · Mujer" }));
+    expect(voiceSettings.get()).toBe("uk-female");
+    expect(spoken.at(-1)).toContain("Hello");
+  });
+
   it("shares Lexi with the system sheet and shows the QR code", async () => {
     const { Share } = jest.requireActual<typeof import("react-native")>("react-native");
     const share = jest.spyOn(Share, "share").mockResolvedValue({ action: "sharedAction" });
