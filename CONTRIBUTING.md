@@ -11,7 +11,7 @@ Gracias por querer mejorar Lexi. Para que tu tiempo no se pierda, sigue este ord
   programar. Lexi es deliberadamente sencilla y no toda buena idea encaja.
 - **Seguridad:** nunca en un issue público. Mira [SECURITY.md](SECURITY.md).
 
-Los issues con la etiqueta `buen primer issue` son un buen punto de partida.
+Los issues con la etiqueta `good first issue` son un buen punto de partida.
 
 ## 2. Prepara tu copia
 
