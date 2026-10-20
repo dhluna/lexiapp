@@ -162,3 +162,17 @@ Lexi usa Resend sobre su dominio:
 - **Límite:** el plan gratuito de Vercel incluye un número limitado de eventos al mes. Si se
   supera, hay que pasar a Pro o cambiar a Cloudflare Web Analytics, que también funciona sin
   cookies.
+
+## 13. Si Vercel no despliega tras fusionar
+
+Vercel despliega producción cuando GitHub le avisa de un push a `master` (webhook). Si ese
+aviso se pierde (por ejemplo, durante una incidencia de GitHub; ver githubstatus.com), la
+fusión queda en `master` pero **no aparece ninguna fila «Production» nueva** en Vercel ›
+Deployments, y lexiapp.app sigue sirviendo la versión anterior.
+
+- **Comprobarlo:** `gh api "repos/dhluna/lexiapp/deployments?sha=<commit>"` devuelve una lista
+  vacía para el commit fusionado.
+- **Opción 1 (panel):** Vercel › Deployments › menú **⋯** › **Create Deployment** con `master`.
+  No uses «Redeploy» sobre la fila de producción actual: repetiría el commit anterior.
+- **Opción 2 (Git):** fusiona cualquier PR nuevo; su push a `master` vuelve a avisar a Vercel y
+  el despliegue incluye todo lo anterior.
