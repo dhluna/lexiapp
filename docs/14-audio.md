@@ -1,6 +1,6 @@
 # 14 · Audio grabado (voces neuronales)
 
-Estado: **implementado** (web y móvil). Las grabaciones se generan con el script.
+Estado: **implementado**. Las grabaciones se generan con el script.
 
 ## Objetivo
 
@@ -14,7 +14,7 @@ voces del navegador o del teléfono de cada persona, y la calidad y el acento ca
 | RF-58 | Las palabras, los ejemplos, las formas verbales y las respuestas de «Ponerme a prueba» se oyen con grabaciones neuronales. |
 | RF-59 | Ajustes › Pronunciación › **Voz**: «EE. UU. · Mujer» (por defecto), «EE. UU. · Hombre», «Reino Unido · Mujer» y «Reino Unido · Hombre». Al elegir una voz suena una muestra. Es un ajuste del dispositivo (`lexi:voice`), no se sincroniza. |
 | RF-60 | «Lenta» y «Rápida» cambian la velocidad de la grabación sin cambiar el tono. |
-| RF-61 | Si falta la grabación de un texto o no se puede descargar (por ejemplo, el móvil sin conexión), se usa la voz del sistema, con el acento de la voz elegida si existe. |
+| RF-61 | Si falta la grabación de un texto o no se puede descargar (por ejemplo, sin conexión), se usa la voz del navegador, con el acento de la voz elegida si existe. |
 | RF-62 | El AFI de las fichas sigue siendo de inglés americano, de diccionario (Oxford, Merriam-Webster), elijas la voz que elijas. Ajustes lo indica. |
 
 ## Voces
@@ -32,15 +32,13 @@ regenerarla.
 ## Archivos
 
 - **Grabaciones:** `apps/web/public/audio/<voz>/<clave>.mp3`. La clave es `audioKey(texto)`, de
-  `domain/audio.ts`: un *slug* más un hash FNV-1a del texto exacto, igual en el script, la web y
-  el móvil.
+  `domain/audio.ts`: un *slug* más un hash FNV-1a del texto exacto, igual en el script y en la
+  web.
 - **Índice:** `apps/web/public/audio/index.json` con las claves disponibles, que son las mismas
-  para las 4 voces. Las apps lo cargan una vez; mientras no está cargado, o si falla, usan la voz
-  del sistema.
-- **Dónde suenan:**
-  - En la web, desde `/audio/…`.
-  - En el móvil, desde `https://lexiapp.app/audio/…` en *streaming*: no van dentro de la app
-    para no añadirle unos 35 MB.
+  para las 4 voces. La web lo carga una vez; mientras no está cargado, o si falla, usa la voz
+  del navegador. La primera palabra de una sesión espera al índice hasta 1,5 s.
+- **Descarga:** cada grabación se pide a `/audio/…` solo al reproducirla (6–30 KB) y queda en la
+  caché del navegador; instalar la web en el móvil no descarga el conjunto (~64 MB).
 
 ## Regenerar (al cambiar el catálogo)
 
@@ -50,9 +48,9 @@ regenerarla.
    - Guárdala en `.env.audio.local` (`GOOGLE_TTS_API_KEY=…`). Ese archivo no se sube nunca
      (regla `.env*` de `.gitignore`).
 2. **Generar:**
-   - `npx tsx scripts/generate-audio.ts --dry-run` muestra cuántos textos y audios hay que
+   - `npm run audio -- --dry-run` muestra cuántos textos y audios hay que
      generar, sin llamar a la API.
-   - `npx tsx scripts/generate-audio.ts` genera solo lo nuevo, borra las grabaciones que ya no se
+   - `npm run audio` genera solo lo nuevo, borra las grabaciones que ya no se
      usan, comprueba que cada voz tiene todas y reescribe `index.json`.
    - El script envía la clave en una cabecera, nunca en la URL ni en los mensajes de error.
 3. Revisa algunas grabaciones al oído y súbelas con un PR, como cualquier cambio.
@@ -70,5 +68,4 @@ nivel gratuito mensual de Text-to-Speech, y regenerar solo lo nuevo cuesta muy p
 | Grabación o voz del sistema | `packages/core/src/services/speech.ts` |
 | Ajuste de voz | `packages/core/src/services/voice-settings.ts` |
 | Web | `platform/audio-clips.ts` (`HTMLAudioElement`, `preservesPitch`), Ajustes |
-| Móvil | `platform/audio-clips.ts` (`expo-audio`, `setPlaybackRate(…, "high")`), Ajustes |
 | Generador | `scripts/generate-audio.ts` |

@@ -1,53 +1,82 @@
-# Lexi
+<p align="center">
+  <img src="brand/lexi-logo.svg" alt="Lexi" height="72">
+</p>
 
-Aplicación web y móvil para que hispanohablantes practiquen vocabulario en inglés cada día:
-tarjetas con significado, pronunciación y ejemplos traducidos, racha diaria y progreso
-por categoría. Cuentas opcionales para sincronizar el progreso entre dispositivos.
+<p align="center">
+  <strong>Vocabulario en inglés para hispanohablantes, cada día y a tu ritmo.</strong><br>
+  Tarjetas con pronunciación grabada, AFI, significado y ejemplos traducidos.
+</p>
 
-**Pruébala:** https://lexiapp.app (Android: APK interno con EAS, ver
-[docs/07](docs/07-movil-pruebas.md)).
+<p align="center">
+  <a href="https://lexiapp.app"><strong>lexiapp.app</strong></a> ·
+  <a href="https://github.com/dhluna/lexiapp/actions/workflows/ci.yml"><img src="https://github.com/dhluna/lexiapp/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-3a3ed6" alt="Licencia MIT"></a>
+</p>
 
-## Funcionalidades (Fase 1)
+Lexi es una aplicación **web**, gratuita y de código abierto. Funciona en el navegador del
+móvil o del ordenador, sin instalar nada y sin cuenta: el progreso se guarda en tu dispositivo.
+Si creas una cuenta, se sincroniza entre tus navegadores.
 
-- **Inicio:** práctica de hoy (con el plan real de la sesión), racha de los últimos 7 días
-  y resumen del vocabulario.
-- **Practicar:** una pantalla limpia con «Empezar» (sesión general) o un toque por paquete;
-  sesiones de 5 a 20 palabras (se cambia en Ajustes). Primero salen las
-  palabras por repasar, luego las nuevas. Cada tarjeta muestra significado y ejemplos desde
-  el principio y pronuncia la palabra al aparecer (se puede desactivar). Una barra flotante
-  permite marcar *aprendida* o *por repasar*; las flechas anterior / siguiente permiten
-  revisar o cambiar respuestas. Resumen al terminar con confeti y un acorde breve (dorado si
-  aprendiste todas). **Ponerme a prueba:** dictado («Escucha y escribe») y «Completa la
-  frase» con tus palabras aprendidas, corregidos con tolerancia; es un control aparte que no
-  cambia tu progreso (al final puedes mandar las falladas a repasar). Atajos de teclado (`Espacio` escuchar,
-  `1`, `2`, `←`, `→`).
-- **Vocabulario:** 330 palabras en 7 paquetes: Esenciales (las 150 más frecuentes, siempre
-  activo) y paquetes temáticos que se añaden a la práctica (tarjetas con el progreso de cada
-  una), con transcripción fonética (AFI, inglés americano). Búsqueda en inglés o español (sin
-  distinguir acentos) en todo el catálogo o dentro de un paquete, filtro por estado y
-  ficha completa de cada palabra.
-- **Niveles e insignias:** 100 puntos por palabra aprendida, 8 niveles (de «Recién llegado» a
-  «Maestro») e insignias por paquete completado; todo se calcula del progreso real.
-- **Compartir:** página `/compartir` con código QR (descargable), enlace copiable, WhatsApp y
-  redes; en el móvil, la hoja de compartir del sistema.
-- **Progreso:** resumen (racha, aprendidas, por repasar y calendario de 4 semanas),
-  palabras por repasar y avance por paquete.
-- **Ajustes** (icono ⚙ de la cabecera): cuenta, palabras por sesión, pronunciación
-  automática, velocidad, sonido de celebración y borrado del progreso.
-- **Cuentas y sincronización (opcional):** con Google o email y contraseña. El progreso se
-  sincroniza entre dispositivos y sigue funcionando sin conexión. Sin configurar Supabase,
-  Lexi funciona igual que sin cuenta.
+## Qué puedes hacer
 
-## Stack
+| | |
+| --- | --- |
+| **Practicar** | Sesiones de 5 a 20 palabras: primero las que tienes por repasar, luego las nuevas. Cada tarjeta trae la pronunciación (normal o lenta), el AFI, el significado y dos ejemplos traducidos. Marcas «La sé» o «Repasar». |
+| **Ponerme a prueba** | Dictado («Escucha y escribe») y «Completa la frase» con tus palabras aprendidas, corregidos con tolerancia. No cambia tu progreso. |
+| **Vocabulario** | 330 palabras en 7 paquetes: Esenciales (las 150 más frecuentes) y temas que añades cuando quieras (Tecnología, Comida, Trabajo, Viajes, Phrasal verbs, Emociones). Búsqueda en inglés o español y ficha de cada palabra. |
+| **Progreso** | Racha diaria, calendario de 4 semanas, avance por paquete y 8 niveles con insignias (100 puntos por palabra aprendida). |
+| **Voces** | Pronunciación grabada con voces neuronales: EE. UU. o Reino Unido, mujer u hombre. |
+| **Cuenta (opcional)** | Con Google o con email. Sincroniza tu progreso y sigue funcionando sin conexión. |
+| **Compartir** | Página con código QR, enlace y redes para recomendar Lexi. |
 
-Next.js 16 (App Router, Turbopack, Cache Components) · React 19 · TypeScript estricto ·
-Tailwind CSS 4 · Lucide · Web Speech API · LocalStorage · Supabase (cuentas y
-sincronización, opcional) · Vitest + React Testing Library.
+Accesible y pensada para el móvil: objetivos táctiles de 44 px, foco visible, modo claro y
+oscuro, respeto a «reducir movimiento» y atajos de teclado (`Espacio`, `1`, `2`, `←`, `→`).
 
-shadcn/ui no se instaló en esta fase; el motivo está en
-[docs/02-arquitectura.md](docs/02-arquitectura.md) (ADR-2).
+## Cómo está hecha
 
-## Puesta en marcha
+| Capa | Tecnología |
+| --- | --- |
+| Web | [Next.js 16](https://nextjs.org) (App Router, Cache Components) · React 19 · Tailwind CSS 4 · Lucide |
+| Lenguaje | TypeScript estricto en todo el proyecto |
+| Cuentas y sincronización | [Supabase](https://supabase.com): Auth (Google y email, PKCE) y Postgres con RLS |
+| Voces | Grabaciones generadas con Google Cloud Text-to-Speech (Neural2) |
+| Alojamiento | Vercel (web, audio y estadísticas de visitas sin cookies) |
+| Correo y dominio | Resend (SMTP de Supabase) · Cloudflare |
+| Calidad | Vitest · React Testing Library · GitHub Actions |
+
+## Arquitectura
+
+```
+packages/core/          @lexi/core: TypeScript puro, sin React ni APIs del navegador
+├── domain/             reglas de negocio: progreso, racha, sesión, niveles, fusión, audio
+├── data/               catálogo de palabras, paquetes, voces
+├── persistence/        repositorio, formato versionado (v5) y migraciones, origen remoto
+├── services/           casos de uso: ProgressStore, SyncService, SpeechService, auth
+└── platform.ts         contratos que aporta la web (puertos)
+apps/web/               la aplicación (Next.js)
+├── src/platform/       adaptadores: localStorage, Web Speech, audio, eventos, redirecciones
+├── src/hooks/          puente React ↔ servicios (inyectables en pruebas)
+├── src/components/     interfaz reutilizable
+├── src/features/       pantallas: inicio, práctica, vocabulario, progreso, ajustes…
+├── src/app/            rutas finas que solo componen
+└── public/audio/       grabaciones de voz (~4.900 MP3) e índice
+supabase/               esquema de Postgres con RLS, sync_push y pruebas de sus reglas
+scripts/                generar audio y QR, probar el SQL
+docs/                   especificaciones y decisiones (ADR)
+```
+
+- **Dependencias en un solo sentido:** `app → features → hooks/components → services →
+  persistence → domain`. El núcleo no conoce React ni el navegador; lo que depende de la
+  plataforma entra por contratos (`KeyValueStorage`, `SpeechEngine`, `AudioClipPlayer`,
+  `SyncTriggers`, `AuthPlatform`).
+- **Local-first:** la interfaz lee siempre el progreso local (`useProgress` →
+  `ProgressStore`). Con cuenta, `SyncService` lo combina con `mergeStates`, una fusión pura,
+  conmutativa e idempotente, y lo sube con `sync_push`. Los borrados dejan rastro para que
+  ningún dispositivo los «resucite».
+- **Estático por defecto:** 349 páginas prerenderizadas, entre ellas una ficha por palabra
+  (útil para buscadores). Los datos del usuario solo existen en el cliente.
+
+## Empezar
 
 Requiere Node.js 20.9 o superior (probado con Node 24).
 
@@ -59,99 +88,75 @@ npm install
 npm run dev
 ```
 
-Abre <http://localhost:3000>. Para activar las cuentas, sigue [docs/05-despliegue.md](docs/05-despliegue.md) (las variables van en `apps/web/.env.local`).
-
-App móvil en tu teléfono con Expo Go (detalles en [docs/07-movil-pruebas.md](docs/07-movil-pruebas.md)):
-
-```bash
-npm run start -w @lexi/mobile
-```
+Abre <http://localhost:3000>. Sin configurar nada, Lexi funciona entera, sin cuentas. Para
+activarlas, sigue [docs/05-despliegue.md](docs/05-despliegue.md) (las variables van en
+`apps/web/.env.local`).
 
 | Comando | Qué hace |
 | --- | --- |
-| `npm run dev` | Servidor de desarrollo de la web |
-| `npm run start -w @lexi/mobile` | Servidor de Expo para la app móvil |
-| `npm test` | Pruebas de todos los paquetes (Vitest en núcleo y web, Jest en móvil) |
-| `npm run test:sql` | Esquema de Supabase y sus reglas (RLS, sincronización) en un Postgres desechable; requiere Docker |
-| `npm run typecheck` | Comprobación de tipos |
-| `npm run lint` | ESLint |
-| `npm run build` / `npm start` | Compilación y servidor de producción de la web |
+| `npm run dev` | Servidor de desarrollo |
+| `npm test` | Pruebas del núcleo y de la web (Vitest) |
+| `npm run typecheck` · `npm run lint` | Tipos y ESLint |
+| `npm run build` · `npm start` | Compilación y servidor de producción |
+| `npm run test:sql` | Esquema de Supabase y sus reglas en un Postgres desechable (necesita Docker) |
+| `npm run audio` | Regenera las grabaciones de voz ([docs/14](docs/14-audio.md)); necesita una clave de Google en `.env.audio.local` |
+| `npm run qr` | Regenera el código QR de compartir ([docs/13](docs/13-compartir.md)) |
 
-## Arquitectura
+## Calidad
 
-```
-packages/core/src/        @lexi/core: sin React ni APIs del navegador
-├── domain/               Reglas de negocio puras: progreso, racha, sesión, búsqueda, fusión
-├── data/                 Catálogo de palabras y paquetes
-├── persistence/          ProgressRepository, esquema versionado, origen remoto (Supabase)
-├── services/             ProgressStore, SyncService, SupabaseAuthService, SpeechService
-└── platform.ts           Contratos que aporta cada plataforma
-apps/web/src/             Next.js
-├── platform/             Adaptadores web: localStorage, Web Speech, eventos, URL
-├── hooks/  components/  features/
-└── app/                  Rutas: /, /practicar, /vocabulario, /vocabulario/[id], /progreso, /ajustes,
-                          /entrar, /auth/callback, /restablecer-contrasena
-apps/mobile/src/           Expo (Android e iOS)
-├── platform/             Adaptadores nativos: SQLite, expo-speech, NetInfo, notificaciones
-├── screens/  components/  hooks/
-└── app/                  Rutas de Expo Router (pestañas + pantallas)
-supabase/                 Esquema de Postgres con RLS y pruebas de sus reglas
-```
+- **CI en cada pull request:** tipos, lint, pruebas, build y reglas SQL en Postgres. `master`
+  está protegida y solo acepta PR con el CI en verde.
+- **Más de 200 pruebas:** dominio y servicios con relojes inyectados, catálogo (AFI, ejemplos,
+  formas verbales, ids únicos), migraciones del formato guardado, fusión y flujos de interfaz
+  con React Testing Library.
+- **Reglas del proyecto** (ids estables, migraciones, estadísticas solo desde el estado real…)
+  en [CLAUDE.md](CLAUDE.md).
 
-`domain`, `data`, `persistence` y `services` no dependen de React; la UI solo los consume.
-El detalle está en `docs/`:
+## Documentación
 
-- [01 · Requisitos](docs/01-requisitos.md): requisitos funcionales, reglas de negocio y criterios de aceptación.
-- [02 · Arquitectura](docs/02-arquitectura.md): capas y decisiones (ADR).
-- [03 · Datos y persistencia](docs/03-datos-y-persistencia.md): modelo, versionado y migraciones.
-- [04 · Cuentas y sincronización](docs/04-cuentas-y-sincronizacion.md): Fase 3 (Supabase, fusión, seguridad).
-- [05 · Configurar cuentas y desplegar](docs/05-despliegue.md): Supabase, Google, variables y Vercel.
-- [06 · App móvil](docs/06-app-movil.md): Fase 4 con Expo.
-- [07 · Probar la app móvil](docs/07-movil-pruebas.md): Expo Go y builds internos con EAS.
-- [08 · Paquetes de palabras](docs/08-paquetes.md): Esenciales y paquetes temáticos.
-- [09 · Celebración](docs/09-celebracion.md): confeti y sonido al terminar una sesión.
-- [10 · Ponerme a prueba](docs/10-ejercicios.md): dictado y completar la frase.
-- [11 · Pendientes](docs/11-pendientes.md): CAPTCHA, comprobaciones antes de anunciar, app móvil y opcionales.
-- [12 · Niveles e insignias](docs/12-niveles.md): puntos, niveles e insignias de paquete.
-- [13 · Compartir Lexi](docs/13-compartir.md): página de compartir, redes y código QR.
-- [14 · Audio grabado](docs/14-audio.md): voces neuronales, selector de voz y cómo regenerar el audio.
-- Política de privacidad: [`/privacidad`](https://lexiapp.app/privacidad).
+| | |
+| --- | --- |
+| [01 · Requisitos](docs/01-requisitos.md) | Requisitos funcionales, reglas de negocio y criterios de aceptación |
+| [02 · Arquitectura](docs/02-arquitectura.md) | Capas y decisiones (ADR) |
+| [03 · Datos y persistencia](docs/03-datos-y-persistencia.md) | Modelo, versionado y migraciones |
+| [04 · Cuentas y sincronización](docs/04-cuentas-y-sincronizacion.md) | Supabase, fusión y seguridad |
+| [05 · Desplegar](docs/05-despliegue.md) | Supabase, Google, correo, dominio, Vercel y estadísticas |
+| [08 · Paquetes](docs/08-paquetes.md) | Esenciales y paquetes temáticos |
+| [09 · Celebración](docs/09-celebracion.md) | Confeti y sonido al terminar una sesión |
+| [10 · Ponerme a prueba](docs/10-ejercicios.md) | Dictado y completar la frase |
+| [11 · Pendientes](docs/11-pendientes.md) | CAPTCHA, comprobaciones antes de anunciar y opcionales |
+| [12 · Niveles e insignias](docs/12-niveles.md) | Puntos, niveles e insignias |
+| [13 · Compartir](docs/13-compartir.md) | Página de compartir y código QR |
+| [14 · Audio grabado](docs/14-audio.md) | Voces neuronales y cómo regenerarlas |
 
-## Verificación
-
-- 88 pruebas en 13 archivos: catálogo, racha, estadísticas, selección de sesión, búsqueda,
-  repositorio (corrupción, versiones futuras, migraciones), `ProgressStore`, `SpeechService`
-  y flujos de UI (sesión completa, abandono y recarga, búsqueda y filtros, ficha, inicio y progreso).
-- Compilación de producción: 96 páginas prerenderizadas (incluidas las 88 fichas).
-- Revisión manual en el navegador a 375 px y 1280 px, en modo claro y oscuro.
+Los documentos 06 y 07 trataban de la antigua app móvil, retirada el 2026-10-21. Su código está
+en la etiqueta de git [`movil-final`](https://github.com/dhluna/lexiapp/tree/movil-final).
+Política de privacidad: [lexiapp.app/privacidad](https://lexiapp.app/privacidad).
 
 ## Limitaciones conocidas
 
-- **La pronunciación automática necesita una interacción previa** (política de los navegadores).
-  En la práctica siempre la hay; si se bloqueara, el botón de escuchar sigue funcionando.
-- **La pronunciación se oye con voces grabadas** (neuronales, 4 voces a elegir en Ajustes:
-  EE. UU. o Reino Unido, mujer u hombre), iguales en todos los dispositivos
-  ([docs/14](docs/14-audio.md)). Si una grabación no está disponible (sin conexión en el
-  móvil, texto nuevo aún sin grabar), se usa la voz del navegador o del sistema, cuya
-  calidad depende del dispositivo; si no tiene voces en inglés, la app avisa.
-  Las pruebas automáticas usan un motor de voz simulado.
-- **El progreso es local a cada navegador y dispositivo.** Borrar los datos del sitio lo elimina.
-  En modo privado o con el almacenamiento bloqueado, la app avisa y funciona solo en memoria.
-- **La sesión en curso no se guarda:** al salir se conservan las respuestas ya dadas, pero
-  la sesión no cuenta como completada y no se puede retomar.
-- **Las traducciones usan un español neutro con rasgos peninsulares** (p. ej., «móvil»,
-  «deberes»). Cuando hay variantes habituales se dan las dos («tarea / deberes»).
-- Sin pruebas end-to-end automatizadas (Playwright) en esta fase; los flujos se cubren con
-  React Testing Library y se revisaron a mano en el navegador.
+- **Sin cuenta, el progreso vive en un solo navegador.** Borrar los datos del sitio lo
+  elimina; en modo privado, Lexi avisa y funciona solo en memoria.
+- **Si una grabación no está disponible** (sin conexión, o un texto nuevo aún sin grabar), se
+  usa la voz del navegador, cuya calidad depende del dispositivo.
+- **La pronunciación automática necesita una interacción previa** (política de los
+  navegadores); el botón de escuchar funciona siempre.
+- **La sesión en curso no se guarda:** al salir se conservan las respuestas dadas, pero no se
+  puede retomar.
+- **Las traducciones usan un español neutro con rasgos peninsulares** («móvil», «deberes»);
+  cuando hay variantes habituales se dan las dos.
+- Sin pruebas end-to-end automatizadas; los flujos se cubren con React Testing Library y se
+  revisan en el navegador.
 
 ## Contribuir
 
 Las contribuciones son bienvenidas. Lee [CONTRIBUTING.md](CONTRIBUTING.md): primero un issue,
-luego un pull request desde tu fork. `master` está protegida: todo entra por PR con el CI en
-verde. Los fallos de seguridad se reportan en privado ([SECURITY.md](SECURITY.md)). Todos los espacios del proyecto siguen el
+luego un pull request desde tu fork. Los fallos de seguridad se reportan en privado
+([SECURITY.md](SECURITY.md)). Todos los espacios del proyecto siguen el
 [código de conducta](CODE_OF_CONDUCT.md).
 
 ## Licencia
 
-[MIT](LICENSE). Puedes usar, modificar y redistribuir el código, también en proyectos
-comerciales, siempre que conserves el aviso de copyright y la licencia.
+[MIT](LICENSE): puedes usar, modificar y redistribuir el código, también en proyectos
+comerciales, siempre que conserves el aviso de copyright y la licencia. Las tipografías
+(Bricolage Grotesque, Atkinson Hyperlegible Next) tienen licencia OFL.

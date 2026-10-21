@@ -14,17 +14,12 @@
     "test": "npm run test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "test:sql": "node scripts/test-sql.mjs"
-  },
-  "overrides": {
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "test:sql": "node scripts/test-sql.mjs",
+    "audio": "tsx scripts/generate-audio.ts",
+    "qr": "node scripts/generate-qr.mjs"
   },
   "devDependencies": {
-    "expo-router": "~57.0.26",
     "qrcode": "^1.5.4",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
     "tsx": "^4.23.15"
   }
 }

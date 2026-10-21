@@ -2,7 +2,7 @@
  * Lexi's QR code design, as pure geometry: rounded modules in ink, rounded corner "eyes" in
  * the accent color and Lexi's mark in the middle. The matrix comes from `data/share.ts`
  * (generated with error correction H, so the mark in the middle does not stop it scanning).
- * Web, mobile and `scripts/generate-qr.mjs` all draw from these shapes.
+ * The web and `scripts/generate-qr.mjs` both draw from these shapes.
  */
 
 export const QR_COLORS = { ink: "#16193b", accent: "#3a3ed6", dot: "#ffe45c", background: "#ffffff" } as const;

@@ -1,6 +1,6 @@
 # 10 · «Ponerme a prueba»: ejercicios
 
-Estado: **implementado** (web y móvil).
+Estado: **implementado**.
 
 ## Objetivo
 
@@ -40,6 +40,5 @@ las palabras tienen frase.
 | Sesión de prueba (`createQuiz`, `isQuiz`, `recordCurrent`) | `packages/core/src/domain/session.ts` (`exercises` en `PracticeSession`) |
 | Si el botón está activo | `quizCount` en `planning/session-plan.ts` |
 | Web | `apps/web/src/features/practice/exercise-card.tsx` |
-| Móvil | `apps/mobile/src/screens/practice/exercise-card.tsx` (campo sin autocorrección ni mayúsculas automáticas) |
 
 No cambia el formato guardado: la prueba no escribe nada; solo el botón final usa `setWordStatus(id, "review")`.

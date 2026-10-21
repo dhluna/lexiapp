@@ -65,4 +65,4 @@ una aplicación web sin cuentas: todo el progreso vive en el navegador.
 ## Fuera de alcance (fases futuras)
 
 Cuentas de usuario, base de datos remota, sincronización entre dispositivos, estadísticas
-históricas avanzadas, repetición espaciada con intervalos, app móvil nativa.
+históricas avanzadas, repetición espaciada con intervalos, app móvil nativa (una versión con Expo existió y se retiró: ver `docs/02-arquitectura.md`, ADR-15).

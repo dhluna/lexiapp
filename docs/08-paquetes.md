@@ -1,6 +1,6 @@
 # 08 · Paquetes de palabras
 
-Estado: **implementado** (web y móvil).
+Estado: **implementado**.
 
 ## Objetivo
 
@@ -29,11 +29,11 @@ persona añade a su práctica cuando quiere. El paquete sustituye a las antiguas
 
 ## Pantallas
 
-| Pantalla | Web | Móvil |
-| --- | --- | --- |
-| Lista de paquetes | `/vocabulario`: «En tu práctica» (con progreso) y «Más paquetes» (con «Añadir») | Pestaña Vocabulario, igual |
-| Un paquete | `/vocabulario?paquete=<id>` | `/paquete/[id]` |
-| Practicar un paquete | `/practicar?paquete=<id>` (solo si está activo; si no, sesión general) | `?paquete=` en la pestaña Practicar |
+| Pantalla | Ruta |
+| --- | --- |
+| Lista de paquetes | `/vocabulario`: «En tu práctica» (con progreso) y «Más paquetes» (con «Añadir») |
+| Un paquete | `/vocabulario?paquete=<id>` |
+| Practicar un paquete | `/practicar?paquete=<id>` (solo si está activo; si no, sesión general) |
 
 ## Datos
 
@@ -45,8 +45,8 @@ persona añade a su práctica cuando quiere. El paquete sustituye a las antiguas
 - Formato guardado **v5** (ver [03](03-datos-y-persistencia.md)). En Supabase, columna
   `user_settings.active_packs` (migración `0002_active_packs.sql`); `practice_sessions.category_id`
   guarda ahora el id del paquete.
-- Los clientes anteriores a los paquetes (por ejemplo, un APK antiguo) no envían
-  `active_packs`: el servidor conserva los de la cuenta.
+- Los clientes anteriores a los paquetes no envían `active_packs`: el servidor conserva los de
+  la cuenta.
 
 ## Reorganización del catálogo
 
@@ -60,7 +60,7 @@ aplicarse la regla de no renombrar ni reutilizar ids.
 
 1. Una cuenta nueva practica solo Esenciales (150 palabras).
 2. Añadir Viajes hace que sus palabras entren en la práctica y en las estadísticas; quitarlo las saca sin perder su progreso.
-3. Añadir un paquete en la web y verlo activo en el móvil tras sincronizar.
+3. Añadir un paquete en un navegador y verlo activo en otro tras sincronizar.
 4. `catalog.test.ts`: Esenciales = 150, cada temático ≥ 25, términos únicos en todo el catálogo y las reglas de siempre (AFI, ejemplos, formas verbales).
 
 ## Fuera de alcance (por ahora)

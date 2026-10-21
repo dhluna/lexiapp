@@ -41,7 +41,7 @@ export interface ServiceResolvers {
 
 const ServicesContext = createContext<Services>({});
 
-/** Lets tests (or a future native shell) inject their own implementations. */
+/** Lets tests inject their own implementations. */
 export function ServicesProvider({ value, children }: { value: Services; children: ReactNode }) {
   return <ServicesContext.Provider value={value}>{children}</ServicesContext.Provider>;
 }

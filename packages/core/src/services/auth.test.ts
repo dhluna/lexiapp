@@ -27,7 +27,7 @@ describe("SupabaseAuthService.completeRedirect", () => {
 
   it("still exchanges the PKCE code returned by Google", async () => {
     const { auth, service } = setup();
-    await service.completeRedirect("lexi://auth/callback?code=xyz");
+    await service.completeRedirect("https://lexiapp.app/auth/callback?code=xyz");
     expect(auth.exchangeCodeForSession).toHaveBeenCalledWith("xyz");
   });
 

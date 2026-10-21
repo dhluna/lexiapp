@@ -24,8 +24,7 @@ npm run dev          # web en http://localhost:3000, sin cuentas
 ```
 
 Sin las variables `NEXT_PUBLIC_SUPABASE_*`, la web funciona sin cuentas y guarda el progreso en el navegador.
-Para la mayoría de los cambios no necesitas Supabase. La app móvil se arranca con
-`npm run start -w @lexi/mobile` (Expo Go).
+Para la mayoría de los cambios no necesitas Supabase.
 
 ## 3. Haz el cambio en una rama
 

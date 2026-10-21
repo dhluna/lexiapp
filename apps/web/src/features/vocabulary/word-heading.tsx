@@ -12,7 +12,7 @@ const TERM_CLASSES = {
   sm: "text-2xl sm:text-4xl",
 } as const;
 
-/** Long words get a smaller size (shared rule with the mobile app). */
+/** Long words get a smaller size. */
 const termSize = (term: string) => TERM_CLASSES[termScale(term)];
 
 interface WordHeadingProps {

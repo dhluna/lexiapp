@@ -14,7 +14,6 @@ Se pegan en Supabase › **Authentication › Emails › Templates**. Los correo
   el correo. Requiere que la **Site URL** de Supabase sea `https://lexiapp.app`.
   - Confirmar cuenta → `/auth/callback?token_hash=…&type=email`.
   - Cambiar contraseña → `/restablecer-contrasena?token_hash=…&type=recovery`.
-  - Desde la app móvil, el enlace abre la web; después se entra en la app con la contraseña.
 - No muestran el email (Gmail lo convertiría en enlace).
 - Fondo blanco, tarjeta con borde, estilos en línea y tablas, para que se vean bien en Gmail (también con tema oscuro), Outlook y Apple Mail; sin imágenes,
   así no dependen de que el cliente las cargue.

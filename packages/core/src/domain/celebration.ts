@@ -36,7 +36,7 @@ const ARPEGGIO: ChimeNote[] = [
 
 /**
  * The bright arpeggio (C6–E6–G6–C7) and, for a perfect session, a sparkling chord on top.
- * Pure data: the web synthesizes it with Web Audio and the mobile WAVs are rendered from it.
+ * Pure data: the web synthesizes it with Web Audio.
  */
 export const CHIME: Record<Exclude<Celebration, "none">, readonly ChimeNote[]> = {
   normal: ARPEGGIO,

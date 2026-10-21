@@ -26,23 +26,14 @@ mes). Un bot podría agotar ese límite y dejar sin correo de confirmación a lo
   `NEXT_PUBLIC_TURNSTILE_SITE_KEY` en Vercel y `.env.local`. Sin la variable, sin widget.
 - Pruebas: claves de prueba de Cloudflare (siempre aceptan) y token simulado en `FakeAuth`.
 
-**Riesgo: la app móvil.** Al activarlo en Supabase, cualquier cliente que no envíe el token deja de
-poder registrarse o entrar con contraseña, **incluido el APK ya instalado** (Google seguiría
-funcionando). Opciones, sin decidir:
-- **Turnstile también en el móvil** mediante `react-native-webview` (incluido en Expo Go), cargando
-  el widget con `baseUrl` `https://lexiapp.app`. Recomendada.
-- **Solo Google en el móvil**: quitar el formulario de email de la app y dejar el registro con
-  email para la web.
-
 **Privacidad:** Turnstile procesa datos técnicos del navegador (IP y señales del dispositivo).
 Añadir Cloudflare a «Quién más interviene» en `/privacidad` y actualizar la fecha.
 
 **Orden para no romper nada:**
-1. Código en web y móvil que obtiene y envía el token (Supabase aún no lo exige, así que no
-   cambia nada para los usuarios).
+1. Código en la web que obtiene y envía el token (Supabase aún no lo exige, así que no cambia
+   nada para los usuarios).
 2. Política de privacidad actualizada.
-3. APK nuevo instalado.
-4. Activar el CAPTCHA en Supabase y probar registro, entrada y cambio de contraseña en web y móvil.
+3. Activar el CAPTCHA en Supabase y probar registro, entrada y cambio de contraseña.
 
 ## 2. Antes de anunciar Lexi
 
@@ -54,20 +45,14 @@ Añadir Cloudflare a «Quién más interviene» en `/privacidad` y actualizar la
       `www.lexiapp.app` con redirección (CNAME en Cloudflare con la nube gris).
 - [ ] **Borrar las cuentas de prueba** en Supabase › Users.
 
-## 3. App móvil
+## 3. Limpieza tras retirar la app móvil
 
-- [ ] **APK nuevo** con el icono nuevo y los últimos cambios (mensaje de cuenta existente,
-      enlace de privacidad): `npx eas-cli@latest build --profile preview --platform android`.
-- [ ] **Google Play**: cuenta de desarrollador (25 USD), prueba cerrada con al menos 12 testers
-      durante 14 días, ficha (textos, capturas, icono 512×512 en `brand/`), formulario de
-      seguridad de los datos y AAB con el perfil `production`. Ver la conversación de lanzamiento
-      resumida en `docs/05-despliegue.md` y `docs/07-movil-pruebas.md`.
-- [ ] **Actualizar a Expo SDK 58** con `npx expo install expo@^58 --fix` y probar la app. Resuelve las
-      alertas de Dependabot de dependencias transitivas de Expo (`decode-uri-component`, `braces`,
-      `node-forge`, `uuid`…), que Dependabot no puede arreglar paquete a paquete. Hay que cambiar
-      también el React fijado si el SDK lo pide.
-- [ ] **iOS / TestFlight**: cuenta de Apple Developer e «Iniciar sesión con Apple» (obligatorio en
-      la App Store si se ofrece Google).
+La app móvil (Expo) se retiró el 2026-10-21; su código está en la etiqueta `movil-final`.
+
+- [ ] **Supabase › Authentication › URL Configuration:** quitar las Redirect URLs `lexi://**` y
+      `exp://**`.
+- [ ] **Expo (expo.dev):** borrar el proyecto de EAS si ya no se va a usar (no tiene coste).
+- [ ] **Desinstalar el APK de prueba:** dejará de sincronizar bien si cambia el formato.
 
 ## 4. Opcional
 

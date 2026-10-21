@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    // Sin "dom": el núcleo no puede usar APIs del navegador (se compila también para React Native).
+    // Sin "dom": el núcleo no puede usar APIs del navegador; lo que depende de la plataforma entra por contratos.
     "lib": ["ES2022"],
     "types": ["node"],
     "module": "esnext",

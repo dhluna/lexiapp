@@ -24,15 +24,6 @@ body:
         3. …
     validations:
       required: true
-  - type: dropdown
-    id: donde
-    attributes:
-      label: ¿Dónde?
-      options:
-        - Web (lexiapp.app)
-        - App móvil (versión de prueba)
-    validations:
-      required: true
   - type: input
     id: dispositivo
     attributes:

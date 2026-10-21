@@ -10,5 +10,5 @@
   los SVG no necesitan la fuente instalada.
 - Deja alrededor del logotipo un margen de, al menos, la altura de la «x».
 - No cambies los colores, no lo estires y no lo pongas sobre fondos con poco contraste.
-- Los iconos de la web (`apps/web/src/app/icon.svg`) y de la app (`scripts/generate-app-icons.mjs`)
-  usan el mismo símbolo.
+- El icono de la web (`apps/web/src/app/icon.svg`, `apple-icon.tsx` y `manifest.ts`) usa el
+  mismo símbolo.

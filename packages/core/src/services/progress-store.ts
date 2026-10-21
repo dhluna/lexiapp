@@ -31,7 +31,7 @@ type Listener = () => void;
 
 /**
  * Application use cases over the user's progress. Framework-agnostic: React consumes it
- * through `useSyncExternalStore`, a React Native client could do the same.
+ * through `useSyncExternalStore`.
  */
 export class ProgressStore {
   private snapshot: ProgressSnapshot | null = null;
