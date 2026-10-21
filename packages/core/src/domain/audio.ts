@@ -13,7 +13,7 @@ function fnv1a(text: string): string {
 
 /**
  * File name (without extension) of the recording of `text`: a readable slug plus a hash of the
- * exact text. Used by `scripts/generate-audio.ts`, the web and the mobile app alike.
+ * exact text. Used by `scripts/generate-audio.ts` and the web alike.
  */
 export function audioKey(text: string): string {
   const slug = text

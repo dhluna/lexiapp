@@ -1,6 +1,6 @@
 /**
- * What each platform (web, React Native) provides to the core. The core never touches
- * browser or native APIs directly: it only talks to these contracts.
+ * What the platform (today, the web app) provides to the core. The core never touches
+ * browser APIs directly: it only talks to these contracts, which also lets tests use fakes.
  */
 
 export type { KeyValueStorage } from "./persistence/storage";
@@ -75,9 +75,4 @@ export type AuthRedirect = "callback" | "reset-password";
 export interface AuthPlatform {
   /** Where the provider or the email link must send the user back. */
   redirectUrl(target: AuthRedirect, nextPath?: string): string;
-  /**
-   * Opens the provider's page and resolves with the URL it returned to (or null if the
-   * user cancelled). Omitted on the web, where the page itself navigates away and back.
-   */
-  openOAuth?(authUrl: string, returnUrl: string): Promise<string | null>;
 }

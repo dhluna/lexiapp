@@ -38,8 +38,8 @@ contrato (versión asíncrona prevista en el documento de datos).
 
 **ADR-4 · `ProgressStore` como fachada de casos de uso, independiente de React.**
 Expone `getState`, `subscribe`, `recordAnswer`, `setWordStatus`, `completeSession`,
-`updatePreferences`. React lo consume con `useSyncExternalStore`; un cliente React Native
-podría reutilizarlo con otro `KeyValueStorage` (p. ej. AsyncStorage tras un adaptador).
+`updatePreferences`. React lo consume con `useSyncExternalStore`; otro cliente podría
+reutilizarlo con su propio `KeyValueStorage`.
 
 **ADR-5 · Hidratación sin parpadeos incorrectos.**
 El servidor no conoce LocalStorage: `getServerSnapshot` devuelve `null` y las vistas
@@ -76,7 +76,7 @@ persiste (abandonar = salir, sin perder lo confirmado).
 **ADR-10 · Supabase con autenticación y datos solo en el cliente.** `@supabase/supabase-js`
 desde el navegador y seguridad con RLS en Postgres. Las páginas siguen siendo estáticas: sin
 `proxy.ts` ni lectura de `cookies()` en el servidor, que con `cacheComponents` obligaría a
-envolver en `Suspense` toda página con sesión. El mismo patrón sirve para la futura app móvil.
+envolver en `Suspense` toda página con sesión.
 
 **ADR-11 · Local primero con sincronización por fusión.** La interfaz sigue leyendo
 LocalStorage; `SyncService` descarga, fusiona con `mergeStates` (función pura) y sube con la
@@ -86,28 +86,25 @@ tiempo real y la incremental: los volúmenes por usuario son pequeños.
 **ADR-12 · Borrados explícitos (datos v4).** Reiniciar una palabra deja una marca con fecha y
 «borrar progreso» fija `resetAt`, para que otro dispositivo no resucite datos borrados.
 
-## Decisiones de la Fase 4 (ver `docs/06-app-movil.md`)
+## Núcleo y web
 
 **ADR-13 · Monorepo con npm workspaces.** `packages/core` (`@lexi/core`) contiene el dominio,
-el catálogo, la persistencia y los servicios; `apps/web` y `apps/mobile` lo consumen como
-código TypeScript (Turbopack y Metro lo compilan). Se importa por ruta
-(`@lexi/core/domain/merge`) en lugar de un índice único, para que cada app cargue solo lo que usa.
-React no se comparte entre apps, para no forzar la misma versión en la web y en Expo.
+el catálogo, la persistencia y los servicios; `apps/web` lo consume como código TypeScript
+(Turbopack lo compila). Se importa por ruta (`@lexi/core/domain/merge`) en lugar de un índice
+único, para cargar solo lo que se usa.
 
-**ADR-14 · Contratos de plataforma.** El núcleo se compila sin `lib: dom` y sus pruebas corren
-en Node. Lo que depende de la plataforma entra por cuatro contratos (`platform.ts`):
-`KeyValueStorage`, `SpeechEngine`, `SyncTriggers` y `AuthPlatform`. La lógica (elegir voz,
-fusionar, reintentar, canjear el código de inicio de sesión) se queda en el núcleo; cada
-plataforma aporta solo el adaptador mínimo.
+**ADR-14 · Contratos de plataforma (puertos y adaptadores).** El núcleo se compila sin
+`lib: dom` y sus pruebas corren en Node. Lo que depende de la plataforma entra por contratos
+(`platform.ts`): `KeyValueStorage`, `SpeechEngine`, `AudioClipPlayer`, `SyncTriggers` y
+`AuthPlatform`. La lógica (elegir voz, fusionar, reintentar, completar el inicio de sesión) se
+queda en el núcleo; la web aporta solo el adaptador mínimo (`apps/web/src/platform/`).
 
-**ADR-15 · Almacenamiento móvil con `expo-sqlite/kv-store`.** Tiene API síncrona, así que
-`ProgressStore` y su contrato `KeyValueStorage` no cambian. AsyncStorage obligaría a hacer
-asíncrono todo el núcleo.
+**ADR-15 · Solo web (2026-10-21).** Hubo una app móvil con Expo (Android e iOS) que compartía
+el núcleo. Se retiró para centrar el proyecto en la web: su código está en la etiqueta de git
+`movil-final`. Si vuelve, será en un repositorio aparte que reutilice `@lexi/core` (por ejemplo,
+publicado como paquete) y el mismo backend; por eso el núcleo sigue sin depender de la web.
 
-**ADR-16 · Google en el móvil con el navegador del sistema.** `signInWithOAuth` con
-`skipBrowserRedirect`, `expo-web-browser` y canje del código al volver por
-`lexi://auth/callback`. Reutiliza el cliente OAuth web; el inicio nativo de Google exigiría
-clientes por plataforma y otra librería.
+*ADR-16 (inicio de sesión con Google en el móvil) se retiró junto con la app móvil.*
 
 ## Decisiones de los paquetes (ver `docs/08-paquetes.md`)
 
@@ -118,9 +115,9 @@ preferencias (formato v5) y se sincroniza con ellas. `getActiveWords(state)` es 
 puerta de la práctica y de las estadísticas; Vocabulario sigue usando `WORDS` completo.
 
 **ADR-18 · Celebración con efectos inyectables.** `Celebrator` (núcleo) decide qué celebrar y
-en qué orden; cada plataforma aporta el confeti y el sonido. El sonido es una partitura en el
-núcleo (`CHIME`): la web la sintetiza y el móvil reproduce WAV generados con ella, así que no
-hay archivos con licencia y las dos suenan igual. Ver `docs/09-celebracion.md`.
+en qué orden; la web aporta el confeti y el sonido. El sonido es una partitura en el núcleo
+(`CHIME`) que la web sintetiza con Web Audio, así que no hay archivos con licencia. Ver
+`docs/09-celebracion.md`.
 
 ## Preparación para el futuro (no implementado)
 
@@ -130,5 +127,5 @@ hay archivos con licencia y las dos suenan igual. Ver `docs/09-celebracion.md`.
   "último cambio gana" por id.
 - **Estadísticas históricas:** `sessions[]` guarda fecha, tamaño y resultado de cada
   sesión completada (limitado a las 365 últimas).
-- **React Native / Expo:** `domain`, `data`, `persistence` (salvo el adaptador de
-  LocalStorage) y `services/progress-store` no dependen del DOM.
+- **Otra app (por ejemplo, nativa):** `domain`, `data`, `persistence` y `services` no
+  dependen del DOM; bastaría con aportar sus adaptadores de `platform.ts`.

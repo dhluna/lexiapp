@@ -41,15 +41,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# expo / react native
-.expo/
-dist/
-web-build/
-*.jks
+
+# claves y certificados (nunca al repo)
+*.key
 *.p8
 *.p12
-*.key
-*.mobileprovision
-*.orig.*
-/apps/mobile/ios/
-/apps/mobile/android/
+*.jks

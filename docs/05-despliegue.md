@@ -48,7 +48,6 @@ En **Authentication › URL Configuration**:
   - `http://localhost:3000/**`
   - `https://lexiapp.app/**`
   - `https://lexiapp-es.vercel.app/**` (dominio anterior, redirige a `lexiapp.app`)
-  - `lexi://**` y `exp://**` (app móvil, ver [docs/07](07-movil-pruebas.md))
   - Si usas despliegues de vista previa de Vercel:
     `https://*-<tu-equipo>.vercel.app/**`
 
@@ -107,12 +106,10 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clave pública>
 
 - **Política de privacidad** en `/privacidad` (`apps/web/src/features/legal/privacy-policy.tsx`).
   El responsable y el email de contacto están en constantes al principio del archivo; si
-  cambian el tratamiento de datos o los proveedores, actualiza el texto y la fecha. La app
-  móvil enlaza a la misma página (`apps/mobile/src/legal.ts`).
+  cambian el tratamiento de datos o los proveedores, actualiza el texto y la fecha.
 - **Icono y vista previa al compartir:** `apps/web/src/app/icon.svg`, `apple-icon.tsx`,
   `opengraph-image.tsx` (con las fuentes de `apps/web/assets/fonts`, licencia OFL) y
-  `manifest.ts`. Los iconos de la app móvil se generan con
-  `node scripts/generate-app-icons.mjs` a partir del mismo diseño.
+  `manifest.ts`.
 - Correo propio en Supabase (SMTP), Google en modo producción (Google Auth Platform ›
   Audience › **Publish app**) y, si quieres, CAPTCHA en el registro.
 
@@ -158,7 +155,7 @@ Lexi usa Resend sobre su dominio:
   (`/auth/callback?token_hash=…`, `/restablecer-contrasena?token_hash=…`) y no deben acabar
   en las estadísticas. La prueba `components/site-analytics.test.ts` lo comprueba.
 - **Privacidad:** sin cookies y sin datos personales. Está declarado en la política de
-  privacidad, en el apartado «Estadísticas de visitas». La app móvil no envía estadísticas.
+  privacidad, en el apartado «Estadísticas de visitas».
 - **Límite:** el plan gratuito de Vercel incluye un número limitado de eventos al mes. Si se
   supera, hay que pasar a Pro o cambiar a Cloudflare Web Analytics, que también funciona sin
   cookies.

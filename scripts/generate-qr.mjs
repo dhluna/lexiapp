@@ -1,4 +1,4 @@
-// Generates Lexi's share QR code: the module matrix shared by web and mobile
+// Generates Lexi's share QR code: the module matrix used by the web
 // (packages/core/src/data/share.ts) and the downloadable files (apps/web/public/qr/).
 // The PNG is decoded back at the end to make sure the code with the logo still scans.
 // Usage: node scripts/generate-qr.mjs

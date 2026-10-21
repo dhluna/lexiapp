@@ -2,8 +2,9 @@
 
 @apps/web/AGENTS.md
 
-Las especificaciones están en `docs/`: léelas antes de cambiar comportamiento y actualízalas
-si cambian requisitos, reglas o el formato guardado.
+Lexi es una aplicación **web** (https://lexiapp.app). Las especificaciones están en `docs/`:
+léelas antes de cambiar comportamiento y actualízalas si cambian requisitos, reglas o el formato
+guardado.
 
 ## Comandos
 
@@ -18,22 +19,24 @@ Monorepo con npm workspaces; los comandos de la raíz se ejecutan en todos los p
 - **Flujo de Git:** `master` está protegida (ruleset). Trabaja en una rama, abre un PR y
   fusiona con *squash* cuando el CI (`.github/workflows/ci.yml`) esté en verde. Cada fusión
   publica la web en Vercel. Ver `CONTRIBUTING.md`.
-- Móvil: `npm run start -w @lexi/mobile`; compila los paquetes con
-  `npx expo export --platform android|ios` dentro de `apps/mobile`.
+- `npm run audio` regenera las grabaciones de voz (`docs/14-audio.md`; necesita
+  `.env.audio.local`, que nunca se lee ni se muestra) y `npm run qr` el código QR
+  (`docs/13-compartir.md`). Hay que regenerar el audio al añadir palabras al catálogo.
 
 ## Estructura
 
 ```
 packages/core   @lexi/core: dominio, catálogo, persistencia, servicios y contratos de plataforma
-apps/web        Next.js (Fases 1 y 3)
-apps/mobile     Expo (Fase 4)
+apps/web        la aplicación web (Next.js)
 ```
 
-- **`@lexi/core` no puede usar React ni APIs del navegador ni nativas.** Se compila sin
-  `lib: dom` y sus pruebas corren en Node: cualquier uso de `window` falla. Lo que depende
-  de la plataforma entra por los contratos de `packages/core/src/platform.ts`
-  (`KeyValueStorage`, `SpeechEngine`, `SyncTriggers`, `AuthPlatform`), y cada app aporta su
-  implementación en `src/platform/`.
+- **`@lexi/core` no puede usar React ni APIs del navegador.** Se compila sin `lib: dom` y sus
+  pruebas corren en Node: cualquier uso de `window` falla. Lo que depende de la plataforma
+  entra por los contratos de `packages/core/src/platform.ts` (`KeyValueStorage`,
+  `SpeechEngine`, `AudioClipPlayer`, `SyncTriggers`, `AuthPlatform`), y la web aporta su
+  implementación en `apps/web/src/platform/`. Esta separación permite probar el dominio sin
+  navegador y reutilizar el núcleo en otra app (el código de la antigua app móvil está en la
+  etiqueta `movil-final`).
 - Se importa por ruta: `@lexi/core/domain/progress`, `@lexi/core/services/sync-service`…
   Dentro del paquete, los imports son relativos.
 
@@ -62,13 +65,13 @@ apps/mobile     Expo (Fase 4)
 - **Estadísticas solo desde el estado real** (`computeStats`, y puntos y niveles con
   `domain/levels.ts`). Nada de números decorativos ni contadores guardados aparte.
 - **Racha:** días locales `YYYY-MM-DD` únicos. Solo cuentan las respuestas dadas en práctica.
-- **Sincronización (Fase 3):** nunca borres progreso sin dejar rastro: reiniciar una palabra
+- **Sincronización:** nunca borres progreso sin dejar rastro: reiniciar una palabra
   registra `removedWords` y «borrar progreso» fija `resetAt`. Toda fusión pasa por
   `mergeStates` (`packages/core/src/domain/merge.ts`), que debe seguir siendo conmutativa e idempotente.
   Los cambios que vienen de la sincronización se aplican con `store.replaceState`, no con
   métodos que cuenten como cambio local (provocarían subidas en bucle).
-- **Cuentas opcionales:** sin `NEXT_PUBLIC_SUPABASE_*` la app debe funcionar como en la
-  Fase 1. Nunca uses la clave `service_role` en el cliente; la seguridad la da RLS
+- **Cuentas opcionales:** sin `NEXT_PUBLIC_SUPABASE_*` la web debe funcionar entera, sin
+  cuentas y con el progreso en el navegador. Nunca uses la clave `service_role` en el cliente; la seguridad la da RLS
   (`supabase/migrations/`).
 - **Catálogo y paquetes** (`docs/08-paquetes.md`): cada palabra pertenece a un solo paquete
   y ningún término se repite entre paquetes. Lleva `ipa` (AFI amplio de inglés americano, sin
@@ -84,21 +87,6 @@ apps/mobile     Expo (Fase 4)
 - Los datos del usuario solo existen en el cliente: `useProgress()` devuelve `null` en el
   servidor y durante la hidratación; muestra un `Skeleton` en ese caso.
 - Consulta `node_modules/next/dist/docs/` (en la raíz del monorepo) ante cualquier duda de API.
-
-## Móvil (Expo SDK 57)
-
-- Lee `apps/mobile/AGENTS.md`: instala módulos con `npx expo install` (versiones del SDK) y
-  consulta la documentación versionada de Expo; las APIs cambian entre SDK.
-- **Una sola copia de React (19.2.3)** en todo el monorepo: el renderizador de React Native
-  exige la versión exacta. Está fijada en el `package.json` raíz (`devDependencies` y
-  `overrides`); no la cambies sin cambiar también Expo.
-- Pantallas en `src/screens`, rutas finas en `src/app` (Expo Router), adaptadores nativos en
-  `src/platform`, composición en `src/services.ts`.
-- Valores animados de Reanimated con `.get()`/`.set()` (lo exige el lint del React Compiler).
-- Fuentes importadas por peso (`@expo-google-fonts/<familia>/<peso>`): importar el paquete
-  entero mete todos los pesos en la app.
-- Pruebas con Jest + React Native Testing Library 14: `render` y los eventos son asíncronos
-  (`await`). `renderWithServices` en `apps/mobile/src/test/render.tsx`.
 
 ## UI
 

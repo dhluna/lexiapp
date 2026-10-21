@@ -3,7 +3,7 @@ import type { CelebrationSettings } from "./celebration-settings";
 
 type Kind = Exclude<Celebration, "none">;
 
-/** What each platform provides: confetti on screen and the chime (plus vibration on mobile). */
+/** What the platform provides: confetti on screen and the chime. */
 export interface CelebrationEffects {
   confetti(kind: Kind): void;
   sound(kind: Kind): void;

@@ -79,10 +79,7 @@ function toUser(session: Session | null): AuthUser | null {
   return { id: session.user.id, email: session.user.email ?? null, provider };
 }
 
-/**
- * Query and fragment parameters of a URL. Parsed by hand because React Native's `URL`
- * does not fully support `searchParams`.
- */
+/** Query and fragment parameters of a URL (Supabase returns tokens in either). */
 export function readUrlParams(url: string): Record<string, string> {
   const params: Record<string, string> = {};
   const start = url.search(/[?#]/);
@@ -135,21 +132,10 @@ export class SupabaseAuthService implements AuthService {
   }
 
   async signInWithGoogle(nextPath: string): Promise<AuthResult> {
+    // The page navigates to Google and comes back to /auth/callback.
     const redirectTo = this.callbackUrl(nextPath);
-    if (!this.platform.openOAuth) {
-      // Web: the page navigates to Google and comes back to /auth/callback.
-      const { error } = await this.client.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
-      return error ? fail(error) : { ok: true };
-    }
-    // Native: open Google in the system browser and finish with the URL it returns to.
-    const { data, error } = await this.client.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo, skipBrowserRedirect: true },
-    });
-    if (error || !data.url) return fail(error ?? { message: "no url" });
-    const returned = await this.platform.openOAuth(data.url, redirectTo);
-    if (!returned) return { ok: false, message: "Se canceló el inicio de sesión.", code: "cancelled" };
-    return this.completeRedirect(returned);
+    const { error } = await this.client.auth.signInWithOAuth({ provider: "google", options: { redirectTo } });
+    return error ? fail(error) : { ok: true };
   }
 
   async signInWithPassword(email: string, password: string): Promise<AuthResult> {

@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 /** The person responsible for the data (Ley 1581 de 2012) and how to reach them. */
 export const DATA_CONTROLLER = "Diego Hernández";
 export const PRIVACY_CONTACT = "hola@lexiapp.app";
-export const PRIVACY_UPDATED = "19 de octubre de 2026";
+export const PRIVACY_UPDATED = "21 de octubre de 2026";
 
 export function PrivacyPolicy() {
   return (
@@ -38,7 +38,7 @@ export function PrivacyPolicy() {
         <h3 className="font-semibold">Si usas Lexi sin cuenta</h3>
         <p>
           Tu progreso (palabras practicadas, sesiones, racha y preferencias) se guarda en el almacenamiento de tu
-          navegador o de la app. No sale de tu dispositivo y nosotros no tenemos acceso a él.
+          navegador. No sale de tu dispositivo y nosotros no tenemos acceso a él.
         </p>
         <h3 className="font-semibold">Si creas una cuenta</h3>
         <ul className="list-disc space-y-1 pl-5">
@@ -64,7 +64,7 @@ export function PrivacyPolicy() {
           La web cuenta las visitas con Vercel Web Analytics para saber cuánta gente usa Lexi y qué páginas son útiles.
           Recoge la página visitada (sin los parámetros de la dirección), el país, el tipo de dispositivo y el
           navegador, y de qué sitio llegas. No usa cookies, no guarda tu IP ni crea un perfil tuyo, y no se combina
-          con tu cuenta ni con tu progreso. La app móvil no envía estadísticas.
+          con tu cuenta ni con tu progreso.
         </p>
         <h3 className="font-semibold">Pronunciación</h3>
         <p>
@@ -98,7 +98,7 @@ export function PrivacyPolicy() {
         <p>
           Mientras tengas la cuenta. Si la eliminas (Ajustes › Cuenta › Eliminar cuenta), se borran al momento tu
           cuenta y todo tu progreso de nuestros servidores. El progreso guardado en tu dispositivo se queda en él
-          hasta que lo borres (Ajustes › Borrar progreso) o borres los datos del sitio o de la app.
+          hasta que lo borres (Ajustes › Borrar progreso) o borres los datos del sitio en tu navegador.
         </p>
       </Section>
 
@@ -138,7 +138,7 @@ export function PrivacyPolicy() {
       <Section title="Cambios">
         <p>
           Si cambiamos esta política, actualizaremos la fecha de arriba y, si el cambio es importante, lo avisaremos
-          en la app.
+          en la web.
         </p>
       </Section>
 
