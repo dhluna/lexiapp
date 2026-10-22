@@ -30,6 +30,8 @@ export interface SyncOptions {
   isOnline?: () => boolean;
   /** Connection restored / app back in the foreground. Omitted in tests. */
   triggers?: SyncTriggers;
+  /** Runs while still signed in, before signing out or deleting the account (daily reminder). */
+  beforeSignOut?: () => Promise<void>;
 }
 
 /**
@@ -106,6 +108,7 @@ export class SyncService {
   /** Uploads pending changes if possible, signs out and forgets this device's progress. */
   async signOut(): Promise<{ ok: boolean; message?: string }> {
     if (this.user && this.isOnline()) await this.syncNow();
+    await this.options.beforeSignOut?.().catch(() => undefined);
     const result = await this.auth.signOut();
     if (!result.ok) return { ok: false, message: result.message };
     this.forgetDevice();
@@ -113,6 +116,7 @@ export class SyncService {
   }
 
   async deleteAccount(): Promise<{ ok: boolean; message?: string }> {
+    await this.options.beforeSignOut?.().catch(() => undefined);
     const result = await this.auth.deleteAccount();
     if (!result.ok) return { ok: false, message: result.message };
     this.forgetDevice();

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { VoiceNotice } from "@/components/voice-notice";
 import { AccountSection, DeleteAccount } from "@/features/account/account-section";
+import { ReminderSection } from "@/features/settings/reminder-section";
+import { Switch } from "@/components/ui/switch";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
 import { useCelebrationSound } from "@/hooks/use-celebration";
@@ -59,6 +61,8 @@ export function SettingsView() {
           onChange={setCelebrationSound}
         />
       </Group>
+
+      <ReminderSection />
 
       <Group title="Pronunciación">
         <VoiceNotice />
@@ -201,37 +205,5 @@ function RadioChips<T extends string | number>({
         })}
       </div>
     </fieldset>
-  );
-}
-
-function Switch({
-  label,
-  hint,
-  checked,
-  onChange,
-}: {
-  label: string;
-  hint: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}) {
-  return (
-    <label className="flex cursor-pointer items-center justify-between gap-4">
-      <span>
-        <span className="block font-semibold">{label}</span>
-        <span className="block text-ink-soft">{hint}</span>
-      </span>
-      <input
-        type="checkbox"
-        role="switch"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="peer sr-only"
-      />
-      <span
-        aria-hidden
-        className="relative h-8 w-14 shrink-0 rounded-full bg-sunken ring-1 ring-line transition-colors peer-checked:bg-accent peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent after:absolute after:top-1 after:left-1 after:size-6 after:rounded-full after:bg-surface after:shadow after:transition-transform peer-checked:after:translate-x-6"
-      />
-    </label>
   );
 }

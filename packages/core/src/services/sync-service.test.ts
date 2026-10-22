@@ -193,4 +193,24 @@ describe("SyncService", () => {
     expect(JSON.parse(d.storage.getItem(SYNC_KEY)!).ownerId).toBeNull();
     expect(d.sync.getSnapshot().status).toBe("disabled");
   });
+
+  it("lets the device clean up before signing out and before deleting the account", async () => {
+    const server = new FakeServer();
+    const storage = new MemoryStorage();
+    const store = new ProgressStore(new LocalStorageProgressRepository(storage));
+    const auth = new FakeAuth();
+    const signedInDuring: (string | null)[] = [];
+    const sync = new SyncService(store, server.sourceFor(() => auth.userId), auth, storage, {
+      beforeSignOut: async () => {
+        signedInDuring.push(auth.userId);
+      },
+    });
+    sync.start();
+    auth.signIn(ANA);
+    await sync.signOut();
+    auth.signIn(LUIS);
+    await sync.deleteAccount();
+    expect(signedInDuring).toEqual(["ana", "luis"]);
+    sync.stop();
+  });
 });
