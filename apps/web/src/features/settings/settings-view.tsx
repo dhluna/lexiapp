@@ -10,7 +10,8 @@ import { Skeleton } from "@/components/ui/empty-state";
 import { useCelebrationSound } from "@/hooks/use-celebration";
 import { useSpeech } from "@/hooks/use-speech";
 import { useVoice } from "@/hooks/use-voice";
-import { VOICE_SAMPLE, VOICES } from "@lexi/core/data/voices";
+import { VOICE_SAMPLE } from "@lexi/core/data/voices";
+import { VoicePicker } from "@/features/settings/voice-picker";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { cn } from "@/lib/cn";
 
@@ -68,10 +69,7 @@ export function SettingsView() {
           onChange={(autoPronounce) => actions.updatePreferences({ autoPronounce })}
         />
         <div>
-          <RadioChips
-            legend="Voz"
-            name="voz"
-            options={VOICES.map((v) => ({ value: v.id, label: v.label }))}
+          <VoicePicker
             value={voice}
             onChange={(next) => {
               setVoice(next);
@@ -79,7 +77,8 @@ export function SettingsView() {
             }}
           />
           <p className="mt-2 text-sm text-ink-soft">
-            Voces grabadas, iguales en todos tus dispositivos. El AFI de las fichas es de inglés americano.
+            Al elegir una voz oirás una muestra. Son grabaciones, iguales en todos tus dispositivos; el AFI de
+            las fichas es de inglés americano.
           </p>
         </div>
         <RadioChips

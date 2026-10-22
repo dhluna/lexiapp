@@ -12,7 +12,7 @@ voces del navegador o del teléfono de cada persona, y la calidad y el acento ca
 | ID | Requisito |
 | --- | --- |
 | RF-58 | Las palabras, los ejemplos, las formas verbales y las respuestas de «Ponerme a prueba» se oyen con grabaciones neuronales. |
-| RF-59 | Ajustes › Pronunciación › **Voz**: «EE. UU. · Mujer» (por defecto), «EE. UU. · Hombre», «Reino Unido · Mujer» y «Reino Unido · Hombre». Al elegir una voz suena una muestra. Es un ajuste del dispositivo (`lexi:voice`), no se sincroniza. |
+| RF-59 | Ajustes › Pronunciación › **Voz**, agrupada por acento: una fila por país, con su bandera (SVG, `components/flags.tsx`) y las opciones «Mujer» y «Hombre». Por defecto, EE. UU. · Mujer. Cada opción se anuncia con el nombre completo («Reino Unido · Hombre»). Al elegir una voz suena una muestra. Es un ajuste del dispositivo (`lexi:voice`), no se sincroniza. |
 | RF-60 | «Lenta» y «Rápida» cambian la velocidad de la grabación sin cambiar el tono. |
 | RF-61 | Si falta la grabación de un texto o no se puede descargar (por ejemplo, sin conexión), se usa la voz del navegador, con el acento de la voz elegida si existe. |
 | RF-62 | El AFI de las fichas sigue siendo de inglés americano, de diccionario (Oxford, Merriam-Webster), elijas la voz que elijas. Ajustes lo indica. |
@@ -67,5 +67,5 @@ nivel gratuito mensual de Text-to-Speech, y regenerar solo lo nuevo cuesta muy p
 | Contrato `AudioClipPlayer` | `packages/core/src/platform.ts` |
 | Grabación o voz del sistema | `packages/core/src/services/speech.ts` |
 | Ajuste de voz | `packages/core/src/services/voice-settings.ts` |
-| Web | `platform/audio-clips.ts` (`HTMLAudioElement`, `preservesPitch`), Ajustes |
+| Web | `platform/audio-clips.ts` (`HTMLAudioElement`, `preservesPitch`), `features/settings/voice-picker.tsx` |
 | Generador | `scripts/generate-audio.ts` |
