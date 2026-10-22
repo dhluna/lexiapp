@@ -106,6 +106,14 @@ publicado como paquete) y el mismo backend; por eso el núcleo sigue sin depende
 
 *ADR-16 (inicio de sesión con Google en el móvil) se retiró junto con la app móvil.*
 
+**ADR-17 · Recordatorio diario desde el servidor (2026-10-22).** Las notificaciones programadas
+desde el propio navegador no son fiables (las APIs que lo permitían se abandonaron), así que el
+aviso lo envía el servidor con Web Push: Supabase `pg_cron` llama cada 15 minutos a
+`/api/recordatorios` (Vercel), que decide con `domain/reminders.ts` y los días de práctica. Es
+la única pieza con la clave secreta de Supabase, y vive solo en `apps/web/src/server/`
+(`server-only`); el navegador sigue usando la clave pública y RLS. Solo con cuenta. El ajuste es
+por dispositivo y no entra en el estado sincronizado. Detalle en `docs/15-recordatorios.md`.
+
 ## Decisiones de los paquetes (ver `docs/08-paquetes.md`)
 
 **ADR-17 · Paquetes incluidos en la app.** El catálogo sigue siendo código (`data/words`,

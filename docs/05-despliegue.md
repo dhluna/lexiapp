@@ -72,8 +72,10 @@ NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clave pública>
 ```
 
-> Nunca uses la clave `service_role` en Lexi: daría acceso completo a la base de datos
-> desde el navegador. Lexi no la necesita.
+> Nunca uses la clave `service_role` (o la secreta, `sb_secret_…`) en el navegador ni en una
+> variable `NEXT_PUBLIC_*`: daría acceso completo a la base de datos. La única excepción es el
+> envío del recordatorio diario, que se ejecuta en el servidor de Vercel
+> (`SUPABASE_SECRET_KEY`, ver `docs/15-recordatorios.md`).
 
 ## 6. Desplegar en Vercel
 
@@ -160,7 +162,14 @@ Lexi usa Resend sobre su dominio:
   supera, hay que pasar a Pro o cambiar a Cloudflare Web Analytics, que también funciona sin
   cookies.
 
-## 13. Si Vercel no despliega tras fusionar
+## 13. Recordatorio diario (opcional)
+
+Las notificaciones push necesitan una migración, claves VAPID, variables en Vercel y una tarea
+programada en Supabase. Los pasos están en
+[`docs/15-recordatorios.md`](15-recordatorios.md#configuración-una-vez). Sin ellos, Ajustes no
+muestra el recordatorio y todo lo demás funciona igual.
+
+## 14. Si Vercel no despliega tras fusionar
 
 Vercel despliega producción cuando GitHub le avisa de un push a `master` (webhook). Si ese
 aviso se pierde (por ejemplo, durante una incidencia de GitHub; ver githubstatus.com), la

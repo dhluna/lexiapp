@@ -8,6 +8,7 @@ const files = [
   "supabase/tests/00_supabase_stub.sql",
   "supabase/migrations/0001_lexi_sync.sql",
   "supabase/migrations/0002_active_packs.sql",
+  "supabase/migrations/0003_reminders.sql",
   "supabase/tests/10_sync_rules.sql",
 ];
 

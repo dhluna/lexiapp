@@ -76,3 +76,31 @@ export interface AuthPlatform {
   /** Where the provider or the email link must send the user back. */
   redirectUrl(target: AuthRedirect, nextPath?: string): string;
 }
+
+// ─── Push notifications (daily reminder) ─────────────────────────────────────
+
+/** A device's push subscription: where the server sends the notice and its encryption keys. */
+export interface PushSubscriptionData {
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+}
+
+/**
+ * - `supported`: notifications can be turned on here.
+ * - `needs-install`: iPhone/iPad browser: only works once Lexi is on the home screen.
+ * - `unsupported`: this browser cannot receive push notifications.
+ */
+export type PushSupport = "supported" | "needs-install" | "unsupported";
+
+export interface PushPlatform {
+  support(): PushSupport;
+  permission(): "default" | "granted" | "denied";
+  /** This device's current subscription, if any. */
+  current(): Promise<PushSubscriptionData | null>;
+  /** Asks for permission if needed; `null` when the person does not allow notifications. */
+  subscribe(vapidPublicKey: string): Promise<PushSubscriptionData | null>;
+  unsubscribe(): Promise<void>;
+  /** IANA time zone of the device, e.g. "Europe/Madrid". */
+  timeZone(): string;
+}

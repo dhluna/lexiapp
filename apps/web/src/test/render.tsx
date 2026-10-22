@@ -10,6 +10,7 @@ import { CelebrationSettings } from "@lexi/core/services/celebration-settings";
 import { Celebrator } from "@lexi/core/services/celebrator";
 import { SpeechService } from "@lexi/core/services/speech";
 import { createWebSpeechEngine, type SpeechEnvironment } from "@/platform/speech";
+import type { ReminderService } from "@lexi/core/services/reminder-service";
 import type { SyncService } from "@lexi/core/services/sync-service";
 import { VoiceSettings } from "@lexi/core/services/voice-settings";
 
@@ -36,7 +37,11 @@ export function createFakeSpeech(voices?: VoiceSettings) {
 export function renderWithServices(
   ui: ReactElement,
   storage = new MemoryStorage(),
-  extra: { auth?: AuthService | null; sync?: (store: ProgressStore) => SyncService | null } = {},
+  extra: {
+    auth?: AuthService | null;
+    sync?: (store: ProgressStore) => SyncService | null;
+    reminders?: ReminderService | null;
+  } = {},
 ) {
   const store = new ProgressStore(new LocalStorageProgressRepository(storage));
   const voiceSettings = new VoiceSettings(storage);
@@ -50,7 +55,16 @@ export function renderWithServices(
   const celebrator = new Celebrator(celebrationSettings, effects, () => speech.service.stop());
   const result = render(
     <ServicesProvider
-      value={{ progressStore: store, speech: speech.service, auth, sync, celebrator, celebrationSettings, voiceSettings }}
+      value={{
+        progressStore: store,
+        speech: speech.service,
+        auth,
+        sync,
+        celebrator,
+        celebrationSettings,
+        voiceSettings,
+        reminders: extra.reminders ?? null,
+      }}
     >
       {ui}
     </ServicesProvider>,

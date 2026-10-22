@@ -184,3 +184,62 @@ do $$ begin
   raise notice 'T8 ok: los paquetes activos siguen la regla de preferencias y sobreviven a clientes antiguos';
 end $$;
 reset role;
+
+-- T9: recordatorios (0003). Cada usuario solo ve y borra sus dispositivos.
+insert into auth.users values ('cccccccc-0000-0000-0000-000000000003', 'eva@example.com');
+set role authenticated;
+select set_config('request.jwt.claim.sub', :'luis', false);
+select public.register_reminder('https://push.example/luis-movil', 'k1', 'a1', '20:00', 'Europe/Madrid');
+do $$ begin
+  assert (select count(*) from public.reminder_devices) = 1, 'T9 Luis no ve su dispositivo';
+  assert (select remind_at from public.reminder_devices) = '20:00', 'T9 hora';
+  begin
+    perform public.register_reminder('https://push.example/x', 'k', 'a', '20:00', 'Marte/Olympus');
+    raise exception 'T9 aceptó una zona horaria inválida';
+  exception when invalid_parameter_value then null;
+  end;
+  begin
+    insert into public.reminder_devices (endpoint, user_id, p256dh, auth, time_zone)
+      values ('https://push.example/y', 'bbbbbbbb-0000-0000-0000-000000000002', 'k', 'a', 'UTC');
+    raise exception 'T9 se pudo escribir sin register_reminder';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+-- Cambiar la hora conserva el último envío.
+reset role;
+update public.reminder_devices set last_sent_on = '2026-10-20';
+set role authenticated;
+select public.register_reminder('https://push.example/luis-movil', 'k1', 'a1', '08:30', 'Europe/Madrid');
+do $$ begin
+  assert (select remind_at from public.reminder_devices) = '08:30', 'T9 no cambió la hora';
+  assert (select last_sent_on from public.reminder_devices) = '2026-10-20', 'T9 se perdió el último envío';
+end $$;
+
+-- Eva no ve los dispositivos de Luis; si inicia sesión en el mismo navegador, el endpoint pasa a ella.
+select set_config('request.jwt.claim.sub', 'cccccccc-0000-0000-0000-000000000003', false);
+do $$ begin
+  assert (select count(*) from public.reminder_devices) = 0, 'T9 Eva ve dispositivos de Luis';
+end $$;
+delete from public.reminder_devices;
+select public.register_reminder('https://push.example/luis-movil', 'k2', 'a2', '21:00', 'America/Bogota');
+do $$ begin
+  assert (select count(*) from public.reminder_devices) = 1, 'T9 Eva no tomó el dispositivo';
+  assert (select last_sent_on from public.reminder_devices) is null, 'T9 heredó el último envío de Luis';
+end $$;
+select set_config('request.jwt.claim.sub', :'luis', false);
+do $$ begin
+  assert (select count(*) from public.reminder_devices) = 0, 'T9 Luis conserva el dispositivo que tomó Eva';
+end $$;
+select public.register_reminder('https://push.example/luis-tablet', 'k3', 'a3', '20:00', 'UTC');
+delete from public.reminder_devices;
+do $$ begin
+  assert (select count(*) from public.reminder_devices) = 0, 'T9 Luis no pudo desactivar';
+end $$;
+select set_config('request.jwt.claim.sub', 'cccccccc-0000-0000-0000-000000000003', false);
+select public.delete_my_account();
+reset role;
+do $$ begin
+  assert not exists (select 1 from public.reminder_devices), 'T9 quedaron dispositivos de Eva';
+  raise notice 'T9 ok: recordatorios aislados por usuario, el endpoint cambia de cuenta y se borran con ella';
+end $$;
+reset role;

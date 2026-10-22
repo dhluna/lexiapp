@@ -3,7 +3,9 @@ import { mergeStates } from "../domain/merge";
 import { createEmptyState } from "../domain/progress";
 import type { UserProgressState } from "../domain/types";
 import { RemoteError, type RemoteProgressSource } from "../persistence/remote-progress";
+import type { ReminderRemote } from "../persistence/remote-reminders";
 import { CURRENT_VERSION } from "../persistence/schema";
+import type { PushPlatform, PushSubscriptionData, PushSupport } from "../platform";
 import type { AuthResult, AuthService, AuthSnapshot, AuthUser, SignUpResult } from "../services/auth";
 
 /** In-memory "account": keeps one state per user, merging what devices push. */
@@ -101,4 +103,43 @@ export class FakeAuth implements AuthService {
     this.snapshot = next;
     for (const listener of this.listeners) listener();
   }
+}
+
+/** Browser push for tests: choose support and the answer to the permission prompt. */
+export class FakePush implements PushPlatform {
+  supportValue: PushSupport = "supported";
+  permissionValue: "default" | "granted" | "denied" = "default";
+  /** What the person answers when asked for permission. */
+  allow = true;
+  zone = "Europe/Madrid";
+  subscription: PushSubscriptionData | null = null;
+
+  support = () => this.supportValue;
+  permission = () => this.permissionValue;
+  current = vi.fn(async () => this.subscription);
+  subscribe = vi.fn(async () => {
+    if (this.permissionValue === "default") this.permissionValue = this.allow ? "granted" : "denied";
+    if (this.permissionValue !== "granted") return null;
+    this.subscription ??= { endpoint: "https://push.example/device", p256dh: "key", auth: "secret" };
+    return this.subscription;
+  });
+  unsubscribe = vi.fn(async () => {
+    this.subscription = null;
+  });
+  timeZone = () => this.zone;
+}
+
+/** Server side of the reminders for tests: devices by endpoint. */
+export class FakeReminderRemote implements ReminderRemote {
+  readonly devices = new Map<string, { time: string; timeZone: string }>();
+  fail = false;
+
+  register = vi.fn(async (subscription: PushSubscriptionData, time: string, timeZone: string) => {
+    if (this.fail) throw new Error("network");
+    this.devices.set(subscription.endpoint, { time, timeZone });
+  });
+  unregister = vi.fn(async (endpoint: string) => {
+    if (this.fail) throw new Error("network");
+    this.devices.delete(endpoint);
+  });
 }

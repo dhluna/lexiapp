@@ -27,6 +27,7 @@ Si creas una cuenta, se sincroniza entre tus navegadores.
 | **Progreso** | Racha diaria, calendario de 4 semanas, avance por paquete y 8 niveles con insignias (100 puntos por palabra aprendida). |
 | **Voces** | Pronunciación grabada con voces neuronales: EE. UU. o Reino Unido, mujer u hombre. |
 | **Cuenta (opcional)** | Con Google o con email. Sincroniza tu progreso y sigue funcionando sin conexión. |
+| **Recordatorio** | Con cuenta: un aviso diario a la hora que elijas, solo si ese día aún no has practicado (notificaciones push; en iPhone, con Lexi en la pantalla de inicio). |
 | **Compartir** | Página con código QR, enlace y redes para recomendar Lexi. |
 
 Accesible y pensada para el móvil: objetivos táctiles de 44 px, foco visible, modo claro y
@@ -101,6 +102,7 @@ activarlas, sigue [docs/05-despliegue.md](docs/05-despliegue.md) (las variables 
 | `npm run test:sql` | Esquema de Supabase y sus reglas en un Postgres desechable (necesita Docker) |
 | `npm run audio` | Regenera las grabaciones de voz ([docs/14](docs/14-audio.md)); necesita una clave de Google en `.env.audio.local` |
 | `npm run qr` | Regenera el código QR de compartir ([docs/13](docs/13-compartir.md)) |
+| `npm run vapid` | Crea las claves del recordatorio diario en `.env.push.local` ([docs/15](docs/15-recordatorios.md)) |
 
 ## Calidad
 
@@ -128,6 +130,7 @@ activarlas, sigue [docs/05-despliegue.md](docs/05-despliegue.md) (las variables 
 | [12 · Niveles e insignias](docs/12-niveles.md) | Puntos, niveles e insignias |
 | [13 · Compartir](docs/13-compartir.md) | Página de compartir y código QR |
 | [14 · Audio grabado](docs/14-audio.md) | Voces neuronales y cómo regenerarlas |
+| [15 · Recordatorio diario](docs/15-recordatorios.md) | Notificaciones push: diseño y configuración |
 
 Los documentos 06 y 07 trataban de la antigua app móvil, retirada el 2026-10-21. Su código está
 en la etiqueta de git [`movil-final`](https://github.com/dhluna/lexiapp/tree/movil-final).

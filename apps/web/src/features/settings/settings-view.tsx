@@ -4,13 +4,16 @@ import { Share2 } from "lucide-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { VoiceNotice } from "@/components/voice-notice";
-import { AccountSection } from "@/features/account/account-section";
+import { AccountSection, DeleteAccount } from "@/features/account/account-section";
+import { ReminderSection } from "@/features/settings/reminder-section";
+import { Switch } from "@/components/ui/switch";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
 import { useCelebrationSound } from "@/hooks/use-celebration";
 import { useSpeech } from "@/hooks/use-speech";
 import { useVoice } from "@/hooks/use-voice";
-import { VOICE_SAMPLE, VOICES } from "@lexi/core/data/voices";
+import { VOICE_SAMPLE } from "@lexi/core/data/voices";
+import { VoicePicker } from "@/features/settings/voice-picker";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { cn } from "@/lib/cn";
 
@@ -59,6 +62,8 @@ export function SettingsView() {
         />
       </Group>
 
+      <ReminderSection />
+
       <Group title="Pronunciación">
         <VoiceNotice />
         <Switch
@@ -68,10 +73,7 @@ export function SettingsView() {
           onChange={(autoPronounce) => actions.updatePreferences({ autoPronounce })}
         />
         <div>
-          <RadioChips
-            legend="Voz"
-            name="voz"
-            options={VOICES.map((v) => ({ value: v.id, label: v.label }))}
+          <VoicePicker
             value={voice}
             onChange={(next) => {
               setVoice(next);
@@ -79,7 +81,8 @@ export function SettingsView() {
             }}
           />
           <p className="mt-2 text-sm text-ink-soft">
-            Voces grabadas, iguales en todos tus dispositivos. El AFI de las fichas es de inglés americano.
+            Al elegir una voz oirás una muestra. Son grabaciones, iguales en todos tus dispositivos; el AFI de
+            las fichas es de inglés americano.
           </p>
         </div>
         <RadioChips
@@ -140,6 +143,7 @@ export function SettingsView() {
             {message}
           </p>
         </div>
+        <DeleteAccount />
       </Group>
 
       <p className="text-center text-sm">
@@ -201,37 +205,5 @@ function RadioChips<T extends string | number>({
         })}
       </div>
     </fieldset>
-  );
-}
-
-function Switch({
-  label,
-  hint,
-  checked,
-  onChange,
-}: {
-  label: string;
-  hint: string;
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-}) {
-  return (
-    <label className="flex cursor-pointer items-center justify-between gap-4">
-      <span>
-        <span className="block font-semibold">{label}</span>
-        <span className="block text-ink-soft">{hint}</span>
-      </span>
-      <input
-        type="checkbox"
-        role="switch"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="peer sr-only"
-      />
-      <span
-        aria-hidden
-        className="relative h-8 w-14 shrink-0 rounded-full bg-sunken ring-1 ring-line transition-colors peer-checked:bg-accent peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent after:absolute after:top-1 after:left-1 after:size-6 after:rounded-full after:bg-surface after:shadow after:transition-transform peer-checked:after:translate-x-6"
-      />
-    </label>
   );
 }

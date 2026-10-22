@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 /** The person responsible for the data (Ley 1581 de 2012) and how to reach them. */
 export const DATA_CONTROLLER = "Diego Hernández";
 export const PRIVACY_CONTACT = "hola@lexiapp.app";
-export const PRIVACY_UPDATED = "21 de octubre de 2026";
+export const PRIVACY_UPDATED = "22 de octubre de 2026";
 
 export function PrivacyPolicy() {
   return (
@@ -73,6 +73,14 @@ export function PrivacyPolicy() {
           la voz de tu navegador o de tu teléfono; si tu sistema usa voces en línea, el texto que se pronuncia puede
           enviarse a su servicio de voz (Google, Microsoft o Apple). No se envía ningún dato personal.
         </p>
+        <h3 className="font-semibold">Recordatorio diario</h3>
+        <p>
+          Solo con cuenta y si lo activas en Ajustes. Guardamos, para cada dispositivo donde lo actives, la dirección
+          de notificaciones que crea tu navegador, la hora elegida, tu zona horaria y el día del último aviso. Con tus
+          días de práctica decidimos si avisarte y con qué texto. El aviso pasa por el servicio de notificaciones de
+          tu navegador (Google, Apple, Mozilla o Microsoft), que solo recibe el aviso cifrado. Estos datos se borran
+          al desactivar el recordatorio, al cerrar sesión en ese dispositivo o al eliminar la cuenta.
+        </p>
       </Section>
 
       <Section title="Quién más interviene">
@@ -86,6 +94,10 @@ export function PrivacyPolicy() {
           </li>
           <li>
             <strong>Google</strong>: solo si eliges «Continuar con Google».
+          </li>
+          <li>
+            <strong>El servicio de notificaciones de tu navegador</strong> (Google, Apple, Mozilla o Microsoft):
+            solo si activas el recordatorio diario.
           </li>
         </ul>
         <p>

@@ -9,11 +9,13 @@ import {
   getCelebrationSettings,
   getCelebrator,
   getProgressStore,
+  getReminderService,
   getSpeechService,
   getSyncService,
   getVoiceSettings,
 } from "@/services/instances";
 import type { ProgressStore } from "@lexi/core/services/progress-store";
+import type { ReminderService } from "@lexi/core/services/reminder-service";
 import type { SpeechService } from "@lexi/core/services/speech";
 import type { SyncService } from "@lexi/core/services/sync-service";
 import type { VoiceSettings } from "@lexi/core/services/voice-settings";
@@ -27,6 +29,8 @@ interface Services {
   celebrator?: Celebrator;
   celebrationSettings?: CelebrationSettings;
   voiceSettings?: VoiceSettings;
+  /** `null` = no daily reminder (accounts or push keys not configured). */
+  reminders?: ReminderService | null;
 }
 
 export interface ServiceResolvers {
@@ -37,6 +41,7 @@ export interface ServiceResolvers {
   celebrator: () => Celebrator;
   celebrationSettings: () => CelebrationSettings;
   voiceSettings: () => VoiceSettings;
+  reminders: () => ReminderService | null;
 }
 
 const ServicesContext = createContext<Services>({});
@@ -61,6 +66,7 @@ export function useServices(): ServiceResolvers {
       celebrator: () => services.celebrator ?? getCelebrator(),
       celebrationSettings: () => services.celebrationSettings ?? getCelebrationSettings(),
       voiceSettings: () => services.voiceSettings ?? getVoiceSettings(),
+      reminders: () => (services.reminders !== undefined ? services.reminders : getReminderService()),
     }),
     [services],
   );

@@ -22,6 +22,9 @@ Monorepo con npm workspaces; los comandos de la raíz se ejecutan en todos los p
 - `npm run audio` regenera las grabaciones de voz (`docs/14-audio.md`; necesita
   `.env.audio.local`, que nunca se lee ni se muestra) y `npm run qr` el código QR
   (`docs/13-compartir.md`). Hay que regenerar el audio al añadir palabras al catálogo.
+- `npm run vapid` crea las claves del recordatorio diario en `.env.push.local`, que nunca se lee
+  ni se muestra (`docs/15-recordatorios.md`). La clave secreta de Supabase solo se usa en
+  `apps/web/src/server/` (con `import "server-only"`).
 
 ## Estructura
 
@@ -71,7 +74,7 @@ apps/web        la aplicación web (Next.js)
   Los cambios que vienen de la sincronización se aplican con `store.replaceState`, no con
   métodos que cuenten como cambio local (provocarían subidas en bucle).
 - **Cuentas opcionales:** sin `NEXT_PUBLIC_SUPABASE_*` la web debe funcionar entera, sin
-  cuentas y con el progreso en el navegador. Nunca uses la clave `service_role` en el cliente; la seguridad la da RLS
+  cuentas y con el progreso en el navegador. Nunca uses la clave `service_role` (o la secreta) en el cliente; la seguridad la da RLS
   (`supabase/migrations/`).
 - **Catálogo y paquetes** (`docs/08-paquetes.md`): cada palabra pertenece a un solo paquete
   y ningún término se repite entre paquetes. Lleva `ipa` (AFI amplio de inglés americano, sin
