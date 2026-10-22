@@ -7,7 +7,7 @@ import { LevelBadge } from "@/components/level-badge";
 import { useSync } from "@/hooks/use-account";
 import { useProgress } from "@/hooks/use-progress";
 import { cn } from "@/lib/cn";
-import { achievedCount, levelFor } from "@lexi/core/domain/levels";
+import { achievedCount, formatPoints, levelFor } from "@lexi/core/domain/levels";
 
 interface NavItem {
   href: string;
@@ -53,19 +53,23 @@ export function TopNav() {
   );
 }
 
-/** Current level, always in sight: its badge links to the badges in Progreso (name in the label and tooltip). */
+/** Current level and points, always in sight: links to the badges in Progreso (level name in the label and tooltip). */
 export function LevelLink() {
   const snapshot = useProgress();
-  if (!snapshot) return <span aria-hidden className="size-11" />;
-  const { level } = levelFor(achievedCount(snapshot.state));
+  if (!snapshot) return <span aria-hidden className="h-11 w-24" />;
+  const { level, points } = levelFor(achievedCount(snapshot.state));
+  const shown = formatPoints(points);
   return (
     <Link
       href="/progreso#insignias"
-      aria-label={`Nivel ${level.number}, ${level.name}: ver insignias`}
-      title={`Nivel ${level.number} · ${level.name}`}
-      className="inline-flex size-11 items-center justify-center rounded-full transition-colors hover:bg-sunken"
+      aria-label={`Nivel ${level.number}, ${level.name}, ${shown} puntos: ver insignias`}
+      title={`Nivel ${level.number} · ${level.name} · ${shown} puntos`}
+      className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface py-1 pr-3.5 pl-1.5 transition-colors hover:bg-sunken"
     >
       <LevelBadge level={level.number} size="xs" />
+      <span aria-hidden className="text-sm font-semibold whitespace-nowrap tabular-nums">
+        {shown} <span className="font-normal text-ink-soft">pts</span>
+      </span>
     </Link>
   );
 }

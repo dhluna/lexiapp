@@ -33,12 +33,11 @@ describe("levels and badges", () => {
     expect(screen.getByText("9 palabras para Explorador")).toBeInTheDocument();
   });
 
-  it("keeps the current level in the header, linking to the badges", () => {
+  it("keeps the current level and the points in the header, linking to the badges", () => {
     renderWithServices(<LevelLink />, learned(16));
-    expect(screen.getByRole("link", { name: "Nivel 2, Básico: ver insignias" })).toHaveAttribute(
-      "href",
-      "/progreso#insignias",
-    );
+    const link = screen.getByRole("link", { name: "Nivel 2, Básico, 1.600 puntos: ver insignias" });
+    expect(link).toHaveAttribute("href", "/progreso#insignias");
+    expect(link).toHaveTextContent("1.600 pts");
   });
 
   it("gives each level its own color: earned badges in full, locked ones faded", () => {
