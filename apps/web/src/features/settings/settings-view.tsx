@@ -4,7 +4,7 @@ import { Share2 } from "lucide-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { VoiceNotice } from "@/components/voice-notice";
-import { AccountSection } from "@/features/account/account-section";
+import { AccountSection, DeleteAccount } from "@/features/account/account-section";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/empty-state";
 import { useCelebrationSound } from "@/hooks/use-celebration";
@@ -139,6 +139,7 @@ export function SettingsView() {
             {message}
           </p>
         </div>
+        <DeleteAccount />
       </Group>
 
       <p className="text-center text-sm">

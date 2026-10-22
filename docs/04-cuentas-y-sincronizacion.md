@@ -73,6 +73,7 @@ cambios no sincronizados se perderán y se pide confirmación.
 
 ### Eliminar cuenta
 
+Está en Ajustes › Datos, junto a «Borrar progreso», y solo aparece con la sesión iniciada.
 Confirmación explícita («Eliminar mi cuenta y todo mi progreso»). Borra el usuario y, en
 cascada, todas sus filas. Después se comporta como cerrar sesión.
 
@@ -229,13 +230,18 @@ interface AuthSnapshot {
 Sin sesión                                Con sesión
 ┌──────────────────────────────────┐      ┌──────────────────────────────────┐
 │ Cuenta                           │      │ Cuenta                           │
-│ Guarda tu progreso y úsalo en    │      │ diego@ejemplo.com                │
-│ todos tus dispositivos.          │      │ ✓ Sincronizado hace 2 min        │
-│ [ Iniciar sesión ]               │      │ [ Sincronizar ahora ]            │
-└──────────────────────────────────┘      │ Cerrar sesión                    │
-                                          │ Eliminar cuenta                  │
+│ Guarda tu progreso y úsalo en    │      │ (D) diego@ejemplo.com  [◉ Nivel] │
+│ todos tus dispositivos.          │      │     Con tu cuenta de Google      │
+│ [ Iniciar sesión ]               │      │ ┌ ✓ Sincronizado hace 2 min ───┐ │
+└──────────────────────────────────┘      │ │          [ Sincronizar ahora ]│ │
+                                          │ └──────────────────────────────┘ │
+                                          │ ─────────────────────────────── │
+                                          │ ⇥ Cerrar sesión                  │
                                           └──────────────────────────────────┘
 ```
+
+La franja de sincronización toma el color del estado: verde si está al día, rojo si hay un
+error y neutro mientras sincroniza o sin conexión. «Eliminar cuenta» está en Ajustes › Datos.
 
 ### /entrar
 
