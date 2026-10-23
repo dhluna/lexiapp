@@ -1,6 +1,6 @@
 "use client";
 
-import { Share2 } from "lucide-react";
+import { ExternalLink, Mail, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { VoiceNotice } from "@/components/voice-notice";
@@ -16,6 +16,7 @@ import { VOICE_SAMPLE } from "@lexi/core/data/voices";
 import { VoicePicker } from "@/features/settings/voice-picker";
 import { useProgress, useProgressActions } from "@/hooks/use-progress";
 import { cn } from "@/lib/cn";
+import { CONTACT_EMAIL, ISSUES_URL, suggestionMailto } from "@/lib/feedback";
 
 const SESSION_SIZES = [5, 10, 15, 20].map((n) => ({ value: n, label: String(n) }));
 
@@ -101,6 +102,31 @@ export function SettingsView() {
             <Share2 aria-hidden className="size-4" />
             Compartir Lexi
           </ButtonLink>
+        </div>
+      </Group>
+
+      <Group title="Sugerencias">
+        <div>
+          <p className="text-ink-soft">
+            ¿Se te ocurre algo para mejorar Lexi o encontraste un error? Escríbenos a{" "}
+            <span className="font-semibold text-ink">{CONTACT_EMAIL}</span>. Para avisar de una palabra, usa el enlace
+            que hay en su ficha.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <ButtonLink href={suggestionMailto()} variant="secondary">
+              <Mail aria-hidden className="size-4" />
+              Enviar una sugerencia
+            </ButtonLink>
+            <a
+              href={ISSUES_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-11 items-center gap-1 rounded-xl px-2 font-semibold text-accent underline-offset-4 hover:underline"
+            >
+              O en GitHub
+              <ExternalLink aria-hidden className="size-4" />
+            </a>
+          </div>
         </div>
       </Group>
 

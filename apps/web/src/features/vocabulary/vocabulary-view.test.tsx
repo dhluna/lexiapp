@@ -107,6 +107,15 @@ describe("VocabularyView", () => {
 });
 
 describe("WordSheet", () => {
+  it("links to report an error in the word, with the word filled in", () => {
+    const word = WORDS[0];
+    renderWithServices(<WordSheet word={word} />);
+    const link = screen.getByRole("link", { name: "¿Ves un error en esta palabra? Avísanos" });
+    const href = link.getAttribute("href")!;
+    expect(href.startsWith("mailto:hola@lexiapp.app?")).toBe(true);
+    expect(decodeURIComponent(href)).toContain(`(${word.id})`);
+  });
+
   it("shows the full entry and updates the learning status", async () => {
     const user = userEvent.setup();
     const word = WORDS.find((w) => w.id === "travel-fly")!;

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CONTACT_EMAIL } from "@/lib/feedback";
 
 /** The person responsible for the data (Ley 1581 de 2012) and how to reach them. */
 export const DATA_CONTROLLER = "Diego Hernández";
-export const PRIVACY_CONTACT = "hola@lexiapp.app";
+export const PRIVACY_CONTACT = CONTACT_EMAIL;
 export const PRIVACY_UPDATED = "22 de octubre de 2026";
 
 export function PrivacyPolicy() {
