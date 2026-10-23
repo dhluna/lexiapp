@@ -37,7 +37,9 @@ Añadir Cloudflare a «Quién más interviene» en `/privacidad` y actualizar la
 
 ## 2. Antes de anunciar Lexi
 
-- [ ] **Enlace de sugerencias** en Ajustes: «¿Sugerencias? Escríbenos» a `hola@lexiapp.app`.
+- [x] **Sugerencias y errores** (2026-10-23): Ajustes › Sugerencias (correo a `hola@lexiapp.app` o
+      GitHub) y, en la ficha de cada palabra y en la práctica, «¿Ves un error en esta palabra?
+      Avísanos», con un correo ya rellenado (`apps/web/src/lib/feedback.ts`).
 - [ ] **Revisión humana de las 330 transcripciones fonéticas** (pasan las comprobaciones
       automáticas, pero las escribió una IA).
 - [ ] **Probar en iPhone (Safari) y Firefox**: la voz en inglés cambia según el navegador.

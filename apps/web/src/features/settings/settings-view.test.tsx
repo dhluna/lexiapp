@@ -61,4 +61,15 @@ describe("SettingsView", () => {
     expect(store.getSnapshot().state.words).toEqual({});
     expect(screen.getByText("Progreso borrado.")).toBeInTheDocument();
   });
+
+  it("offers to send a suggestion by email or on GitHub", () => {
+    renderWithServices(<SettingsView />);
+    expect(screen.getByRole("link", { name: "Enviar una sugerencia" }).getAttribute("href")).toMatch(
+      /^mailto:hola@lexiapp\.app\?subject=Sugerencia%20para%20Lexi/,
+    );
+    expect(screen.getByRole("link", { name: "O en GitHub" })).toHaveAttribute(
+      "href",
+      "https://github.com/dhluna/lexiapp/issues/new/choose",
+    );
+  });
 });

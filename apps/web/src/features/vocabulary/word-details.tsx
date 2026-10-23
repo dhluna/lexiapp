@@ -1,4 +1,6 @@
+import { Flag } from "lucide-react";
 import { SpeakButton } from "@/components/speak-button";
+import { wordReportMailto } from "@/lib/feedback";
 import type { Word } from "@lexi/core/domain/types";
 
 /** Meaning, verb forms and examples. Shared by the practice card and the word sheet. */
@@ -39,6 +41,16 @@ export function WordDetails({ word }: { word: Word }) {
           ))}
         </ul>
       </div>
+
+      <p className="text-sm text-ink-soft">
+        <a
+          href={wordReportMailto(word)}
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl font-semibold underline-offset-4 hover:text-ink hover:underline"
+        >
+          <Flag aria-hidden className="size-4" />
+          ¿Ves un error en esta palabra? Avísanos
+        </a>
+      </p>
     </div>
   );
 }
